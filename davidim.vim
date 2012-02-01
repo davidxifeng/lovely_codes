@@ -170,9 +170,6 @@ function! s:special_sort(str)
     return join(ol + tl)
 endfunction
 
-function! JieXi(s,f)
-    return s:parse_pinyin(a:s,a:f)
-endfunction
 function! s:parse_pinyin(pinyin, is_forward)
 "is_forward could only be 0 or 1
     let fwd = a:is_forward
@@ -225,12 +222,6 @@ endfunction
 
 function! s:actions_after_insert()
     let s:g.cache_for_page = 0
-endfunction
-
-function! Save_Data_File()
-    let newlist = []
-    call add(newlist, string(g:cjk.gb2312))
-    call writefile(newlist, "/tmp/new2312.txt")
 endfunction
 
 function! s:record_char_freq(n)
@@ -498,6 +489,19 @@ function! s:read_phrase_data_file()
     return 1
 endfunction
 
+function! s:save_dict_to_datafile(dict, file)
+    let lst = []
+    for it in sort(keys(a:dict))
+        let nl = it ." ". a:dict[it]
+        call add(lst, nl)
+    endfor
+    call writefile(lst, a:file)
+endfunction
+
+function! s:update_dict_file()
+    call s:save_dict_to_datafile(g:cjk.gb2312, s:tgbf)
+endfunction
+
 function! s:copy_data_files()
 " backup file: manual or use shell script... outside vim
 " or else the backup operation will be to much...
@@ -535,14 +539,18 @@ function! s:init_im()
     inoremap <silent> <C-J> <Esc>:call <SID>toggle_im()<CR>a
 endfunction
 
-function! s:im_main()
-    "add save & restore here, toggle
+function! s:im_frame()
     set completefunc=DavidVimIM
+    autocmd BufWinLeave *.* call s:update_dict_file()
+    "autocmd BufWinLeave *.v call s:update_dict_file()
+endfunction
+
+function! s:im_main()
 
     call s:init_global_state()
     call s:init_global_data()
+    call s:im_frame()
     call s:init_im()
-    command! SaveMe call Save_Data_File()
 endfunction
 
 function s:get_super_code()
@@ -621,7 +629,8 @@ function! s:get_pinyin_table()
         \ "zl", "zj", "zh", "zk", "ze", "zz", "zf", "zg", "va", "vl",
         \ "vj", "vh", "vk", "ve", "vf", "vg", "vi", "vs", "vb", "vu",
         \ "vw", "vy", "vr", "vd", "vv", "vp", "vo", "zi", "zs", "zb",
-        \ "zu", "zr", "zv", "zp", "zo", "nu" ]
+        \ "zu", "zr", "zv", "zp", "zo", "nu", "dg" 
+        \ ]
     return table
 endfunction 
 

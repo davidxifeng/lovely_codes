@@ -1,5 +1,5 @@
 "David's shuang pin input method
-"Begin: Nov/29 2011 Tue 14:17:25
+"Begin: Tue 14:17:25 Nov/29 2011
 "Maintainer: David Feng <davidxifeng@gmail.com>
 
 if exists('g:loaded_david_im') || &cp
@@ -7,86 +7,19 @@ if exists('g:loaded_david_im') || &cp
 endif
 let g:loaded_david_im= 1
 
-function s:get_super_code()
-    let jack=
-        \{
-        \'a':"啊 啊 阿 吖",
-        \'b':"不 把 吧 别 比",
-        \'c':"才 错 次 从 草 菜 此",
-        \'d':"的 点 到 大 多",
-        \'e':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'f':"一 二 三 四 五",
-        \'g':"六 七 八 九 十",
-        \'h':"威",
-        \'i':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'j':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'k':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'l':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'m':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'n':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'o':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'p':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'q':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'r':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'s':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'t':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'u':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'v':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'w':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'x':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'y':"也 我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
-        \'z':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振"
-        \';':"我"
-        \}
-    return jack
-endfunction
+function! s:init_global_state()
+    "g : the global input method state variable
+    let s:g = {}
+    let s:g.chinese_mode = 0
+    let s:g.entered_english = 0
+    let s:g.cache_for_page = 0
+    let s:g.partly_input = 0
+    let s:g.remained_pinyin = ""
+    let s:g.record_freq = 0
 
-function! s:get_pinyin_table()
-     " total: 406
-     let table = [
-        \ "oa", "ol", "oj", "oh", "ok", "ba", "bl", "bj", "bh", "bk",
-        \ "bz", "bf", "bg", "bi", "bm", "bc", "bx", "bn", "b;", "bo", 
-        \ "bu", "ca", "cl", "cj", "ch", "ck", "ce", "cf", "cg", "ia", 
-        \ "il", "ij", "ih", "ik", "ie", "if", "ig", "ii", "is", "ib",
-        \ "iu", "iw", "iy", "ir", "id", "iv", "ip", "io", "ci", "cs",
-        \ "cb", "cu", "cr", "cv", "cp", "co", "da", "dl", "dj", "dh",
-        \ "dk", "de", "dz", "df", "di", "dw", "dm", "dc", "dx", "d;",
-        \ "dq", "ds", "db", "du", "dr", "dv", "dp", "do", "oe", "oz",
-        \ "of", "or", "fa", "fj", "fh", "fz", "ff", "fg", "fc", "fo",
-        \ "fb", "fu", "ga", "gl", "gj", "gh", "gk", "ge", "gz", "gf",
-        \ "gg", "gs", "gb", "gu", "gw", "gy", "gr", "gd", "gv", "gp",
-        \ "go", "ha", "hl", "hj", "hh", "hk", "he", "hz", "hf", "hg",
-        \ "hs", "hb", "hu", "hw", "hy", "hr", "hd", "hv", "hp", "ho",
-        \ "oi", "ji", "jw", "jm", "jd", "jc", "jx", "jn", "j;", "js",
-        \ "jq", "ju", "jr", "jt", "jp", "ka", "kl", "kj", "kh", "kk",
-        \ "ke", "kf", "kg", "ks", "kb", "ku", "kw", "ky", "kr", "kd",
-        \ "kv", "kp", "ko", "la", "ll", "lj", "lh", "lk", "le", "lz",
-        \ "lg", "li", "lw", "lm", "ld", "lc", "lx", "ln", "l;", "lq",
-        \ "ls", "lb", "lu", "lr", "lt", "lp", "lo", "ly", "ma", "ml",
-        \ "mj", "mh", "mk", "me", "mz", "mf", "mg", "mi", "mm", "mc",
-        \ "mx", "mn", "m;", "mq", "mo", "mb", "mu", "na", "nl", "nj",
-        \ "nh", "nk", "ne", "nz", "nf", "ng", "ni", "nm", "nd", "nc",
-        \ "nx", "nn", "n;", "nq", "ns", "nb", "nr", "nt", "no", "ny",
-        \ "oo", "ob", "pa", "pl", "pj", "ph", "pk", "pz", "pf", "pg",
-        \ "pi", "pm", "pc", "px", "pn", "p;", "po", "pb", "pu", "qi",
-        \ "qw", "qm", "qd", "qc", "qx", "qn", "q;", "qs", "qq", "qu",
-        \ "qr", "qt", "qp", "rj", "rh", "rk", "re", "rf", "rg", "ri",
-        \ "rs", "rb", "ru", "rr", "rv", "rp", "ro", "sa", "sl", "sj",
-        \ "sh", "sk", "se", "sf", "sg", "ua", "ul", "uj", "uh", "uk",
-        \ "ue", "uz", "uf", "ug", "ui", "ub", "uu", "uw", "uy", "ur",
-        \ "ud", "uv", "up", "uo", "si", "ss", "sb", "su", "sr", "sv",
-        \ "sp", "so", "ta", "tl", "tj", "th", "tk", "te", "tg", "ti",
-        \ "tm", "tc", "tx", "t;", "ts", "tb", "tu", "tr", "tv", "tp",
-        \ "to", "wa", "wl", "wj", "wh", "wz", "wf", "wg", "wo", "wu",
-        \ "xi", "xw", "xm", "xd", "xc", "xx", "xn", "x;", "xs", "xq",
-        \ "xu", "xr", "xt", "xp", "ya", "yj", "yh", "yk", "ye", "yi",
-        \ "yn", "y;", "yo", "ys", "yb", "yu", "yr", "yt", "yp", "za",
-        \ "zl", "zj", "zh", "zk", "ze", "zz", "zf", "zg", "va", "vl",
-        \ "vj", "vh", "vk", "ve", "vf", "vg", "vi", "vs", "vb", "vu",
-        \ "vw", "vy", "vr", "vd", "vv", "vp", "vo", "zi", "zs", "zb",
-        \ "zu", "zr", "zv", "zp", "zo", "nu" ]
-    return table
-endfunction 
+    let s:pinyin_input = ""
+    let s:hanzi_output = []
+endfunction
 
 function! DavidVimIM(findstart, base)
     if a:findstart
@@ -111,9 +44,9 @@ function! DavidVimIM(findstart, base)
 
         let icode = a:base
 
-        "single character
-        if strlen(icode) == 1 && has_key(g:cjk.one,icode)
-            let s:hanzi_output=split(g:cjk.one[icode])
+        "super special code
+        if strlen(icode) == 1 && has_key(g:cjk.one, icode)
+            let s:hanzi_output = split(g:cjk.one[icode])
             "TODO add menu tag here... and also has_key false...
             return s:hanzi_output
         endif
@@ -122,6 +55,7 @@ function! DavidVimIM(findstart, base)
         if strlen(icode) % 2
             let icode = icode[:-2]
         endif
+        let s:pinyin_input = icode
 
         "english text
         if !s:is_valid_code(icode)
@@ -136,7 +70,6 @@ function! DavidVimIM(findstart, base)
         let pylen = strlen(icode)/2
         if pylen == 1
             let chars = split(scd[icode])
-            call reverse(sort(chars))
             let s:hanzi_output = s:create_dict_list(chars, 1)
         elseif pylen == 2
             if has_key(phd, icode)
@@ -163,7 +96,7 @@ function! DavidVimIM(findstart, base)
                 let s:g.partly_input = 1
                 let s:g.remained_pinyin = pylist[1]
             elseif len(pylist) == 3
-                let cs = split("三个汉字词")
+                let cs = split("三个汉字词 看你怎么办")
                 let s:hanzi_output = s:create_dict_list(cs, 0)
             endif
         endif
@@ -171,6 +104,75 @@ function! DavidVimIM(findstart, base)
     endif
 endfunction
 
+function! s:my_sort_list(chars)
+    "current: only support single char + weight
+    let l = a:chars
+
+    let tail_list = []
+    let order_list = []
+
+    for i in l
+        " with weight number or not ?
+        if strlen(i) == 3
+            call add(tail_list, i)
+        else
+            call s:my_add_list(order_list, i)
+        endif
+    endfor
+
+    return order_list + tail_list
+endfunction
+
+function! s:my_add_list(order_list, item)
+    "if a+0 <= b+0 "which one is better, or faster?
+    let ol = a:order_list
+    let it = a:item
+
+    if empty(ol)
+        call add(ol, it)
+        return
+    endif
+
+    let a = it[3:]
+
+    "improve the algorithm, or use user define sort()
+    let idx = len(ol) - 1
+    while idx >= 0
+        let b = ol[idx][3:]
+        if str2nr(a) <= str2nr(b)
+            call insert(ol, it, idx + 1)
+            return
+        endif
+        let idx -= 1
+    endwhile
+    call insert(ol, it, 0) "idx
+endfunction
+
+function! Sort_compare_for_im(a, b)
+    let a = str2nr(a:a[3:])
+    let b = str2nr(a:b[3:])
+    return a == b ? 0 : a > b ? -1 : 1
+endfunction
+
+function! s:special_sort(str)
+    let lt = split(a:str)
+    let ol = []
+    let tl = []
+    for i in lt
+        let l = strlen(i)
+        if l == 3
+            call add(tl, i)
+        elseif l > 3
+            call add(ol, i)
+        endif
+    endfor
+    call sort(ol, "Sort_compare_for_im")
+    return join(ol + tl)
+endfunction
+
+function! JieXi(s,f)
+    return s:parse_pinyin(a:s,a:f)
+endfunction
 function! s:parse_pinyin(pinyin, is_forward)
 "is_forward could only be 0 or 1
     let fwd = a:is_forward
@@ -225,9 +227,36 @@ function! s:actions_after_insert()
     let s:g.cache_for_page = 0
 endfunction
 
+function! Save_Data_File()
+    let newlist = []
+    call add(newlist, string(g:cjk.gb2312))
+    call writefile(newlist, "/tmp/new2312.txt")
+endfunction
+
 function! s:record_char_freq(n)
-    let str = g:cjk.gb2312[s:pinyin_input]
-    let char = s:hanzi_output[a:n]
+    let s:g.record_freq = 0
+    let newstr = g:cjk.gb2312[s:pinyin_input]
+    let inputed_char = s:hanzi_output[a:n].word
+    let starti = matchend(newstr, inputed_char)
+    let length = strlen(newstr)
+    if length == starti 
+        "the last char at the last position
+        let g:cjk.gb2312[s:pinyin_input] =
+        \ s:special_sort(g:cjk.gb2312[s:pinyin_input]."1")
+    else
+        if newstr[starti] == " "
+            let newstring = newstr[: starti-1]."1".newstr[starti :]
+        else
+            let endi = starti
+            while endi + 1 < length && newstr[endi+1] != " "
+                let endi += 1
+            endwhile
+            let freq = newstr[starti : endi]
+            let freq = freq + 1
+            let newstring = newstr[: starti-1].freq.newstr[endi+1 :]
+        endif
+        let g:cjk.gb2312[s:pinyin_input] = s:special_sort(newstring)
+    endif
 endfunction
 
 function! s:cache_for_page()
@@ -255,7 +284,7 @@ function! s:create_dict_list(chars, trim_number)
         "if all character is 3-byte, then use this;
         "or else use remove 0-9 method
         if a:trim_number
-            let char = char[-3:]
+            let char = char[:2]
             let s:g.record_freq = 1
         endif
         let dict_item["abbr"] = i."  ".char
@@ -421,20 +450,6 @@ function! s:restore_im_rc()
     set pumheight&
 endfunction
 
-function! s:init_global_state()
-    "g : the global input method state variable
-    let s:g = {}
-    let s:g.chinese_mode = 0
-    let s:g.entered_english = 0
-    let s:g.cache_for_page = 0
-    let s:g.partly_input = 0
-    let s:g.remained_pinyin = ""
-    let s:g.record_freq = 0
-
-    let s:pinyin_input = ""
-    let s:hanzi_output = []
-endfunction
-
 function! s:read_db_file()
     let dict=g:cjk.gb2312
     if ! filereadable(s:tgbf)
@@ -527,6 +542,87 @@ function! s:im_main()
     call s:init_global_state()
     call s:init_global_data()
     call s:init_im()
+    command! SaveMe call Save_Data_File()
 endfunction
+
+function s:get_super_code()
+    let jack=
+        \{
+        \'a':"啊 啊 阿 吖",
+        \'b':"不 把 吧 别 比",
+        \'c':"才 错 次 从 草 菜 此",
+        \'d':"的 点 到 大 多",
+        \'e':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'f':"一 二 三 四 五",
+        \'g':"六 七 八 九 十",
+        \'h':"威",
+        \'i':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'j':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'k':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'l':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'m':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'n':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'o':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'p':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'q':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'r':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'s':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'t':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'u':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'v':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'w':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'x':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'y':"也 我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'z':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振"
+        \}
+    return jack
+endfunction
+
+function! s:get_pinyin_table()
+     " total: 406
+     let table = [
+        \ "oa", "ol", "oj", "oh", "ok", "ba", "bl", "bj", "bh", "bk",
+        \ "bz", "bf", "bg", "bi", "bm", "bc", "bx", "bn", "b;", "bo", 
+        \ "bu", "ca", "cl", "cj", "ch", "ck", "ce", "cf", "cg", "ia", 
+        \ "il", "ij", "ih", "ik", "ie", "if", "ig", "ii", "is", "ib",
+        \ "iu", "iw", "iy", "ir", "id", "iv", "ip", "io", "ci", "cs",
+        \ "cb", "cu", "cr", "cv", "cp", "co", "da", "dl", "dj", "dh",
+        \ "dk", "de", "dz", "df", "di", "dw", "dm", "dc", "dx", "d;",
+        \ "dq", "ds", "db", "du", "dr", "dv", "dp", "do", "oe", "oz",
+        \ "of", "or", "fa", "fj", "fh", "fz", "ff", "fg", "fc", "fo",
+        \ "fb", "fu", "ga", "gl", "gj", "gh", "gk", "ge", "gz", "gf",
+        \ "gg", "gs", "gb", "gu", "gw", "gy", "gr", "gd", "gv", "gp",
+        \ "go", "ha", "hl", "hj", "hh", "hk", "he", "hz", "hf", "hg",
+        \ "hs", "hb", "hu", "hw", "hy", "hr", "hd", "hv", "hp", "ho",
+        \ "oi", "ji", "jw", "jm", "jd", "jc", "jx", "jn", "j;", "js",
+        \ "jq", "ju", "jr", "jt", "jp", "ka", "kl", "kj", "kh", "kk",
+        \ "ke", "kf", "kg", "ks", "kb", "ku", "kw", "ky", "kr", "kd",
+        \ "kv", "kp", "ko", "la", "ll", "lj", "lh", "lk", "le", "lz",
+        \ "lg", "li", "lw", "lm", "ld", "lc", "lx", "ln", "l;", "lq",
+        \ "ls", "lb", "lu", "lr", "lt", "lp", "lo", "ly", "ma", "ml",
+        \ "mj", "mh", "mk", "me", "mz", "mf", "mg", "mi", "mm", "mc",
+        \ "mx", "mn", "m;", "mq", "mo", "mb", "mu", "na", "nl", "nj",
+        \ "nh", "nk", "ne", "nz", "nf", "ng", "ni", "nm", "nd", "nc",
+        \ "nx", "nn", "n;", "nq", "ns", "nb", "nr", "nt", "no", "ny",
+        \ "oo", "ob", "pa", "pl", "pj", "ph", "pk", "pz", "pf", "pg",
+        \ "pi", "pm", "pc", "px", "pn", "p;", "po", "pb", "pu", "qi",
+        \ "qw", "qm", "qd", "qc", "qx", "qn", "q;", "qs", "qq", "qu",
+        \ "qr", "qt", "qp", "rj", "rh", "rk", "re", "rf", "rg", "ri",
+        \ "rs", "rb", "ru", "rr", "rv", "rp", "ro", "sa", "sl", "sj",
+        \ "sh", "sk", "se", "sf", "sg", "ua", "ul", "uj", "uh", "uk",
+        \ "ue", "uz", "uf", "ug", "ui", "ub", "uu", "uw", "uy", "ur",
+        \ "ud", "uv", "up", "uo", "si", "ss", "sb", "su", "sr", "sv",
+        \ "sp", "so", "ta", "tl", "tj", "th", "tk", "te", "tg", "ti",
+        \ "tm", "tc", "tx", "t;", "ts", "tb", "tu", "tr", "tv", "tp",
+        \ "to", "wa", "wl", "wj", "wh", "wz", "wf", "wg", "wo", "wu",
+        \ "xi", "xw", "xm", "xd", "xc", "xx", "xn", "x;", "xs", "xq",
+        \ "xu", "xr", "xt", "xp", "ya", "yj", "yh", "yk", "ye", "yi",
+        \ "yn", "y;", "yo", "ys", "yb", "yu", "yr", "yt", "yp", "za",
+        \ "zl", "zj", "zh", "zk", "ze", "zz", "zf", "zg", "va", "vl",
+        \ "vj", "vh", "vk", "ve", "vf", "vg", "vi", "vs", "vb", "vu",
+        \ "vw", "vy", "vr", "vd", "vv", "vp", "vo", "zi", "zs", "zb",
+        \ "zu", "zr", "zv", "zp", "zo", "nu" ]
+    return table
+endfunction 
 
 call s:im_main()

@@ -55,7 +55,6 @@ function! DavidVimIM(findstart, base)
         if strlen(icode) % 2
             let icode = icode[:-2]
         endif
-        let s:pinyin_input = icode
 
         "english text
         if !s:is_valid_code(icode)
@@ -66,8 +65,10 @@ function! DavidVimIM(findstart, base)
         let scd = g:cjk.gb2312
         let phd = g:cjk.phrases
 
+        let s:pinyin_input = icode
+
         "pinyin to hanzi
-        let pylen = strlen(icode)/2
+        let pylen = strlen(icode) / 2
         if pylen == 1
             let chars = split(scd[icode])
             let s:hanzi_output = s:create_dict_list(chars, 1)
@@ -76,10 +77,11 @@ function! DavidVimIM(findstart, base)
                 let chars = split(phd[icode])
                 let s:hanzi_output = s:create_dict_list(chars, 0)
             else
-                let chars = split(scd[(icode[:1])])
+                let s:pinyin_input = icode[:1]
+                let chars = split(scd[s:pinyin_input])
                 let s:hanzi_output = s:create_dict_list(chars, 1)
                 let s:g.partly_input = 1
-                let s:g.remained_pinyin = icode[-2:]
+                let s:g.remained_pinyin = icode[2:]
             endif
         elseif pylen == 3
             let pylist = s:parse_pinyin(icode, 1)
@@ -96,7 +98,7 @@ function! DavidVimIM(findstart, base)
                 let s:g.partly_input = 1
                 let s:g.remained_pinyin = pylist[1]
             elseif len(pylist) == 3
-                let cs = split("三个汉字词 看你怎么办")
+                let cs = split("")
                 let s:hanzi_output = s:create_dict_list(cs, 0)
             endif
         endif
@@ -220,20 +222,28 @@ function! s:parse_pinyin(pinyin, is_forward)
     return phrase_list
 endfunction
 
-function! s:actions_after_insert()
+function! s:actions_after_insert(n)
     let s:g.cache_for_page = 0
+
+    if s:g.record_freq
+        call s:record_char_freq(a:n)
+    endif
+
+    "current only for single char
+    let item = s:pinyin_input."♫".s:hanzi_output[a:n].word
+    call s:ih.add_to_history()
 endfunction
 
 function! s:record_char_freq(n)
     let s:g.record_freq = 0
-    let newstr = g:cjk.gb2312[s:pinyin_input]
+    let tk = s:pinyin_input[:1]
+    let newstr = g:cjk.gb2312[tk]
     let inputed_char = s:hanzi_output[a:n].word
     let starti = matchend(newstr, inputed_char)
     let length = strlen(newstr)
     if length == starti 
         "the last char at the last position
-        let g:cjk.gb2312[s:pinyin_input] =
-        \ s:special_sort(g:cjk.gb2312[s:pinyin_input]."1")
+        let g:cjk.gb2312[tk] = s:special_sort(g:cjk.gb2312[tk]."1")
     else
         if newstr[starti] == " "
             let newstring = newstr[: starti-1]."1".newstr[starti :]
@@ -246,7 +256,7 @@ function! s:record_char_freq(n)
             let freq = freq + 1
             let newstring = newstr[: starti-1].freq.newstr[endi+1 :]
         endif
-        let g:cjk.gb2312[s:pinyin_input] = s:special_sort(newstring)
+        let g:cjk.gb2312[tk] = s:special_sort(newstring)
     endif
 endfunction
 
@@ -347,13 +357,13 @@ function! <SID>select_keys_map(key)
         let key = repeat("\<C-N>", n)
         let key .= "\<C-Y>"
         if s:g.partly_input
-            let key .= s:g.remained_pinyin."\<C-X>\<C-U>"
             let s:g.partly_input = 0
+            let key .= s:g.remained_pinyin."\<C-X>\<C-U>"
+            "01:58 next: after use partly input, remember a new phrase
+            "history and record/ save...
         endif
-        call s:actions_after_insert()
-        if s:g.record_freq
-            call s:record_char_freq(n)
-        endif
+        call s:actions_after_insert(n)
+
     endif
     return key
 endfunction
@@ -383,10 +393,7 @@ function! <SID>vimim_space()
             let s:g.partly_input = 0
             let space .= s:g.remained_pinyin."\<C-X>\<C-U>"
         endif
-        call s:actions_after_insert()
-        if s:g.record_freq
-            call s:record_char_freq(0)
-        endif
+        call s:actions_after_insert(0)
     else
         let one_before=getline(".")[col(".")-2]
         if one_before =~# g:im_keycodes
@@ -518,10 +525,7 @@ function! s:copy_data_files()
 endfunction
 
 function! s:init_global_data()
-    if !exists("g:im_keycodes")
-        let g:im_keycodes = "[a-z;]"
-        let g:select_keys = range(10)
-
+    if !exists("g:cjk")
         let g:cjk = {}
         let g:cjk.one = s:get_super_code()
         let g:cjk.pinyin_table_list = s:get_pinyin_table()
@@ -529,26 +533,63 @@ function! s:init_global_data()
         let g:cjk.phrases = {}
 
         call s:copy_data_files()
-
         call s:read_db_file()
         call s:read_phrase_data_file()
-    endif
-endfunction
 
-function! s:init_im()
-    inoremap <silent> <C-J> <Esc>:call <SID>toggle_im()<CR>a
+        function! g:cjk.sdb()
+            return self.gb2312
+        endfunction
+
+        function! g:cjk.pdb()
+            return self.phrases
+        endfunction
+
+        let g:im_keycodes = "[a-z;]"
+        let g:select_keys = range(10)
+
+    endif
 endfunction
 
 function! s:im_frame()
     set completefunc=DavidVimIM
-    autocmd BufWinLeave *.* call s:update_dict_file()
-    "autocmd BufWinLeave *.v call s:update_dict_file()
+    inoremap <silent> <C-J> <Esc>:call <SID>toggle_im()<CR>a
+    autocmd BufWinLeave *.* call s:update_dict_file() " move to a proper pos
+endfunction
+
+function! s:input_history()
+    let s:ih = {}
+    let s:ih.data = []
+    let s:ih.count = 0
+    let s:ih.size = 10
+
+    function! s:ih.add_to_history(it)
+        call insert(self.data, it)
+        if self.count < self.size
+            let self.count += 1
+        else
+            call remove(self.data, -1)
+        endif
+    endfunction
+
+    function! s:ih.last_n_history(ln)
+        let nh = ""
+        let i = 0
+        while i < a:ln
+            let nh .= self.data[i]
+            let i += 1
+        endwhile
+        return nh
+    endfunction
+
+endfunction
+
+function! s:init_im()
+    call s:init_global_state()
+    call s:init_global_data()
+    call s:input_history()
 endfunction
 
 function! s:im_main()
-
-    call s:init_global_state()
-    call s:init_global_data()
     call s:im_frame()
     call s:init_im()
 endfunction
@@ -564,7 +605,7 @@ function s:get_super_code()
         \'f':"一 二 三 四 五",
         \'g':"六 七 八 九 十",
         \'h':"威",
-        \'i':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
+        \'i':"▲ 你 他 她 它 零 百 千 万 程 序 员 聂 振",
         \'j':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
         \'k':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",
         \'l':"我 爱 你 他 她 它 零 百 千 万 程 序 员 聂 振",

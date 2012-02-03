@@ -1,6 +1,7 @@
 "David's shuang pin input method
 "Begin: Tue 14:17:25 Nov/29 2011
 "Maintainer: David Feng <davidxifeng@gmail.com>
+"♂♫♀
 
 if exists('g:loaded_david_im') || &cp
   finish
@@ -16,6 +17,9 @@ function! s:init_global_state()
     let s:g.partly_input = 0
     let s:g.remained_pinyin = ""
     let s:g.record_freq = 0
+
+    call s:input_history()
+    let g:ih = s:ih "debug only
 
     let s:pinyin_input = ""
     let s:hanzi_output = []
@@ -65,16 +69,16 @@ function! DavidVimIM(findstart, base)
         let scd = g:cjk.gb2312
         let phd = g:cjk.phrases
 
-        let s:pinyin_input = icode
-
         "pinyin to hanzi
         let pylen = strlen(icode) / 2
         if pylen == 1
             let chars = split(scd[icode])
+            let s:pinyin_input = icode
             let s:hanzi_output = s:create_dict_list(chars, 1)
         elseif pylen == 2
             if has_key(phd, icode)
                 let chars = split(phd[icode])
+                let s:pinyin_input = icode
                 let s:hanzi_output = s:create_dict_list(chars, 0)
             else
                 let s:pinyin_input = icode[:1]
@@ -82,9 +86,12 @@ function! DavidVimIM(findstart, base)
                 let s:hanzi_output = s:create_dict_list(chars, 1)
                 let s:g.partly_input = 1
                 let s:g.remained_pinyin = icode[2:]
+                let s:ih.set_n = 2
+                let s:ih.wait_n = 2
             endif
         elseif pylen == 3
             let pylist = s:parse_pinyin(icode, 1)
+            let s:pinyin_input = icode
             if len(pylist) == 1
                 let chars = split(phd[icode])
                 let s:hanzi_output = s:create_dict_list(chars, 0)
@@ -106,48 +113,19 @@ function! DavidVimIM(findstart, base)
     endif
 endfunction
 
-function! s:my_sort_list(chars)
-    "current: only support single char + weight
-    let l = a:chars
-
-    let tail_list = []
-    let order_list = []
-
-    for i in l
-        " with weight number or not ?
-        if strlen(i) == 3
-            call add(tail_list, i)
-        else
-            call s:my_add_list(order_list, i)
-        endif
-    endfor
-
-    return order_list + tail_list
+" jntmxwbjhbniqunalioa
+" ==>
+" jntm xwbj hb ni qu nali oa <反向分词结果>
+" jntm xwbj hb ni qu nali oa <正向分词结果>
+" 今天 下班 后 你 去 哪里 oa <反向分词结果>
+" 今天 下班 后 你 去 哪里 oa <正向分词结果>
+" ......
+function! s:pinyin_to_pylist(input_py, pylist)
+    let
 endfunction
 
-function! s:my_add_list(order_list, item)
-    "if a+0 <= b+0 "which one is better, or faster?
-    let ol = a:order_list
-    let it = a:item
-
-    if empty(ol)
-        call add(ol, it)
-        return
-    endif
-
-    let a = it[3:]
-
-    "improve the algorithm, or use user define sort()
-    let idx = len(ol) - 1
-    while idx >= 0
-        let b = ol[idx][3:]
-        if str2nr(a) <= str2nr(b)
-            call insert(ol, it, idx + 1)
-            return
-        endif
-        let idx -= 1
-    endwhile
-    call insert(ol, it, 0) "idx
+function! s:pylist_to_hzlist(pylist, hzlist)
+    let
 endfunction
 
 function! Sort_compare_for_im(a, b)
@@ -229,9 +207,24 @@ function! s:actions_after_insert(n)
         call s:record_char_freq(a:n)
     endif
 
-    "current only for single char
-    let item = s:pinyin_input."♫".s:hanzi_output[a:n].word
-    call s:ih.add_to_history()
+    call s:ih.add_to_history(s:pinyin_input, s:hanzi_output[a:n].word)
+
+    if s:ih.set_n
+        let s:ih.wait_n -= 1
+        if !s:ih.wait_n
+            let history = s:ih.last_n_history(s:ih.set_n)
+            let pinyin = ""
+            let hanzi = ""
+                for [a, b] in history
+                    let pinyin .= a
+                    let hanzi .= b
+                endfor
+            "add a new phrase dict
+            let g:cjk.phrases[pinyin] = hanzi
+
+            let s:ih.set_n = 0
+        endif
+    endif
 endfunction
 
 function! s:record_char_freq(n)
@@ -359,11 +352,8 @@ function! <SID>select_keys_map(key)
         if s:g.partly_input
             let s:g.partly_input = 0
             let key .= s:g.remained_pinyin."\<C-X>\<C-U>"
-            "01:58 next: after use partly input, remember a new phrase
-            "history and record/ save...
         endif
         call s:actions_after_insert(n)
-
     endif
     return key
 endfunction
@@ -506,16 +496,25 @@ function! s:save_dict_to_datafile(dict, file)
 endfunction
 
 function! s:update_dict_file()
-    call s:save_dict_to_datafile(g:cjk.gb2312, s:tgbf)
+    if s:ih.count
+        call s:save_dict_to_datafile(g:cjk.gb2312, s:tgbf)
+        call s:save_dict_to_datafile(g:cjk.phrases, s:tpdf)
+    endif
 endfunction
 
-function! s:copy_data_files()
-" backup file: manual or use shell script... outside vim
-" or else the backup operation will be to much...
+function! s:process_data_files_real()
+    let s:tagfile = "/tmp/davidim/running_ims.v"
+    if !filereadable(s:tagfile)
+        call system("mkdir /tmp/davidim/")
+        call system("echo 1>/tmp/davidim/running_ims.v")
+    endif
+endfunction
+
+function! s:process_data_files()
     let s:tpdf = "/tmp/pdf.txt"
     let s:tgbf = "/tmp/gb2312.txt"
-    let ppdf = "/home/david/.vim/plugin/phrase2012.txt"
-    let pgbf = "/home/david/.vim/plugin/gb2312.txt"
+    let ppdf = "/home/david/Dropbox/wiki/ph.txt"
+    let pgbf = "/home/david/Dropbox/wiki/sc.txt"
     if !filereadable(s:tpdf)
         call system("cp ".ppdf." ".s:tpdf)
     endif
@@ -532,7 +531,7 @@ function! s:init_global_data()
         let g:cjk.gb2312 = {}
         let g:cjk.phrases = {}
 
-        call s:copy_data_files()
+        call s:process_data_files()
         call s:read_db_file()
         call s:read_phrase_data_file()
 
@@ -546,39 +545,46 @@ function! s:init_global_data()
 
         let g:im_keycodes = "[a-z;]"
         let g:select_keys = range(10)
-
     endif
 endfunction
 
 function! s:im_frame()
     set completefunc=DavidVimIM
     inoremap <silent> <C-J> <Esc>:call <SID>toggle_im()<CR>a
-    autocmd BufWinLeave *.* call s:update_dict_file() " move to a proper pos
+    autocmd BufWinLeave * call s:update_dict_file()
 endfunction
 
 function! s:input_history()
     let s:ih = {}
-    let s:ih.data = []
+    let s:ih.pinyin = []
+    let s:ih.hanzi = []
     let s:ih.count = 0
     let s:ih.size = 10
+    let s:ih.set_n = 0
+    let s:ih.wait_n = 0
 
-    function! s:ih.add_to_history(it)
-        call insert(self.data, it)
+    function! s:ih.add_to_history(py, hz)
+        call insert(self.pinyin, a:py)
+        call insert(self.hanzi, a:hz)
         if self.count < self.size
             let self.count += 1
         else
-            call remove(self.data, -1)
+            call remove(self.pinyin, -1)
+            call remove(self.hanzi, -1)
         endif
     endfunction
 
-    function! s:ih.last_n_history(ln)
-        let nh = ""
+    function! s:ih.last_n_history(ln) " assert( ln<10 )
+        let result = []
         let i = 0
         while i < a:ln
-            let nh .= self.data[i]
+            let lily = []
+            call add(lily, self.pinyin[i])
+            call add(lily, self.hanzi[i])
+            call add(result, lily)
             let i += 1
         endwhile
-        return nh
+        return reverse(result)
     endfunction
 
 endfunction
@@ -586,7 +592,6 @@ endfunction
 function! s:init_im()
     call s:init_global_state()
     call s:init_global_data()
-    call s:input_history()
 endfunction
 
 function! s:im_main()

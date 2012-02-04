@@ -90,64 +90,44 @@ function! DavidVimIM(findstart, base)
                 let s:ih.wait_n = 2
             endif
         elseif pylen == 3
-            let pylist = s:parse_pinyin(icode, 1)
             let s:pinyin_input = icode
-            if len(pylist) == 1
-                let chars = split(phd[icode])
-                let s:hanzi_output = s:create_dict_list(chars, 0)
-            elseif len(pylist) == 2
-                if strlen(pylist[0]) ==2
-                    let ch1 = split(scd[pylist[0]])
-                elseif strlen(pylist[0]) == 4
-                    let ch1 = split(phd[pylist[0]])
-                endif
-                let s:hanzi_output = s:create_dict_list(ch1, 0)
-                let s:g.partly_input = 1
-                let s:g.remained_pinyin = pylist[1]
-            elseif len(pylist) == 3
-                let cs = split("")
-                let s:hanzi_output = s:create_dict_list(cs, 0)
-            endif
+
+            let pylist = []
+            call s:pinyin_to_pylist(icode, pylist)
+            let hzlist = []
+            call s:pylist_to_hzlist(pylist, hzlist)
+            let s:hanzi_output = s:create_dict_list(hzlist, 0)
         endif
         return s:hanzi_output
     endif
 endfunction
 
-" jntmxwbjhbniqunalioa
-" ==>
-" jntm xwbj hb ni qu nali oa <反向分词结果>
-" jntm xwbj hb ni qu nali oa <正向分词结果>
-" 今天 下班 后 你 去 哪里 oa <反向分词结果>
-" 今天 下班 后 你 去 哪里 oa <正向分词结果>
-" ......
 function! s:pinyin_to_pylist(input_py, pylist)
-    let
+    let r1 = s:parse_pinyin(a:input_py, 0)
+    let r2 = s:parse_pinyin(a:input_py, 1)
+    let r3 = s:parse_pinyin_single(a:input_py)
+    call add(a:pylist, r1)
+    call add(a:pylist, r2)
+    call add(a:pylist, r3)
 endfunction
 
 function! s:pylist_to_hzlist(pylist, hzlist)
-    let
-endfunction
+    let scd = g:cjk.gb2312
+    let phd = g:cjk.phrases
 
-function! Sort_compare_for_im(a, b)
-    let a = str2nr(a:a[3:])
-    let b = str2nr(a:b[3:])
-    return a == b ? 0 : a > b ? -1 : 1
-endfunction
-
-function! s:special_sort(str)
-    let lt = split(a:str)
-    let ol = []
-    let tl = []
-    for i in lt
-        let l = strlen(i)
-        if l == 3
-            call add(tl, i)
-        elseif l > 3
-            call add(ol, i)
-        endif
+    for one_line in a:pylist
+        let line = ""
+        for py in one_line
+            if has_key(phd, py)
+                let tmp = split(phd[py])
+                let line .= tmp[0]
+            else
+                let tmp = split(scd[py])
+                let line .= tmp[0][0:2]
+            endif
+        endfor
+        call add(a:hzlist, line)
     endfor
-    call sort(ol, "Sort_compare_for_im")
-    return join(ol + tl)
 endfunction
 
 function! s:parse_pinyin(pinyin, is_forward)
@@ -198,6 +178,18 @@ function! s:parse_pinyin(pinyin, is_forward)
         call reverse(phrase_list)
     endif
     return phrase_list
+endfunction
+
+function! s:parse_pinyin_single(pinyin)
+    let scd = g:cjk.gb2312
+    let lst = []
+    let i = 0
+    let m = strlen(a:pinyin) - 2
+    while i <= m
+        call add(lst, a:pinyin[i : i+1])
+        let i += 2
+    endwhile
+    return lst
 endfunction
 
 function! s:actions_after_insert(n)
@@ -269,21 +261,16 @@ endfunction
 function! s:create_dict_list(chars, trim_number)
     let dict_list = []
     let i = 1
-    " variable function member typedef define(macro)
-    "let kind_value = "vfmtd"
     for char in a:chars
         let dict_item = {}
 
-        "remove the number before
-        "if all character is 3-byte, then use this;
-        "or else use remove 0-9 method
         if a:trim_number
             let char = char[:2]
             let s:g.record_freq = 1
         endif
         let dict_item["abbr"] = i."  ".char
         let dict_item["word"] = char
-        "let dict_item["kind"] = kind_value[ i%5]
+        let dict_item["dup"] = 1
         let i = i==9 ? 0 : i+1
         call add(dict_list, dict_item)
     endfor
@@ -378,12 +365,7 @@ endfunction
 
 function! <SID>vimim_space()
     if pumvisible()
-        let space = "\<C-Y>"
-        if s:g.partly_input
-            let s:g.partly_input = 0
-            let space .= s:g.remained_pinyin."\<C-X>\<C-U>"
-        endif
-        call s:actions_after_insert(0)
+        let space = <SID>select_keys_map(1)
     else
         let one_before=getline(".")[col(".")-2]
         if one_before =~# g:im_keycodes
@@ -597,6 +579,28 @@ endfunction
 function! s:im_main()
     call s:im_frame()
     call s:init_im()
+endfunction
+
+function! Sort_compare_for_im(a, b)
+    let a = str2nr(a:a[3:])
+    let b = str2nr(a:b[3:])
+    return a == b ? 0 : a > b ? -1 : 1
+endfunction
+
+function! s:special_sort(str)
+    let lt = split(a:str)
+    let ol = []
+    let tl = []
+    for i in lt
+        let l = strlen(i)
+        if l == 3
+            call add(tl, i)
+        elseif l > 3
+            call add(ol, i)
+        endif
+    endfor
+    call sort(ol, "Sort_compare_for_im")
+    return join(ol + tl)
 endfunction
 
 function s:get_super_code()

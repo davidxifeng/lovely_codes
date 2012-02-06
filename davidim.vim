@@ -70,6 +70,11 @@ function! DavidVimIM(findstart, base)
         let phd = g:cjk.phrases
 
         "pinyin to hanzi
+        "IMPORTANT NOTE 23:20
+        "this module will soon removed, and I will use sunpinyin as a
+        "input method engine backend, and here will only be a front end.
+        "begin to research how to wrap sunpinyin with ruby or lua, and then
+        "connect it with vimim front end.
         let pylen = strlen(icode) / 2
         if pylen == 1
             let chars = split(scd[icode])

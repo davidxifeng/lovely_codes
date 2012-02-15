@@ -1,3 +1,5 @@
 a group of my little projects
 
 davidim.vim : a vim plugin that can input Chinese characters by double pinyin;
+
+cpp/* : a group of C/C++ exercise

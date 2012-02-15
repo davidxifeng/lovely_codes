@@ -28,7 +28,6 @@ endfunction
 function! DavidVimIM(findstart, base)
     if a:findstart
         let start_column = col(".")-2
-        " must be col. -2 TWO!
         let current_line = getline(".")
         while start_column>= 1
             if current_line[start_column] =~# g:im_keycodes
@@ -38,7 +37,9 @@ function! DavidVimIM(findstart, base)
                 break
             endif
         endwhile
-        "TODO return -1 thing ...
+        if current_line[start_column] == ";"
+            let start_column += 1 "fix ;pnyn bug
+        endif
         return start_column
     else
         if s:g.cache_for_page != 0
@@ -50,8 +51,8 @@ function! DavidVimIM(findstart, base)
 
         "super special code
         if strlen(icode) == 1 && has_key(g:cjk.one, icode)
-            let s:hanzi_output = split(g:cjk.one[icode])
-            "TODO add menu tag here... and also has_key false...
+            let s:pinyin_input = icode
+            let s:hanzi_output = s:create_dict_list(split(g:cjk.one[icode]),0)
             return s:hanzi_output
         endif
         
@@ -75,6 +76,10 @@ function! DavidVimIM(findstart, base)
         "input method engine backend, and here will only be a front end.
         "begin to research how to wrap sunpinyin with ruby or lua, and then
         "connect it with vimim front end.
+        "Feb/09 Thu 01:26:13
+        "1> 4,3,2 word input, remember, and p.setence input
+        "2> SML someday,
+        "3> front end /backend...
         let pylen = strlen(icode) / 2
         if pylen == 1
             let chars = split(scd[icode])
@@ -372,9 +377,15 @@ function! <SID>vimim_space()
     if pumvisible()
         let space = <SID>select_keys_map(1)
     else
-        let one_before=getline(".")[col(".")-2]
+        let cl = getline(".")
+        let one_before=cl[col(".")-2]
         if one_before =~# g:im_keycodes
-            let space = "\<C-X>\<C-U>"
+            "fix one ; as non pinyin code
+            if one_before == ';' && cl[col(".")-3] !~# g:im_keycodes
+                let space = " "
+            else
+                let space = "\<C-X>\<C-U>"
+            endif
         else
             let space = " "
         endif
@@ -537,7 +548,7 @@ endfunction
 
 function! s:im_frame()
     set completefunc=DavidVimIM
-    inoremap <silent> <C-J> <Esc>:call <SID>toggle_im()<CR>a
+    inoremap <C-L> <Esc>:call <SID>toggle_im()<CR>a
     autocmd BufWinLeave * call s:update_dict_file()
 endfunction
 

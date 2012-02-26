@@ -13,35 +13,29 @@ function! s:init_global_state()
     let s:g = {}
     let s:g.chinese_mode = 0
     let s:g.cache_for_page = 0
-    let s:g.partly_input = 0 "should be s: here TODO fix me
+    let s:g.partly_input = 0
     let s:g.remained_pinyin = ""
     let s:g.record_freq = 0
 
     call s:input_history()
-    let g:ih = s:ih "debug only
 
     let s:pinyin_input = ""
     let s:hanzi_output = []
+    let s:valid_pinyin_length = 0
 
     let s:shift_english = 0
 endfunction
 
 function! DavidVimIM(findstart, base)
     if a:findstart
-        let start_column = col(".")-2
-        let current_line = getline(".")
-        while start_column>= 1
-            if current_line[start_column] =~# g:im_keycodes
-                let start_column -= 1
-            else
-                let start_column += 1
-                break
-            endif
-        endwhile
-        if current_line[start_column] == ";"
-            let start_column += 1 "fix ;pnyn bug
+        let start_column = col(".")-1
+        if s:valid_pinyin_length != 0
+            let start_column -= s:valid_pinyin_length
+        else
+            let start_column = -2
         endif
         return start_column
+        "-1 cancel with error message -2 cancel silently
     else
         if s:g.cache_for_page != 0
             let s:hanzi_output = s:cache_for_page()
@@ -417,8 +411,8 @@ function! <SID>vimim_enter()
 endfunction
 
 function! s:begin_im()
-    inoremap <expr> <Space>  <SID>vimim_space()
-    inoremap <expr> <CR>  <SID>vimim_enter()
+    "inoremap <expr> <Space>  <SID>vimim_space()
+    "inoremap <expr> <CR>  <SID>vimim_enter()
     "inoremap <expr> <BS>  <SID>vimim_bs()
     "inoremap <expr> <Esc>  <SID>vimim_esc()
     call s:begin_select_maps()
@@ -429,18 +423,32 @@ function! s:begin_im()
 endfunction
 
 function! s:end_im()
-    execute 'iunmap <Space>'
-    execute 'iunmap <CR>'
+    "execute 'iunmap <Space>'
+    "execute 'iunmap <CR>'
     "execute 'iunmap <BS>'
     "execute 'iunmap <Esc>'
     call s:end_select_maps()
     call s:restore_im_rc()
 endfunction
 
+function! s:output_log(s)
+    let sh = "echo ".a:s.">>/tmp/vim.log"
+    call system(sh)
+endfunction
+
 "new core function Feb/26 Sun 09:30:26
-"new lots of rewrite...
 function! s:handle_input()
-    let v:char='O'
+    let ic=v:char
+    if ic =~# "[a-z]"
+        let s:valid_pinyin_length += 1
+    elseif ic =~# "[;]" && s:valid_pinyin_length != 0
+        let s:valid_pinyin_length += 1
+    elseif ic == " "
+        "invoke cx xu
+    else
+        let s:valid_pinyin_length = 0
+    endif
+    call s:output_log(ic.s:valid_pinyin_length)
 endfunction
 
 function! <SID>toggle_im()

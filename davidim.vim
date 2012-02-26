@@ -12,9 +12,8 @@ function! s:init_global_state()
     "g : the global input method state variable
     let s:g = {}
     let s:g.chinese_mode = 0
-    let s:g.entered_english = 0
     let s:g.cache_for_page = 0
-    let s:g.partly_input = 0
+    let s:g.partly_input = 0 "should be s: here TODO fix me
     let s:g.remained_pinyin = ""
     let s:g.record_freq = 0
 
@@ -23,6 +22,8 @@ function! s:init_global_state()
 
     let s:pinyin_input = ""
     let s:hanzi_output = []
+
+    let s:shift_english = 0
 endfunction
 
 function! DavidVimIM(findstart, base)
@@ -377,6 +378,11 @@ function! <SID>vimim_space()
     if pumvisible()
         let space = <SID>select_keys_map(1)
     else
+        if s:shift_english
+            let s:shift_english = 0
+            return " "
+            "use auto cmd for reset left border
+        endif
         let cl = getline(".")
         let one_before=cl[col(".")-2]
         if one_before =~# g:im_keycodes
@@ -393,11 +399,28 @@ function! <SID>vimim_space()
     return space
 endfunction
 
+function! <SID>vimim_enter()
+    if pumvisible()
+        let enter = "\<C-E>"
+        let s:shift_english = 1
+    else
+        let cl = getline(".")
+        let one_before=cl[col(".")-2]
+        if one_before =~# g:im_keycodes
+            let enter = ""
+            let s:shift_english = 1
+        else
+            let enter = "\<CR>"
+        endif
+    endif
+    return enter
+endfunction
+
 function! s:begin_im()
     inoremap <expr> <Space>  <SID>vimim_space()
-    "inoremap <expr> <CR>  <SID>vimim_space()
-    "inoremap <expr> <BS>  <SID>vimim_space()
-    "inoremap <expr> <Esc>  <SID>vimim_space()
+    inoremap <expr> <CR>  <SID>vimim_enter()
+    "inoremap <expr> <BS>  <SID>vimim_bs()
+    "inoremap <expr> <Esc>  <SID>vimim_esc()
     call s:begin_select_maps()
     call s:set_im_rc()
 
@@ -407,20 +430,28 @@ endfunction
 
 function! s:end_im()
     execute 'iunmap <Space>'
-    "execute 'iunmap <CR>'
+    execute 'iunmap <CR>'
     "execute 'iunmap <BS>'
     "execute 'iunmap <Esc>'
     call s:end_select_maps()
     call s:restore_im_rc()
 endfunction
 
+"new core function Feb/26 Sun 09:30:26
+"new lots of rewrite...
+function! s:handle_input()
+    let v:char='O'
+endfunction
+
 function! <SID>toggle_im()
     if s:g.chinese_mode == 0
         call s:begin_im()
         let s:g.chinese_mode =1
+        autocmd InsertCharPre <buffer> call s:handle_input()
     else
         call s:end_im()
         let s:g.chinese_mode =0
+        autocmd! InsertCharPre
     endif
 endfunction
 
@@ -511,8 +542,8 @@ endfunction
 function! s:process_data_files()
     let s:tpdf = "/tmp/pdf.txt"
     let s:tgbf = "/tmp/gb2312.txt"
-    let ppdf = "/home/david/Dropbox/wiki/ph.txt"
-    let pgbf = "/home/david/Dropbox/wiki/sc.txt"
+    let ppdf = "/home/david/data/Dropbox/wiki/ph.txt"
+    let pgbf = "/home/david/data/Dropbox/wiki/sc.txt"
     if !filereadable(s:tpdf)
         call system("cp ".ppdf." ".s:tpdf)
     endif

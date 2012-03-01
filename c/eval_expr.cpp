@@ -158,6 +158,7 @@ int get_priority(const string & optr)
 //              negative value;
 //              float value;
 //              only +-*/^;
+//              error handling
 //              ...
 string translate_expression(const string & exp)
 {

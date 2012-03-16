@@ -6,7 +6,7 @@
 if exists('g:loaded_david_im') || &cp
   finish
 endif
-let g:loaded_david_im= 1
+let g:loaded_david_im = 1
 
 function! s:init_global_state()
     let s:g = {}

@@ -30,21 +30,28 @@ function! s:filter_file_list(dir, filetypes)
 	call filter(file_list, 'v:val =~? '."'".file_type_reg."'")
 	call filter(file_list, '!isdirectory(v:val)')
 	"echo file_list
-	for l in file_list
-		echo l
+	for item in file_list
+		echo item
 	endfor
+	return file_list
 endfunction
 
 "process all files
 function! s:process_files(files)
 	echo a:files
+	for item in a:files
+		execute 'sp '.item
+		exe 'w! '.item.'.txt'
+		exe 'q'
+	endfor
 endfunction
 
 function! Main()
 	"call s:Displayversion()
-	let prj_dir = "E:/NewEclipse/com.example.hellojni.HelloJni"
+	let prj_dir = "E:/Clean/test"
 	let file_type_list = ["java", "c", "cpp", "mk", "lua", "h", "xml"]
-	call s:filter_file_list(prj_dir, file_type_list)
+	let file_list = s:filter_file_list(prj_dir, file_type_list)
+	call s:process_files(file_list)
 endfunction
 
 call Main()

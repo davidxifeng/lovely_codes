@@ -1,0 +1,15 @@
+name:           project-utility
+version:        0.1
+cabal-version:  >= 1.2
+build-type:     Simple
+author:         david feng
+
+executable eclipse
+  hs-source-dirs:  src
+  main-is:         Main.hs
+  build-depends:   base >= 4, filepath, directory, hxt, text, mtl
+  ghc-options:     -Wall
+  other-modules:   
+                   FileUtility, UpdateAndroidManifest, AppConfig,
+                   Strings
+

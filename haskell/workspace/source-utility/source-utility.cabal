@@ -1,0 +1,13 @@
+name:           source-utility
+version:        0.1
+cabal-version:  >= 1.2
+build-type:     Simple
+author:         david feng
+
+executable su
+  hs-source-dirs:  src
+  main-is:         Main.hs
+  build-depends:   base >= 4, filepath,
+                   directory, hxt, text, process
+  ghc-options:     -Wall
+

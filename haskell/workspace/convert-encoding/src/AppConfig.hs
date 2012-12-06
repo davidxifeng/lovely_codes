@@ -42,7 +42,7 @@ getConfig :: FilePath -> IO (Maybe Config)
 getConfig file
         = do
                 cfg <- runX (xunpickleDocument xpConfig
-                        [withValidate no, withTrace 1, withRemoveWS yes]
+                        [withValidate no, withRemoveWS yes]
                         file)
                 if null cfg
                         then do

@@ -1,3 +1,4 @@
 .metadata
 .dist-buildwrapper
 .settings
+.stylish-haskell.yaml

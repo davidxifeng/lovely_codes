@@ -1,4 +1,4 @@
-module FileUtility(processDirectoryList,
+module FileUtility(processDirectoryList, fileTypeFilter,
         whenM, getDirectoryContentsEx, partitionM)
         where
 
@@ -9,16 +9,17 @@ import GHC.Base
 import GHC.IO
 import GHC.List
 -- import GHC.Show(show)
--- import Data.Tuple
+import Data.Tuple
 -- import System.IO(putStrLn)
 
+import Data.Char (toLower)
 import System.Directory(
     doesDirectoryExist, getDirectoryContents
     -- doesFileExist,
     -- createDirectory, removeFile, renameFile,
     -- removeDirectoryRecursive
     )
-import System.FilePath((</>)) -- splitExtension
+import System.FilePath((</>), splitExtension)
 import Data.List(sort, delete)
 import Control.Monad(when, mapM_, foldM) -- liftM, filterM
 
@@ -67,6 +68,9 @@ getDirectoryContentsEx dir = do
         else do
         return ([], [])
 
+fileTypeFilter :: [String] -> FilePath -> Bool
+fileTypeFilter extlist file = map toLower (snd $ splitExtension file)
+        `elem` extlist
 {-
         输入一个过滤处理文件的判断函数,和一个处理文件的函数,一个待处理的目录列表;
         本函数会对目录下的所有判断为true子文件应用action

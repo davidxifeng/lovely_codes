@@ -2,3 +2,5 @@
 .dist-buildwrapper
 .settings
 .stylish-haskell.yaml
+*.hi
+*.o

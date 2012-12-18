@@ -4,3 +4,4 @@
 .stylish-haskell.yaml
 *.hi
 *.o
+a.out

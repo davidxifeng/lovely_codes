@@ -24,3 +24,7 @@ t4 = decode (h "{\"test\" : 123456}")
 
 t5 :: Maybe Value
 t5 = decode (h "{\"test\" : 123456}")
+
+main :: IO ()
+main = do
+    putStrLn "hi"

@@ -40,9 +40,10 @@ begin_main_loop:
 
 
 void do_print(float time);
+int test_glob(void);
 
 int main(int argc, char * argv[]) {
-    test_select(do_print);
+    test_glob();
     return 0;
 }
 

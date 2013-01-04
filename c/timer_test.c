@@ -1,5 +1,5 @@
 /*
- *来源与网上博客,不是我写的
+ *来源于网上博客,不是我写的
 */
 #include<stdio.h>
 #include<stdlib.h>

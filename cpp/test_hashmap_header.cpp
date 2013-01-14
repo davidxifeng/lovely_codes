@@ -35,7 +35,10 @@ int main(void) {
 #if sk
     am.insert(make_pair("jack", 1));
     am.insert(make_pair("lucy", 4));
-    str2int_hmap_iter it = am.find("jack");
+    am.insert(make_pair("love", 5));
+    am.insert(make_pair("you", 6));
+    am.insert(make_pair("grace", 7));
+    str2int_hmap_iter it = am.find("love");
 #else
     am.insert(make_pair(6, 4));
     am.insert(make_pair(9, 1));
@@ -44,5 +47,19 @@ int main(void) {
     if(it != am.end()){
         cout<<"first find is "<<it->second<<" "<<endl;
     }
+    //it = am.begin();
+    for(; it != am.end(); ){
+        if(it->second == 5){
+            am.erase(it++);
+        }else {
+            it++;
+        }
+    }
+    cout<<"is empty? "<<am.empty()<<endl;
+    it = am.begin();
+    for(; it != am.end(); it++) {
+        cout<<it->second<<":"<<endl;;
+    }
+    cout<<"is empty? "<<am.empty()<<endl;
     return 0;
 }

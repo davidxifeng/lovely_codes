@@ -25,6 +25,7 @@ int main(int argc, char * argv[]){
             break;
         case 't':
             nsecs = atoi(optarg);
+            printf("nsecs %d\n", nsecs);
             tfnd = 1;
             break;
         default: /* '?' */

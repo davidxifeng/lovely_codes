@@ -22,9 +22,6 @@ void debug_output(const char * format, ...){
 }
 
 int main(void) {
-    debug_output("test");
-    debug_output("test %s", "jack");
-    dbg("test %s", "jack");
-    debug_output("test %s %X", "love", 252);
+    dbg("long is %u, long long is %u", sizeof(long), sizeof(long long));
     return 0;
 }

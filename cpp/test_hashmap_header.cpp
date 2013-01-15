@@ -30,7 +30,7 @@ typedef hash_map<string, int>::iterator str2int_hmap_iter;
 typedef hash_map<int, int> str2int_hmap;
 typedef hash_map<int, int>::iterator str2int_hmap_iter;
 #endif
-int main(void) {
+int unit_main(void) {
     str2int_hmap am;
 #if sk
     am.insert(make_pair("jack", 1));

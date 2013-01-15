@@ -12,9 +12,11 @@ file(GLOB CPP_SOURCE "*.cpp")
 file(GLOB C_SOURCE "*.c")
 list(APPEND SOURCE ${C_SOURCE} ${CPP_SOURCE})
 
-SET(CMAKE_CXX_FLAGS "-g -Wall")
+SET(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
 
 add_executable(${PROJECT_NAME} ${SOURCE})
+
+target_link_libraries(${PROJECT_NAME} bsd)
 
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION bin

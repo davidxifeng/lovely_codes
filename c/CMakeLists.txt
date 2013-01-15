@@ -21,7 +21,8 @@ SET(CMAKE_C_FLAGS "-g -Wall -std=c99")
 #加了这个选项才知道很可能标准头文件unistd.h居然不是c99兼容的...
 #SET(CMAKE_CXX_FLAGS "-g -Wno-deprecated")
 
-add_executable(SeeDemo ${SOURCE})
+#add_executable(SeeDemo ${SOURCE})
+add_executable(SeeDemo hook_snprintf.c)
 
 #target_link_libraries(LogServer MainLib)
 

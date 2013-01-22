@@ -7,11 +7,14 @@
 #include <string.h> //strlen
 
 #define _snprintf snprintf_hook
+#define sprintf sprintf_hook
 
 /**
  * 性质:pure
  * 替换字符串函数内部使用的专用函数,替换目标字符串中识别出的模式为预设内容
  * %I64d -> %ld
+ * %I64u -> %lu
+ * note: dst末尾的0
  */
 static
 void str_process(const char * src, char * dst){
@@ -21,12 +24,20 @@ void str_process(const char * src, char * dst){
         {
         case '%':
             *dst++ = *src++;
-            if (*src == 'I' && *(src + 1) == '6' && *(src + 2) == '4'
-                && *(src + 3) == 'd')
+            if (*src == 'I' && *(src + 1) == '6' && *(src + 2) == '4')
             {
-                *dst++ = 'l';
-                *dst++ = 'd';
-                src += 4;
+                if (*(src + 3) == 'd')
+                {
+                    *dst++ = 'l';
+                    *dst++ = 'd';
+                    src += 4;
+                }
+                else if(*(src + 3) == 'u')
+                {
+                    *dst++ = 'l';
+                    *dst++ = 'u';
+                    src += 4;
+                }
             }
             break;
         default:
@@ -34,6 +45,8 @@ void str_process(const char * src, char * dst){
             break;
         }
     }
+    *dst = '\0';//crashed here once; and use malloc/free too much may cause
+    //performance issue
 }
 
 /**
@@ -50,7 +63,7 @@ int snprintf_hook(char *str, size_t size, const char *format, ...)
 {
     int r;
     size_t fslen = strlen(format);
-    char * real_fs = malloc(fslen + 1);
+    char * real_fs = malloc(fslen + 1);//无需memset 0重量级操作,str_proc搞定\0
 
     if (real_fs == NULL)
         return -1; //原函数要求失败返回negative value
@@ -92,15 +105,16 @@ int sprintf_hook(char *str, const char *format, ...){
 
 void test(void)
 {
-    char str_buf[128];
-    snprintf(str_buf, 128, "int %d, long int %ld, char %c\n", 23, 214748364922L,
-        'L');
-    puts(str_buf);
-    snprintf_hook(str_buf, 128, "int %d, long int %I64d, char %c\n", 23,
-        214748364922L, 'L');
-    puts(str_buf);
-    sprintf_hook(str_buf, "%%%I64d,%s.", 1234567890123456L,"S.H.E");
-    puts(str_buf);
+    char sql[256]={0};
+    _snprintf(sql,256,"call arrangeArena(@ret)");
+    puts(sql);
+
+    memset(sql,0,256);
+    _snprintf(sql,256,"select * from zbz_jjcrank");
+    puts(sql);
+
+    sprintf(sql, "hihihihi");
+    puts(sql);
 }
 
 int main(int argc, char const *argv[])

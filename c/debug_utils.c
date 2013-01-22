@@ -5,20 +5,19 @@
 #include <stdarg.h>
 
 void debug_output(const char * format, ...){
-#if __GNUC__
-    time_t now;
-    time(&now);
-    struct tm *ltime;
-    ltime = localtime(&now);
-    fprintf(stderr, "%04d-%02d-%02d %02d:%02d:%02d :-> ", ltime->tm_year + 1900,
-        ltime->tm_mon, ltime->tm_mday, ltime->tm_hour, ltime->tm_min,
-        ltime->tm_sec);
+    //fputs("→_→\t :-> \t", stderr);
+    fputs(":->\t", stderr);
     va_list ap;
     va_start(ap, format);
     vfprintf(stderr, format, ap);
     va_end(ap);
+    fputs("\n:\t", stderr);
+
+    time_t now;
+    time(&now);
+    //ctime返回的结果是日期字符串+一个new line符号
+    fprintf(stderr, "%s", ctime(&now));
     fputs("\n", stderr);
-#endif
 }
 
 int main(void) {

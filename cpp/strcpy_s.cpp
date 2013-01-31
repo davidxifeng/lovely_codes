@@ -1,6 +1,12 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <iostream>
+#include <vector>
+#include <map>
+#include <string>
+
+using namespace std;
 // note: g++ -lbsd
 #include <bsd/string.h>
 
@@ -40,17 +46,17 @@ void SameNameTest(T a, int b, int c) {
 }
 
 int main(int argc, char ** argv){
-    //char sd[10], bd[30];
-    char sd[10];
-    const char * sr = "hello";
-    const char * br = "0123456789abcde";
-    //strcpy(sd, br);
-    printf("d is %d, l is %d\n", david(1,2, 0), david(1,2,3));
-    SameNameTest(23L, 2, 3);
-    strcpy_s(sd, 10, br);
-    puts(sd);
-    //strcpy_s(sd, br);
-    //puts(sd);
+    //test gdb's stl pretty print with gdb-python
+    vector<int> vi;
+    vi.push_back(1);
+    vi.push_back(2);
+    vi.push_back(3);
+    cout<<vi[1]<<endl;
+    map<int, string> is;
+    is[1] = "hello";
+    is[2] = "lily";
+    is[3] = "david";
+    cout<<is[2]<<endl;
     return 0;
 }
 

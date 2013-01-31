@@ -27,6 +27,8 @@ import Happstack.Server     ( ServerPart, Method(POST, HEAD, GET), Response, dec
 import           Text.Blaze.Html ((!), Html)
 import qualified Text.Blaze.Html4.Strict as H
 import qualified Text.Blaze.Html4.Strict.Attributes as A
+
+
 newtype PostId = PostId { unPostId :: Integer }
     deriving (Eq, Ord, Data, Enum, Typeable, SafeCopy)
 data Status =
@@ -45,9 +47,13 @@ data Post = Post
     , tags    :: [Text]
     }
     deriving (Eq, Ord, Data, Typeable)
+-- 表示一个博客结构体的数据类型
+
 
 $(deriveSafeCopy 0 'base ''Post)
 
+-- 增加对IxSet的支持,定义用来索引的keys
+-- 然后就可以在IxSet中保存数据了
 newtype Title     = Title Text    deriving (Eq, Ord, Data, Typeable, SafeCopy)
 newtype Author    = Author Text   deriving (Eq, Ord, Data, Typeable, SafeCopy)
 newtype Tag       = Tag Text      deriving (Eq, Ord, Data, Typeable, SafeCopy)

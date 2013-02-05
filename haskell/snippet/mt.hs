@@ -20,7 +20,7 @@ data AppState = AppState {
 type App = ReaderT AppConfig (StateT AppState IO)
 
 runApp :: App a -> Int -> IO (a, AppState)
-runApp k maxDepth = 
+runApp k maxDepth =
         let config = AppConfig maxDepth
             state  = AppState 0
         in runStateT (runReaderT k config) state

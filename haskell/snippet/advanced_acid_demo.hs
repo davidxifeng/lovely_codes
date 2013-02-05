@@ -34,38 +34,44 @@ import System.FilePath      ((</>))
 import Text.Blaze           ((!))
 import Text.Blaze.Html4.Strict (body, head, html, input, form, label, p, title, toHtml)
 import Text.Blaze.Html4.Strict.Attributes (action, enctype, for, id, method, name, type_, value)
+
+
+
 class HasAcidState m st where
    getAcidState :: m (AcidState st)
-query :: forall event m. 
+
+
+query :: forall event m.
          ( Functor m
          , MonadIO m
          , QueryEvent event
          , HasAcidState m (EventState event)
-         ) => 
-         event
-      -> m (EventResult event)
+         ) => event -> m (EventResult event)
+
 query event =
     do as <- getAcidState
        query' (as :: AcidState (EventState event)) event
-update :: forall event m. 
+
+
+update :: forall event m.
           ( Functor m
           , MonadIO m
           , UpdateEvent event
           , HasAcidState m (EventState event)
-          ) => 
-          event 
-       -> m (EventResult event)
+          ) => event -> m (EventResult event)
+
 update event =
     do as <- getAcidState
        update' (as :: AcidState (EventState event)) event
--- | bracket the opening and close of the `AcidState` handle. 
+-- | bracket the opening and close of the `AcidState` handle.
 
 -- automatically creates a checkpoint on close
-withLocalState :: (MonadBaseControl IO m, MonadIO m, IsAcidic st, Typeable st) => 
+withLocalState :: (MonadBaseControl IO m, MonadIO m, IsAcidic st, Typeable st) =>
                   Maybe FilePath           -- ^ path to state directory
                  -> st                     -- ^ initial state value
                  -> (AcidState st -> m a) -- ^ function which uses the `AcidState` handle
                  -> m a
+
 withLocalState mPath initialState =
     bracket (liftIO $ (maybe openLocalState openLocalStateFrom mPath) initialState)
             (liftIO . createCheckpointAndClose)
@@ -101,6 +107,7 @@ setGreeting :: Text -> Update GreetingState Text
 setGreeting txt = greeting != txt
 
 $(makeAcidic ''GreetingState ['getGreeting, 'setGreeting])
+
 data Acid = Acid { acidCountState    :: AcidState CountState
                  , acidGreetingState :: AcidState GreetingState
                  }
@@ -111,6 +118,7 @@ withAcid mBasePath action =
     in withLocalState (Just $ basePath </> "count")    initialCountState    $ \c ->
        withLocalState (Just $ basePath </> "greeting") initialGreetingState $ \g ->
            action (Acid c g)
+
 newtype App a = App { unApp :: ServerPartT (ReaderT Acid IO) a }
     deriving ( Functor, Alternative, Applicative, Monad, MonadPlus, MonadIO
                , HasRqData, ServerMonad ,WebMonad Response, FilterMonad Response
@@ -118,8 +126,9 @@ newtype App a = App { unApp :: ServerPartT (ReaderT Acid IO) a }
 
 runApp :: Acid -> App a -> ServerPartT IO a
 runApp acid (App sp) = mapServerPartT (flip runReaderT acid) sp
+
 instance HasAcidState App CountState where
-    getAcidState = acidCountState    <$> ask 
+    getAcidState = acidCountState    <$> ask
 
 instance HasAcidState App GreetingState where
     getAcidState = acidGreetingState <$> ask
@@ -208,7 +217,7 @@ withFooPlugin basePath f =
        do withLocalState (Just $ basePath </> "foo") initialFooState $ \fooState -> 
               f $ runReaderT fooReaderPlugin fooState
 main' :: IO ()
-main' = 
+main' =
     withFooPlugin "_state" $ \fooPlugin' ->
         withAcid Nothing $ \acid ->
             simpleHTTP nullConf $ fooPlugin' `mplus` runApp acid page

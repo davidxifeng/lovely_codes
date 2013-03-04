@@ -11,8 +11,59 @@
 #include<sys/types.h>
 #include<sys/select.h>
 
+#define tm_to_mysql_datetime(lt, mysql_time) sprintf(mysql_time,\
+    "%4d-%02d-%02d %02d:%02d:%02d", lt->tm_year + 1900, lt->tm_mon + 1,\
+    lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec)
 
-int main(int argc, char **argv)
+#define make_time(time, year, month, day, hour, minute, second) \
+    time.tm_year = year - 1900;\
+    time.tm_mon = month - 1;\
+    time.tm_mday = day;\
+    time.tm_hour = hour;\
+    time.tm_min = minute;\
+    time.tm_sec = second
+
+void test_file(void)
+{
+    FILE * f = fopen("test_file.txt", "r+");
+    fseek(f, -2, SEEK_END);
+    char value;
+    fread(&value, 1, 1, f);
+    printf("%c", value);
+    value = ';';
+    fseek(f, -1, SEEK_CUR);
+    fwrite(&value, 1, 1, f);
+    fclose(f);
+}
+
+void test_format_time(void)
+{
+    char s[20];
+    struct tm log_time;
+    time_t now;
+    time(&now);
+    char * hi = "test sizeof string literal";
+    char hi2[] = "test sizeof string literal";
+    //sizeof hi is 8
+
+    //sizeof hi2 is 27 (strlen() + '\0')
+    printf("now is %ld\n", now);
+    memcpy(&log_time, localtime(&now), sizeof(log_time));
+    struct tm * tm = & log_time;
+    tm_to_mysql_datetime(tm, s);
+    puts(s);
+    //printf("\n%lu\n", strlen(s));// 19
+    make_time(log_time, 2013,2,21,0,0,0);
+    time_t time_a = mktime(&log_time);
+    puts(ctime(&time_a));
+    struct tm time2;
+    make_time(time2, 2013,2,21,23,59,59);
+    time_t time_b = mktime(&time2);
+    puts(ctime(&time_b));
+    printf("%d",time_b - time_a);
+}
+
+int timer_main(int argc, char **argv)
 {
     unsigned int nTimeTestSec = 0;
     unsigned int nTimeTest = 0;
@@ -25,7 +76,7 @@ int main(int argc, char **argv)
     int i = 0;
     struct timespec req;
 
-    unsigned int delay[20] = 
+    unsigned int delay[20] =
         {500000, 100000, 50000, 10000, 1000, 900, 500, 100, 10, 1, 0};
     int nReduce = 0;
 

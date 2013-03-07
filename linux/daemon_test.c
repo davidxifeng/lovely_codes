@@ -10,6 +10,8 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <signal.h>
+#include <time.h>
+
 
 #define true 1
 #define false 0
@@ -21,7 +23,7 @@ typedef void (*simple_timer_proc)(float);
 static bool g_quit_on_int_signal = false;
 
 static void on_signal_action(int i) {
-    fputs("\tquiting\n", stderr);
+    fputs("\nquiting\n", stderr);
     g_quit_on_int_signal = true;
 }
 /* minimalism linux select single thread timer
@@ -85,9 +87,18 @@ void simple_select_timer(unsigned int interval, simple_timer_proc func) {
 void just_test(float span) {
     puts("programming running...");
     printf("%f\n", span);
+    FILE * f = fopen("/tmp/test_daemon.txt", "a");
+    time_t now = time(NULL);
+    fprintf(f, "%s\n", ctime(&now));
+    fclose(f);
+    //if (test > 10.0) {
+     //   int * pi = NULL;
+      //  printf("%d\n", 2 + *pi);
+    //}
 }
 
 int main(int argc, char * argv[]) {
-    simple_select_timer(2000, just_test);
+    simple_select_timer(1000, just_test);
+    puts("exit 0");
     return 0;
 }

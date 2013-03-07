@@ -1,2 +1,3 @@
 daemon_test
+run_test
 *.o

@@ -9,7 +9,7 @@ int main(int argc, char * argv[]) {
 
     srand(time(NULL));
 
-    sleep(3);
+    sleep(5);
 
     int r = rand();
     if( r % 2 == 0) {

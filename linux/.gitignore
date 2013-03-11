@@ -1,3 +1,4 @@
 daemon_test
 run_test
+forkdemo
 *.o

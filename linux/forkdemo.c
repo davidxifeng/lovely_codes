@@ -12,7 +12,7 @@ void on_signal_child(int i) {
 static
 void on_signal_with_arg(int sig, siginfo_t * sig_info, void * unused) {
     fputs("on signal child", stderr);
-    fprintf(stderr, "sig is %d, code is %d, pid is %u", sig, sig_info->si_code, 
+    fprintf(stderr, "sig is %d, code is %d, pid is %u\n", sig, sig_info->si_code, 
             sig_info->si_pid);
 }
 
@@ -29,8 +29,15 @@ main(int argc, char * argv[]) {
     signal_child.sa_handler = on_signal_child;
     sigfillset(&signal_child.sa_mask);
 #endif
+    int r;
 
-    sigaction(SIGCHLD, &signal_child, NULL);
+    //-1 on error, 0 on success
+    r = sigaction(SIGCHLD, &signal_child, NULL);
+    if ( r == -1 ) {
+        puts("sigaction error");
+        return -1;
+    }
+
     printf("parent pid is %u\n", getpid());
 
     pid_t pid;
@@ -46,7 +53,7 @@ main(int argc, char * argv[]) {
             return -2;
         }
     }
-    puts("in parent process");
+    printf("in parent process, child pid is %u\n", pid);
     /*
     if(waitpid(pid, NULL, 0) < 0 ) {
         puts("error wait");

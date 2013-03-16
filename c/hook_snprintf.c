@@ -117,8 +117,13 @@ void test(void)
     puts(sql);
 }
 
+//void test_format_time(void);
+void test_file(void);
+
 int main(int argc, char const *argv[])
 {
-    test();
+    //test();
+    //test_format_time();
+    test_file();
     return 0;
 }

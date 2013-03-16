@@ -57,6 +57,8 @@ int main(int argc, char ** argv){
     is[2] = "lily";
     is[3] = "david";
     cout<<is[2]<<endl;
+    const char * test = "hello";
+    cout<< test<<endl;
     return 0;
 }
 

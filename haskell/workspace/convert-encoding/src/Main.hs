@@ -39,29 +39,26 @@ convertEncoding fromEnc toEnc filepath = do
                         -> putStrLn $ "incomplete input sequence at byte offset "
                         ++ show inputPos
                 IConv.UnexpectedError _  
-                        -> putStrLn $ "Codec.Text.IConv: unexpected error"
+                        -> putStrLn "Codec.Text.IConv: unexpected error"
 
 
 mainAction :: FilePath -> IO ()
 mainAction f = do
         x <- getConfig f
         case x of
-                Just cfg -> do
-                        processDirectoryList (fileTypeFilter $ fileTypes cfg)
+                Just cfg -> processDirectoryList (fileTypeFilter $ fileTypes cfg)
                                 (convertEncoding (fromEncoding cfg) (toEncoding cfg))
                                 $ dstDirs cfg
-                Nothing -> do
-                        return ()
-        return ()
+                Nothing -> return ()
 
 currentAction :: FilePath -> IO ()
-currentAction f = do
+currentAction f =
         processDirectoryList
                 (fileTypeFilter [".c", ".cpp", ".h", ".vcproj", ".txt"])
                 (convertEncoding "GB18030" "UTF-8" ) [f]
 main::IO()
 main = do
         args <- getArgs
-        if (null args)
+        if null args
                 then getCurrentDirectory >>= currentAction  
-                else mainAction $ args !! 0
+                else mainAction $ head args 

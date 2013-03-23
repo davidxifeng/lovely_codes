@@ -15,6 +15,7 @@ def main(addr, who):
 if __name__ == '__main__':
     import sys
     if len(sys.argv) != 3:
+        """ address format: e.g. tcp://0.0.0.0:5210 """
         print "usage: prompt.py <address> <username>"
         raise SystemExit
     main(sys.argv[1], sys.argv[2])

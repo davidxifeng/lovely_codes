@@ -13,7 +13,7 @@ def bar():
     print('Implicit context switch back to bar')
 
 def test1():
-	gevent.joinall([gevent.spawn(foo), gevent.spawn(bar),])
+    gevent.joinall([gevent.spawn(foo), gevent.spawn(bar),])
 
 
 start = time.time()
@@ -38,17 +38,17 @@ def gr3():
 
 
 def test_io_block():
-	gevent.joinall([
-		gevent.spawn(gr1),
-		gevent.spawn(gr2),
-		gevent.spawn(gr3),
-		])
+    gevent.joinall([
+        gevent.spawn(gr1),
+        gevent.spawn(gr2),
+        gevent.spawn(gr3),
+        ])
 
 
 def main():
-	#test1()
-	test_io_block()
+    #test1()
+    test_io_block()
 
 
 if __name__ == "__main__":
-	main()
+    main()

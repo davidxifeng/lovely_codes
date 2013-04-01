@@ -1,7 +1,15 @@
-a group of my little projects
+my little projects
 
-davidim.vim : a vim plugin that can input Chinese characters by double pinyin;
+Haskell: Haskell demo and Haskell projects
 
-Haskell: my little haskell code
+Python: simple Python code
 
-c/* : a group of C/C++ exercise
+Vim: Vim scripts
+    davidim.vim : a vim plugin that can input Chinese characters by
+    double pinyin;
+
+C: C demo
+
+CPP: Cpp demo
+
+Linux: linux api usage

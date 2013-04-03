@@ -2,7 +2,7 @@
 import zmq
 
 def main(addrs):
-    
+
     context = zmq.Context()
     socket = context.socket(zmq.SUB)
     socket.setsockopt(zmq.SUBSCRIBE, "")

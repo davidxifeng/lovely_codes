@@ -1,54 +1,68 @@
-import time
-import gevent
-from gevent import select
-
-def foo():
-    print('Running in foo')
-    gevent.sleep(0)
-    print('Explicit context switch to foo again')
-
-def bar():
-    print('Explicit context to bar')
-    gevent.sleep(0)
-    print('Implicit context switch back to bar')
-
-def test1():
-    gevent.joinall([gevent.spawn(foo), gevent.spawn(bar),])
+#coding:utf-8
+from gevent import Greenlet, joinall, spawn, sleep
+from gevent.event import AsyncResult, Event
 
 
-start = time.time()
-tic = lambda: 'at %1.1f seconds' % (time.time() - start)
+def fa():
+    print 'a1'
+    sleep(0)
+    print 'a2'
 
-def gr1():
-    # Busy waits for a second, but we don't want to stick around...
-    print('Started Polling: 1', tic())
-    select.select([], [], [], 2)
-    print('Ended Polling 1: ', tic())
-
-def gr2():
-    # Busy waits for a second, but we don't want to stick around...
-    print('Started Polling 2: ', tic())
-    select.select([], [], [], 2)
-    print('Ended Polling 2: ', tic())
-
-def gr3():
-    print("Hey lets do some stuff while the greenlets poll, at", tic())
-    gevent.sleep(1)
-
-
-
-def test_io_block():
-    gevent.joinall([
-        gevent.spawn(gr1),
-        gevent.spawn(gr2),
-        gevent.spawn(gr3),
-        ])
-
+def fb():
+    print 'b1'
+    sleep(0)
+    print 'b2'
 
 def main():
-    #test1()
-    test_io_block()
+    r = []
+    r.append(spawn(fa))
+    r.append(spawn(fb))
+    joinall(r)
+    print 'c3'
+
+eve = AsyncResult()
+
+def e1():
+    print 'sleep 2'
+    sleep(2)
+    print 'after sleep, set'
+    eve.set()
+    print '1 after get'
+
+def e2():
+    print 'b'
+    eve.get()
+    print '2 after get'
+    sleep(1)
+
+'''测试结果显示set get不能像switch一样使用'''
+
+def event():
+    r = []
+    r.append(spawn(e1))
+    r.append(spawn(e2))
+    joinall(r)
+
+e = Event()
+
+def e3():
+    print 'e3 1'
+    e.wait()
+    print 'e3 2'
+
+def e4():
+    print 'e4 1'
+    sleep(2)
+    e.clear()
+    print 'e4 2'
+    e.set()
+
+def event2():
+    r = []
+    r.append(spawn(e3))
+    r.append(spawn(e4))
+    joinall(r)
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    event2()

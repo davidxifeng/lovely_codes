@@ -20,7 +20,6 @@ op_bp op =
 eval' :: Expression -> Expression
 eval' [] = []
 eval' (c:[]) = [c]
---eval (x:op:y:[]) = [cal op x y]
 eval' (x:op:y:[]) =
         case op of
             Plus       -> x:op:y:[]

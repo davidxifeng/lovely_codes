@@ -1,4 +1,4 @@
-module Eval (Token(..), Expression, eval)
+module Eval (Token(..), Expression, eval, eval2)
 where
 
 import Data.Char ( isSpace
@@ -7,7 +7,7 @@ import Data.Char ( isSpace
 
 import Text.Parsec ( ParseError, parse, many, many1, spaces
                    , digit, char, eof, (<|>), satisfy
-                   , choice, try
+                   , choice, try, chainl1
                    )
 
 import Text.Parsec.String (Parser)
@@ -95,10 +95,37 @@ cal' (x:[]) = x
 eval :: String -> Double
 eval s =
         let
-            Number r = either (\_ -> Number 0) (cal' . eval')
+            Number r = either (const $ Number 0) (cal' . eval')
                 (parse exprs "Expression Parser 0.1" s)
         in
             r
 
 test = eval "12.5 + 2 *3 /4 +5^2 "
 test' = 12.5 + 2 *3 /4 +5**2
+
+-- | 使用@chainl1@ 来直接在解析的时候求值,这个函数很给力
+eval2 :: String -> Integer
+eval2 s = either (const 2013521) (id) (parse eval2' "" s)
+
+eval2' :: Parser Integer
+eval2' = do
+        chainl1 (chainl1 (chainl1 number op0) op1) op2
+
+number :: Parser Integer
+number = do
+        n <- many1 digit
+        return (read n :: Integer)
+
+-- | 几乎没有印象^是整数的power, **是浮点数的power了...
+op0 :: Parser (Integer -> Integer -> Integer)
+op0 = (char '^' >> return (^))
+
+op1 :: Parser (Integer -> Integer -> Integer)
+op1 = (char '*' >> return (*)) <|> (char '/' >> return (div))
+
+op2 :: Parser (Integer -> Integer -> Integer)
+op2 =
+        (char '+' >> return (+))
+        <|>
+        (char '-' >> return (-))
+

@@ -20,7 +20,7 @@ import Text.Parsec.Token (float)
 -- 库已经定义了spaces
 
 data Token = Plus | Minus | Times | Divided_By | Power | Number !Double
-     deriving Show
+     deriving (Show,Eq)
 
 type Expression = [Token]
 
@@ -35,8 +35,7 @@ parse_number =
             return $ Number (read (ds ++ '.' : f) :: Double)
         )
         <|>
-        do
-            ds <- many1 digit
+        do  ds <- many1 digit
             spaces
             return $ Number (read ds :: Double)
 
@@ -62,25 +61,18 @@ exprs = do
         return $ concat r ++ [l]
 
 op_bp :: Token -> Int
-op_bp op =
-        case op of
-            Plus       -> 1
-            Minus      -> 1
-            Times      -> 2
-            Divided_By -> 2
-            Power      -> 3
-            otherwise  -> error "error input"
+op_bp op
+    | op `elem` [Plus, Minus]       = 1
+    | op `elem` [Times, Divided_By] = 2
+    | op == Power                   = 3
+    | otherwise                     = error "error input"
 
 eval' :: Expression -> Expression
 eval' [] = [Number 0]
 eval' (c:[]) = [c]
-eval' (x:op:y:[]) =
-        case op of
-            Plus       -> x:op:y:[]
-            Minus      -> x:op:y:[]
-            Times      -> [cal op x y]
-            Divided_By -> [cal op x y]
-            Power      -> [cal op x y]
+eval' xs@(x:op:y:[])
+    | op `elem` [Plus, Minus] = xs
+    | op `elem` [Times, Divided_By, Power] = [cal op x y]
 
 eval' (x:op:y:next_op:z:cs) =
         if (op_bp op) >= (op_bp next_op)

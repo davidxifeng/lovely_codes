@@ -7,17 +7,15 @@ number = do
         return (read n :: Integer)
 
 plus :: Parser (Integer -> Integer -> Integer)
-plus =
-        do
-            char '+'
-            return (+)
-        <|>
-        do
-            char '-'
-            return (-)
+plus = (char '+' >> return (+)) <|> (char '-' >> return (-))
 
-adds :: Parser Integer
-adds = do
-        chainl1 number plus
+-- | 按照从左到右的顺序计算
+testl = parseTest $ chainl1 number plus
+-- | 按照从左到右的顺序计算
+testr = parseTest $ chainr1 number plus
 
-test = parseTest adds "1+2-3+4"
+test = test' "1-2+3"
+
+test' s = do
+        testl s -- 2
+        testr s -- -4 <= 1-(2+3)

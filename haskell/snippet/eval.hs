@@ -25,8 +25,8 @@ data Token = Plus | Minus | Times | Divided_By | Power | Number !Double
 type Expression = [Token]
 
 -- 解析2.3 或者2 这样简单的带小数点的数字
-parse_double :: Parser Token
-parse_double =
+parse_number :: Parser Token
+parse_number =
         try (do
             ds <- many1 digit
             char '.'
@@ -35,25 +35,31 @@ parse_double =
             return $ Number (read (ds ++ '.' : f) :: Double)
         )
         <|>
-        (do
+        do
             ds <- many1 digit
             spaces
             return $ Number (read ds :: Double)
-        )
 
-expr :: Parser Token
-expr =
-        choice (map
-               (\(o,t)-> char o >> spaces >> return t)
-               (zip "+-*/^" [Plus, Minus, Times, Divided_By, Power]))
-        <|>
-        parse_double
+op_expr :: Parser Token
+op_expr =
+        choice (map (\(o,t)-> char o >> spaces >> return t)
+                    (zip "+-*/^" [Plus, Minus, Times, Divided_By, Power]))
+
+number_op :: Parser [Token]
+number_op =
+        try (do
+            n <- parse_number
+            o <- op_expr
+            return [n,o]
+        )
 
 exprs :: Parser [Token]
 exprs = do
-        r <- many expr
+        spaces
+        r <- many number_op
+        l <- parse_number
         eof
-        return r
+        return $ concat r ++ [l]
 
 op_bp :: Token -> Int
 op_bp op =
@@ -66,7 +72,7 @@ op_bp op =
             otherwise  -> error "error input"
 
 eval' :: Expression -> Expression
-eval' [] = []
+eval' [] = [Number 0]
 eval' (c:[]) = [c]
 eval' (x:op:y:[]) =
         case op of
@@ -81,10 +87,6 @@ eval' (x:op:y:next_op:z:cs) =
             then eval' $ (cal op x y) : next_op: z : cs
             else eval' (x : op: (eval' $ y:next_op:z : cs))
 
-cal' :: Expression -> Token
-cal' (x:op:y:[]) = cal op x y
-cal' (x:[]) = x
-
 cal :: Token -> Token -> Token -> Token
 cal op (Number x) (Number y) =
         case op of
@@ -93,6 +95,10 @@ cal op (Number x) (Number y) =
             Times      -> Number $ x * y
             Divided_By -> Number $ x / y
             Power      -> Number $ x ** y
+
+cal' :: Expression -> Token
+cal' (x:op:y:[]) = cal op x y
+cal' (x:[]) = x
 
 eval :: String -> Double
 eval s =

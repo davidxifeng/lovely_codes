@@ -1,11 +1,62 @@
--- 进行优先级比较的表达式求值函数
--- Tue Apr  9 17:59:02 CST 2013
+module Eval (Token(..), Expression, eval)
+where
 
+import Data.Char ( isSpace
+                 )
+
+import Text.Parsec ( ParseError, parse, many, many1, spaces
+                   , digit, char, eof, (<|>)
+                   )
+import Text.Parsec.String (Parser)
+-- Tue Apr  9 17:59:02 CST 2013 进行优先级比较的表达式求值函数
+-- Fri May 24 14:02:35 CST 2013 学习了Parsec库的使用,写了一个简单的解析器
+
+-- possibleSpace :: Parser ()
+-- possibleSpace = skipMany (satisfy isSpace)
+-- 库已经定义了spaces
+
+data Token = Plus | Minus | Times | Divided_By | Power | Number !Double
+     deriving Show
 
 type Expression = [Token]
 
-data Token = Plus | Minus | Times | Divided_By | Power | Number Double
-     deriving Show
+op :: Char -> Parser Token
+op p = do
+        char p
+        spaces
+        return $ fp p
+    where
+        fp '-' = Minus
+        fp '+' = Plus
+        fp '*' = Times
+        fp '/' = Divided_By
+        fp '^' = Power -- 如果使用**表示power就需要look ahead了
+
+parse_number :: Parser Token
+parse_number = do
+        ds <- many1 digit
+        spaces
+        return $ Number (read ds :: Double)
+
+expr :: Parser Token
+expr =
+        op '+'
+        <|>
+        op '-'
+        <|>
+        op '*'
+        <|>
+        op '/'
+        <|>
+        op '^'
+        <|>
+        parse_number
+
+exprs :: Parser [Token]
+exprs = do
+        r <- many expr
+        eof
+        return r
 
 op_bp :: Token -> Int
 op_bp op =
@@ -33,9 +84,6 @@ eval' (x:op:y:next_op:z:cs) =
             then eval' $ (cal op x y) : next_op: z : cs
             else eval' (x : op: (eval' $ y:next_op:z : cs))
 
-eval :: Expression -> Token
-eval exp = cal' $ eval' exp
-
 cal' :: Expression -> Token
 cal' (x:op:y:[]) = cal op x y
 cal' (x:[]) = x
@@ -49,4 +97,13 @@ cal op (Number x) (Number y) =
             Divided_By -> Number $ x / y
             Power      -> Number $ x ** y
 
-test = eval [Number 2, Plus , Number 3, Times , Number 4, Power, Number 2, Plus, Number 5, Times, Number 2]
+eval :: String -> Double
+eval s =
+        let
+            Number r = either (\_ -> Number 0) (cal' . eval')
+                (parse exprs "Expression Parser 0.1" s)
+        in
+            r
+
+test = eval "12 + 2 *3 /4 +5^2 "
+test' = 12 + 2 *3 /4 +5**2

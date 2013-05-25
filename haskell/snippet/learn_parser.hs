@@ -19,3 +19,41 @@ test = test' "1-2+3"
 test' s = do
         testl s -- 2
         testr s -- -4 <= 1-(2+3)
+
+parens' :: Parser ()
+parens' = do{ char '('
+            ; parens'
+            ; char ')'
+            ; parens'
+            }
+          <|> return ()
+
+contens :: Parser [Char]
+contens = (many $ noneOf "()")
+
+-- (s(d(e)f))
+-- (s(1)2(3(4))f)
+remove_match_parens  :: Parser [Char]
+remove_match_parens  =
+        do { char '('
+           ; c2 <- contens
+           ; mp <- remove_match_parens
+           ; c3 <- contens
+           ; char ')'
+           ; c4 <- contens
+           ; z <- remove_match_parens
+           ; return $ c2 ++ mp ++ c3 ++ c4 ++ z
+           }
+        <|> return []
+
+rp = do
+        c1 <- contens
+        rest <- remove_match_parens
+        return $ c1 ++ rest
+
+rptest = do
+        parseTest rp ""
+        parseTest rp "ab"
+        parseTest rp "(12)"
+        parseTest rp "(1(d)(s(f)d)2)"
+        parseTest rp "(1(2(3))) 4(5) (6(7))"

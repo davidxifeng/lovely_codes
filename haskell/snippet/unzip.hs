@@ -12,9 +12,7 @@ main :: IO ()
 main = do
         argv <- getArgs
         fla_zip_file <- return $ argv !! 0
-        output_path <- return $ take ((length fla_zip_file) - 4) fla_zip_file
-        putStrLn $ "fla is " ++ fla_zip_file
-        putStrLn $ "output_path is " ++ output_path
+        output_path <- return $ (take ((length fla_zip_file) - 4) fla_zip_file) ++ "/"
         exists <- doesFileExist fla_zip_file
         if exists
             then do

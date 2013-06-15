@@ -1,41 +1,10 @@
 --{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 import Data.Char
+import Control.Monad.Trans (liftIO)
 import Control.Monad.Trans.Identity
 import Control.Monad.Identity
-
-data Result i o m a = Yield o (i -> CoroutineT i o m a) | Result a
-
-
--- | Co-routine monad transformer
---   * i = input value returned by yield
---   * o = output value, passed to yield
---   * m = next monad in stack
---   * a = monad return value
---data CoroutineT i o m a = CoroutineT {
-newtype CoroutineT i o m a = CoroutineT {
-        runCoroutineT :: m (Result i o m a)
-    }
-
--- | Suspend processing, returning a @o@ value and a continuation to the caller
-yield :: Monad m =>
-        o -> CoroutineT i o m i
-yield o = CoroutineT $ return $ Yield o (\i -> CoroutineT $ return $ Result i)
-
-instance Monad m => Monad (CoroutineT i o m) where
-
-    return a = CoroutineT $ return $ Result a
-
-    f >>= g  = CoroutineT $ do
-        res1 <- runCoroutineT f
-        case res1 of
-            Yield o c -> return $ Yield o (\i -> c i >>= g)
-            Result a  -> runCoroutineT (g a)
-
-    -- Pass fail to next monad in the stack
-    fail err = CoroutineT $ fail err
-
-
+import Coroutine
 
 
 type Question = String
@@ -51,11 +20,12 @@ data Fruit
     | Lemon
     deriving Show
 
-test :: Int -> CoroutineT Bool Int Identity String
+test :: Int -> CoroutineT Bool Int IO String
 test st = do
+        liftIO $ putStrLn "enter test"
         loop st
     where
-        loop :: Int -> CoroutineT Bool Int Identity String
+        loop :: Int -> CoroutineT Bool Int IO String
         loop i = do
             s <- yield i
             if s
@@ -66,10 +36,12 @@ tr :: IO ()
 tr = do
         run (test 5)
     where
-        run :: CoroutineT Bool Int Identity String -> IO ()
-        run crt = handle $ runIdentity $ runCoroutineT crt
+        run :: CoroutineT Bool Int IO String -> IO ()
+        run crt = do
+            r <- runCoroutineT crt
+            handle r
 
-        handle :: Result Bool Int Identity String -> IO ()
+        handle :: Result Bool Int IO String -> IO ()
         handle (Yield q cont) = do
             putStrLn $ "q is " ++ show q
             if q == 12

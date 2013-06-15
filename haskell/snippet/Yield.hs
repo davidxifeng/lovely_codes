@@ -64,7 +64,7 @@ test st = do
 
 tr :: IO ()
 tr = do
-        handle $ runIdentity $ runCoroutineT (test 5)
+        run (test 5)
     where
         run :: CoroutineT Bool Int Identity String -> IO ()
         run crt = handle $ runIdentity $ runCoroutineT crt

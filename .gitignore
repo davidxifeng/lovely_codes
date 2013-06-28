@@ -11,5 +11,5 @@ dist
 .stylish-haskell.yaml
 *.hi
 *.o
-a.out
+*.out
 *.swp

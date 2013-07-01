@@ -6,17 +6,17 @@ module AppConfig
 
 import Text.XML.HXT.Core
 
-data Config = Config 
+data Config = Config
     { dstDirs :: [String]
     , fromEncoding  :: String
     , toEncoding  :: String
     , fileTypes   :: [String]
     }
     deriving (Show)
-    
+
 instance XmlPickler Config where
         xpickle = xpConfig
-    
+
 xpConfig :: PU Config
 xpConfig
         = xpElem "config" $

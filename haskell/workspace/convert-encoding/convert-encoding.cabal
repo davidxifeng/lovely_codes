@@ -14,3 +14,13 @@ executable convert-encoding
                    AppConfig,
                    FileUtility
 
+executable convert-newline
+  hs-source-dirs:  src
+  main-is:         NewlineMain.hs
+  build-depends:   base >= 4, hxt, utf8-string,
+    directory, filepath, bytestring, text
+  ghc-options:     -Wall
+  other-modules:
+                   AppConfig,
+                   FileUtility
+

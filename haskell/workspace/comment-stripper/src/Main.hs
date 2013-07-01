@@ -5,7 +5,7 @@ import Control.Monad
 import Data.List
 
 removeFirstComment :: String -> String
-removeFirstComment [] = [] 
+removeFirstComment [] = []
 removeFirstComment ('/':'*':xs) = inComment xs
         where   inComment [] = []
                 inComment ('*':'/':is) = is
@@ -34,7 +34,7 @@ processDirectoryFile [] _ = return ()
 processDirectoryFile (x:xs) path = do
         processOneFile x path
         processDirectoryFile xs path
-        
+
 
 isTrueSubDirectory :: FilePath -> Bool
 isTrueSubDirectory x
@@ -47,7 +47,7 @@ getAllSubDirectory dir = do
         dc <- getDirectoryContents dir
         let tdc = filter isTrueSubDirectory dc
         let full_dc = map ((dir ++ "\\") ++) tdc
-        sdc <- filterM doesDirectoryExist full_dc 
+        sdc <- filterM doesDirectoryExist full_dc
         return sdc
 
 
@@ -65,19 +65,19 @@ processDirectoryList (d:ds) = do
                 else do
                 putStrLn $ d ++ " is not a valid directory"
                 return ()
-               
+
         processDirectoryList ds
 
 main :: IO ()
 main = do
-        cur_dir <- getCurrentDirectory 
+        cur_dir <- getCurrentDirectory
         let config_file = cur_dir ++ "\\dir_list.txt"
         have_config_file <- doesFileExist config_file
         if have_config_file
                 then do
                 dir_list_str <- readFile config_file
-                _ <- ($) mapM putStrLn $ lines dir_list_str      
+                _ <- ($) mapM putStrLn $ lines dir_list_str
                 processDirectoryList $ lines dir_list_str
                 else do
                 putStrLn "no config file, just exiting\n;-)"
-                return () 
+                return ()

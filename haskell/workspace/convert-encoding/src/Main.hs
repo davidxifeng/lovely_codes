@@ -16,7 +16,7 @@ convertEncoding fromEnc toEnc filepath = do
         let tf = filepath ++ "david.temp"
         renameFile filepath tf
         rs <- BSL.readFile tf -- 不知道失败的情况下,open的handle会在何时被关闭,eof何时?
-        let rc = IConv.convertStrictly fromEnc toEnc rs 
+        let rc = IConv.convertStrictly fromEnc toEnc rs
         case rc of
                 Left val -> do
                         BSL.writeFile filepath val
@@ -26,8 +26,8 @@ convertEncoding fromEnc toEnc filepath = do
                         putStrLn "convert failed, just keep it unchanged"
                         renameFile tf filepath
                         showErr ex
-        where 
-        showErr ex = 
+    where
+        showErr ex =
                 case ex of
                 IConv.UnsuportedConversion fe te
                         -> putStrLn $ "cannot convert from string encoding "
@@ -38,7 +38,7 @@ convertEncoding fromEnc toEnc filepath = do
                 IConv.IncompleteChar inputPos
                         -> putStrLn $ "incomplete input sequence at byte offset "
                         ++ show inputPos
-                IConv.UnexpectedError _  
+                IConv.UnexpectedError _
                         -> putStrLn "Codec.Text.IConv: unexpected error"
 
 
@@ -60,5 +60,5 @@ main::IO()
 main = do
         args <- getArgs
         if null args
-                then getCurrentDirectory >>= currentAction  
-                else mainAction $ head args 
+                then getCurrentDirectory >>= currentAction
+                else mainAction $ head args

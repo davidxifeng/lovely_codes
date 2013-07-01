@@ -10,7 +10,7 @@ executable convert-encoding
   build-depends:   base >= 4, hxt, utf8-string, encoding,
     directory, filepath, bytestring, iconv, text
   ghc-options:     -Wall
-  other-modules:   
+  other-modules:
                    AppConfig,
                    FileUtility
 

@@ -20,19 +20,22 @@ convertNewLine file = do
         writeFile tmpfile (cvt fs)
         renameFile tmpfile file
 
+targetFileExtensionList :: [String]
+targetFileExtensionList = [".c", ".cpp", ".h", ".txt", ".lua", ".m", ".mm"]
 
 action :: FilePath -> IO ()
 action f =
         processDirectoryList
-                (fileTypeFilter [".c", ".cpp", ".h", ".txt", ".lua", ".m", ".mm"])
-                (convertNewLine) [f]
+            (fileTypeFilter targetFileExtensionList)
+            convertNewLine
+            [f]
 
 main::IO()
 main = do
         args <- getArgs
         if null args
-                then do
-                    putStrLn "usage: dir"
-                else do
-                    action $ head args
+            then do
+                putStrLn "usage: dir"
+            else do
+                action $ head args
 

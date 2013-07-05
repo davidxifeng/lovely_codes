@@ -19,6 +19,7 @@ executable convert-newline
   main-is:         NewlineMain.hs
   build-depends:   base >= 4, hxt, utf8-string,
     directory, filepath, bytestring, text
+    , process
   ghc-options:     -Wall
   other-modules:
                    AppConfig,

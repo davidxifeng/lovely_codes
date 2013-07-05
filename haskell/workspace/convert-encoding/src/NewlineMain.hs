@@ -1,15 +1,26 @@
 module Main where
 
 import System.Environment(getArgs)
-import System.Directory(getCurrentDirectory, renameFile, removeFile)
+import System.Directory(getCurrentDirectory, renameFile, removeFile,
+                       Permissions(..), getPermissions, setPermissions)
 
 import FileUtility (processDirectoryList, fileTypeFilter)
 
+import System.Cmd
 
 cvt :: String -> String
 cvt [] = []
 cvt ('\r' : '\n' : cs) = '\n' : (cvt cs)
 cvt (c : cs) = c : (cvt cs)
+
+removeExe :: FilePath -> IO ()
+removeExe file = do
+        putStrLn $ "remove x file " ++ file
+        --p <- getPermissions file
+        --setPermissions file (p {executable = False})
+        system $ "chmod -x " ++ file
+        return ()
+
 
 convertNewLine :: FilePath -> IO ()
 convertNewLine file = do
@@ -27,7 +38,8 @@ action :: FilePath -> IO ()
 action f =
         processDirectoryList
             (fileTypeFilter targetFileExtensionList)
-            convertNewLine
+            --convertNewLine
+            removeExe
             [f]
 
 main::IO()

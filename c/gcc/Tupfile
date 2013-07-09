@@ -1,0 +1,4 @@
+
+: foreach *.c |> gcc -o %o -fPIC -g -c -Wall %f |> %B.o
+
+: *.o |> gcc -shared -W1,-soname,libdavid.so.1 -o libdavid.so.1.0.1 %f |> libdavid.so.1.0.1

@@ -1,5 +1,8 @@
 tags
 
+.tup
+*.so
+
 *.pyc
 
 .DS_Store

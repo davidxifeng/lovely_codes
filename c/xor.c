@@ -7,6 +7,10 @@ int main(void) {
     char sd[10];
     char * pc = ss;
     int i;
+    memcpy(&i, ss, 4);
+    //memcpy(&i, NULL, 0); //okay
+    //memcpy(&i, NULL, 4); //will crash, sf
+    printf("i is %d\n", i);
     for(i = 0; i < strlen(ss); i++)
     {
         sd[i] = ss[i] ^ 'H';

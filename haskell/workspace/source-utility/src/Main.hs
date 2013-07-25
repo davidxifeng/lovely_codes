@@ -2,10 +2,10 @@ module Main where
 
 import Text.XML.HXT.Core
 import Data.Char
-import System.Process
+import System.Process (shell, proc, createProcess)
 
 
--- |use this function to learn hxt
+-- | use this function to learn hxt
 test :: ArrowXml a => a XmlTree XmlTree
 test = mkelem "hello" [sattr "description" "this is root elemment"]
         [ mkelem "world" [] [ txt "love haskell"]
@@ -24,11 +24,10 @@ test = mkelem "hello" [sattr "description" "this is root elemment"]
             += sattr "name" "3"
             += txt "love 3"
         ]
-    
+
 {-
     runX :: IOSArrow XmlTree c -> IO [c]
-            
-    getText :: ArrowXml a => a XmlTree String            
+    getText :: ArrowXml a => a XmlTree String
 -}
 
 modifyXml :: FilePath -> IOSArrow XmlTree String
@@ -44,7 +43,7 @@ processor filename =
     hasName "hello" //> hasName "world" >>>
     getChildren >>>
     getText
-       
+
 processor2 :: FilePath -> IOSArrow XmlTree String
 processor2 filename =
     readDocument [withValidate no, withTrace 1] filename >>>
@@ -52,10 +51,10 @@ processor2 filename =
     deep (isElem >>> hasName "love") >>>
     getChildren >>>
     getText
-    
+
 
 play :: FilePath -> IO()
-play arg = do 
+play arg = do
          result <- runX (processor arg)
          print result
          r2 <- runX (processor2 arg)
@@ -65,7 +64,7 @@ play arg = do
          text_list <- runX
             (
             readDocument [withValidate no, withTrace 1] "hello.xml" >>>
-            getChildren >>> isElem >>> removeAllWhiteSpace >>> 
+            getChildren >>> isElem >>> removeAllWhiteSpace >>>
             deep (
                     isText
                     <+>
@@ -108,8 +107,8 @@ play arg = do
               )
          putStrLn $ head s
          return ()
-             
-    
+
+
 testmain :: IO ()
 testmain = do
     _ <- runX(
@@ -122,7 +121,7 @@ testmain = do
 
 main :: IO ()
 main
-    = do        
+    = do
         putStrLn "end"
         _ <- createProcess (shell "ls")
         _ <- createProcess (proc "dir" [])

@@ -1,11 +1,11 @@
 module FileUtility
 (
     copyDir,
-    whenM
+    when
 )
 where
 
-import Control.Monad hiding(join)
+import Control.onad hiding(join)
 import System.Directory
 import System.FilePath((</>))
 import Control.Applicative((<$>))
@@ -13,16 +13,16 @@ import Control.Exception(throw)
 
 import Data.List(isPrefixOf, intercalate, intersperse)
  
-whenM :: Monad m => m Bool -> m () -> m ()
---whenM :: IO Bool -> IO () -> IO ()
-whenM s r = s >>= flip when r
+when :: onad m => m Bool -> m () -> m ()
+--when :: IO Bool -> IO () -> IO ()
+when s r = s >>= flip when r
 
 -- | 递归copy文件夹,会覆盖目标文件夹中已有的文件,过滤.svn文件夹,example文件夹
 copyDir ::  FilePath -> FilePath -> IO ()
 copyDir src dst = do
-    whenM (not <$> doesDirectoryExist src) $
+    when (not <$> doesDirectoryExist src) $
         throw (userError "source does not exist")
-  --whenM (doesFileOrDirectoryExist dst) $
+  --when (doesFileOrDirectoryExist dst) $
     --throw (userError "destination already exists")
 
     putStrLn $ "copying\n" ++ src ++ "\nto\n" ++ dst
@@ -34,7 +34,7 @@ copyDir src dst = do
             createDirectory dst
     content <- getDirectoryContents src
     let xs = filter (`notElem` [".", "..", ".svn", "example"]) content
-    forM_ xs $ \name -> do
+    for_ xs $ \name -> do
         let srcPath = src </> name
         let dstPath = dst </> name
         isDirectory <- doesDirectoryExist srcPath
@@ -44,9 +44,9 @@ copyDir src dst = do
 
 
 -- doesFileOrDirectoryExist :: FilePath -> IO Bool
--- doesFileOrDirectoryExist x = orM [doesDirectoryExist x, doesFileExist x]
--- orM :: [IO Bool] -> IO Bool
--- orM xs = or <$> sequence xs
+-- doesFileOrDirectoryExist x = or [doesDirectoryExist x, doesFileExist x]
+-- or :: [IO Bool] -> IO Bool
+-- or xs = or <$> sequence xs
 
 spanList :: ([a] -> Bool) -> [a] -> ([a], [a])
 

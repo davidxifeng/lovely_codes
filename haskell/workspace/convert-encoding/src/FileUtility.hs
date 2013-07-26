@@ -50,6 +50,7 @@ partitionM :: Monad m => (a -> m Bool) -> [a] -> m ([a],[a])
 {-# INLINE partitionM #-}
 partitionM p xs = do
         foldM (selectM p ) ([],[]) xs
+
 -- foldM :: Monad m => (a -> b -> m a) -> a -> [b] -> m a
 {-
         getDirectoryContents的加强版,返回子目录和子文件(完整路径名,不包括.和..)
@@ -60,13 +61,12 @@ getDirectoryContentsEx dir = do
     r <- doesDirectoryExist dir
     if r
         then do
-        dc <- getDirectoryContents dir
-        -- dirs <- filterM doesDirectoryExist $ map (dir </>) (filter (\ x -> x /= "." && x /= "..") dc)
-        -- dirs <- filterM doesDirectoryExist $ map (dir </>) [ x | x<- dc, x /= "..", x /= "."]
-        (dirs,files) <- partitionM doesDirectoryExist $ map (dir </>) (delete "." (delete ".." $ sort dc))
-        return (dirs, files)
-        else do
-        return ([], [])
+            dc <- getDirectoryContents dir
+            -- dirs <- filterM doesDirectoryExist $ map (dir </>) (filter (\ x -> x /= "." && x /= "..") dc)
+            -- dirs <- filterM doesDirectoryExist $ map (dir </>) [ x | x<- dc, x /= "..", x /= "."]
+            (dirs,files) <- partitionM doesDirectoryExist $ map (dir </>) (delete "." (delete ".." $ sort dc))
+            return (dirs, files)
+        else return ([], [])
 
 fileTypeFilter :: [String] -> FilePath -> Bool
 fileTypeFilter extlist file = map toLower (snd $ splitExtension file)

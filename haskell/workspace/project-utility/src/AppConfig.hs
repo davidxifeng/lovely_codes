@@ -23,7 +23,7 @@ data Config = Config
 
 instance XmlPickler Config where
     xpickle = xpConfig
-    
+
 xpConfig        :: PU Config
 xpConfig
     = xpElem "config" $
@@ -49,8 +49,8 @@ generateConfigFile file
         demoTemplate
             = Config "sdk template directory" "com.example.hellojni"
                 "game project directory" "game.package.name" ["src", "res", "libs"]
-        
-getConfig :: FilePath -> IO (Maybe Config)        
+
+getConfig :: FilePath -> IO (Maybe Config)
 getConfig file
     =   do
         cfg <- runX (

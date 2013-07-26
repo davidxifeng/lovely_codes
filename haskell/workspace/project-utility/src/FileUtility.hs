@@ -5,7 +5,8 @@ module FileUtility
 )
 where
 
-import Control.onad hiding(join)
+import qualified Control.Monad as CM
+
 import System.Directory
 import System.FilePath((</>))
 import Control.Applicative((<$>))
@@ -13,9 +14,10 @@ import Control.Exception(throw)
 
 import Data.List(isPrefixOf, intercalate, intersperse)
  
-when :: onad m => m Bool -> m () -> m ()
+when :: Monad m => m Bool -> m () -> m ()
 --when :: IO Bool -> IO () -> IO ()
-when s r = s >>= flip when r
+when s r = s >>= flip CM.when r
+
 
 -- | 递归copy文件夹,会覆盖目标文件夹中已有的文件,过滤.svn文件夹,example文件夹
 copyDir ::  FilePath -> FilePath -> IO ()
@@ -34,7 +36,7 @@ copyDir src dst = do
             createDirectory dst
     content <- getDirectoryContents src
     let xs = filter (`notElem` [".", "..", ".svn", "example"]) content
-    for_ xs $ \name -> do
+    CM.forM_ xs $ \name -> do
         let srcPath = src </> name
         let dstPath = dst </> name
         isDirectory <- doesDirectoryExist srcPath

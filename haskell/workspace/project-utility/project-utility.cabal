@@ -3,13 +3,15 @@ version:        0.1
 cabal-version:  >= 1.2
 build-type:     Simple
 author:         david feng
+description:    这是2012年在天拓深圳的时候写的一个小工具,用来把广告SDK加到其他
+                Android游戏工程中
 
 executable eclipse
+
   hs-source-dirs:  src
   main-is:         Main.hs
   build-depends:   base >= 4, filepath, directory, hxt, text, mtl
   ghc-options:     -Wall
-  other-modules:   
-                   FileUtility, UpdateAndroidManifest, AppConfig,
+  other-modules:   FileUtility, UpdateAndroidManifest, AppConfig,
                    Strings
 

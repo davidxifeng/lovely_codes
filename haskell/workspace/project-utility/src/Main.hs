@@ -1,8 +1,7 @@
-import System.Directory(
-    createDirectory, doesFileExist
+import System.Directory
+    ( createDirectory, doesFileExist
     , doesDirectoryExist, getDirectoryContents
-    , removeFile, renameFile
-    , removeDirectoryRecursive
+    , removeFile, renameFile , removeDirectoryRecursive
     )
 import System.FilePath((</>) , splitExtension)
 import Control.Monad (liftM, filterM)
@@ -10,7 +9,7 @@ import Data.List (sort)
 import Control.Applicative((<$>))
 
 import FileUtility
-import UpdateAndroidManifest
+import UpdateAndroidManifest (whenM, addServiceInfo)
 import AppConfig
 import Strings (replace)
 
@@ -27,7 +26,7 @@ processDirectoryFile _ [] _ = return ()
 processDirectoryFile ac (x:xs) path = do
         processOneFile x path
         processDirectoryFile ac xs path
-        where 
+        where
         -- processOneFile :: FilePath -> FilePath-> IO ()
         processOneFile file dir = do
                         let raw_file_name = dir </> file
@@ -38,8 +37,8 @@ processDirectoryFile ac (x:xs) path = do
                             (replace (srcPkgName ac) (dstPkgName ac) file_string)
                         putStrLn $ "write the processed file to " ++ raw_file_name
                         removeFile temp_file_name
-        
-        
+
+
 replacePkgName :: Config -> [FilePath] -> IO()
 replacePkgName _ []
     = return ()
@@ -51,23 +50,23 @@ replacePkgName ac (src_dir:src_dirs)
         subdir_list <- getValidSubDir src_dir
         replacePkgName ac subdir_list
         replacePkgName ac src_dirs
-            where 
+            where
                 -- getAllSubDirectory :: FilePath -> IO [FilePath]
                 getValidSubDir dir
                     = do
                         dc <- getDirectoryContents dir
                         let tdc = filter (\x -> x `notElem` [".", "..", ".svn"]) dc
                         let full_dc = map (dir </>) tdc
-                        filterM doesDirectoryExist full_dc 
+                        filterM doesDirectoryExist full_dc
 
                     -- getJavaFile :: FilePath -> IO [FilePath]
                 getJavaFile dir = (sort . filter isSourceFile) `liftM` getDirectoryContents dir
                     where
                     isSourceFile filepath = (snd.splitExtension) filepath `elem` [".java", ".Java"]
-      
-test :: String      
-test = "hi,utf-8;你好,hi"      
-    
+
+test :: String
+test = "hi,utf-8;你好,hi"
+
 main::IO()
 main = do
     putStrLn test
@@ -92,7 +91,7 @@ main = do
                 Nothing -> do
                     putStrLn "can not get a valid config"
                     return ()
-            
+
         else do
             putStrLn "first run, generate empty config file"
             generateConfigFile cfgFile

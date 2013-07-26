@@ -1,5 +1,5 @@
 module UpdateAndroidManifest
-    (addServiceInfo)
+    (addServiceInfo, whenM)
 where
 
 import System.Directory

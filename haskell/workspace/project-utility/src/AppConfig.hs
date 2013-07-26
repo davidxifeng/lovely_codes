@@ -51,8 +51,7 @@ generateConfigFile file
                 "game project directory" "game.package.name" ["src", "res", "libs"]
 
 getConfig :: FilePath -> IO (Maybe Config)
-getConfig file
-    =   do
+getConfig file = do
         cfg <- runX (
              xunpickleDocument xpConfig
                 [withValidate no
@@ -64,7 +63,7 @@ getConfig file
              )
         if null cfg
             then do
-                putStrLn "读取xml配置数据失败,\n可能是没有配置文件或者数据格式不正确,\n生成空的模板文件"
+                putStrLn usageString
                 generateConfigFile file
                 return Nothing
             else do
@@ -72,3 +71,8 @@ getConfig file
                 print $ head cfg
                 putStrLn "end of print cfg"
                 return $ Just (head cfg)
+    where
+        usageString = unlines [ "读取xml配置数据失败,"
+                              , "可能是没有配置文件或者数据格式不正确"
+                              , "生成空的模板文件"
+                              ]

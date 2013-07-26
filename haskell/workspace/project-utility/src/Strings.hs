@@ -1,41 +1,45 @@
-module Strings 
-(-- * Merging
-                     merge, mergeBy,
-                     -- * Tests
-                     startswith, endswith, contains, hasAny,
-                     -- * Association List Utilities
-                     {- | These functions are designed to augment the
-                     association list functions in "Data.List" and
-                     provide an interface similar to "Data.FiniteMap" or
-                     "Data.Map"
-                     for association lists. -}
-                     addToAL, delFromAL, flipAL, keysAL, valuesAL,
-                     hasKeyAL,
-                     -- ** Association List Conversions
-                     strFromAL,
-                     strToAL,
-                     -- * Conversions
-                     split, join, replace, genericJoin, takeWhileList,
-                     dropWhileList, spanList, breakList,
-                     -- ** Advanced Conversions
-                     WholeFunc(..), wholeMap, fixedWidth,
-                     -- * Fixed-Width and State Monad Utilities
-                     grab,
-                     -- * Miscellaneous
-                     countElem, elemRIndex, alwaysElemRIndex, seqList,
-                     subIndex, uniq
-                     -- -- * Sub-List Selection
-                     -- sub,
-                    )
-                    where
-                    
-import Data.List(intersperse, concat, isPrefixOf, isSuffixOf, elemIndices,
-                elemIndex, elemIndices, tails, find, findIndex, isInfixOf)
-                
-                
-import Control.Monad.State(State, get, put)
+module Strings (
+               -- * Merging
+               merge, mergeBy,
 
-import Data.Maybe(isJust)
+               -- * Tests
+               startswith, endswith, contains, hasAny,
+
+               -- * Association List Utilities
+               {- | These functions are designed to augment the
+               association list functions in "Data.List" and
+               provide an interface similar to "Data.FiniteMap" or
+               "Data.Map"
+               for association lists. -}
+               addToAL, delFromAL, flipAL,
+               keysAL, valuesAL, hasKeyAL,
+
+               -- ** Association List Conversions
+               strFromAL, strToAL,
+
+               -- * Conversions
+               split, join, replace, genericJoin, takeWhileList,
+               dropWhileList, spanList, breakList,
+
+               -- ** Advanced Conversions
+               WholeFunc(..), wholeMap, fixedWidth,
+
+               -- * Fixed-Width and State Monad Utilities
+               grab,
+
+               -- * Miscellaneous
+               countElem, elemRIndex, alwaysElemRIndex, seqList,
+               subIndex, uniq
+
+               -- -- * Sub-List Selection
+               -- sub,
+               )
+    where
+
+import Control.Monad.State  (get, put, State)
+import Data.List            (elemIndex, elemIndices, find, intersperse, tails,
+                            findIndex, isInfixOf, isPrefixOf, isSuffixOf)
+import Data.Maybe           (isJust)
 
 
 {- | Merge two sorted lists into a single, sorted whole.
@@ -66,7 +70,7 @@ prop_mergeBy xs ys =
 mergeBy :: (a -> a -> Ordering) -> [a] -> [a] -> [a]
 mergeBy _ [] ys = ys
 mergeBy _ xs [] = xs
-mergeBy cmp (allx@(x:xs)) (ally@(y:ys)) 
+mergeBy cmp (allx@(x:xs)) (ally@(y:ys))
         -- Ordering derives Eq, Ord, so the comparison below is valid.
         -- Explanation left as an exercise for the reader.
         -- Someone please put this code out of its misery.
@@ -110,7 +114,7 @@ The function is given the remainder of the list to examine. -}
 takeWhileList :: ([a] -> Bool) -> [a] -> [a]
 takeWhileList _ [] = []
 takeWhileList func list@(x:xs) =
-    if func list 
+    if func list
        then x : takeWhileList func xs
        else []
 
@@ -124,9 +128,9 @@ dropWhileList func list@(_:xs) =
        else list
 
 {- | Similar to Data.List.span, but performs the test on the entire remaining
-list instead of just one element. 
+list instead of just one element.
 
-@spanList p xs@ is the same as @(takeWhileList p xs, dropWhileList p xs)@ 
+@spanList p xs@ is the same as @(takeWhileList p xs, dropWhileList p xs)@
 -}
 spanList :: ([a] -> Bool) -> [a] -> ([a], [a])
 
@@ -155,12 +159,12 @@ split :: Eq a => [a] -> [a] -> [[a]]
 split _ [] = []
 split delim str =
     let (firstline, remainder) = breakList (startswith delim) str
-        in 
+        in
         firstline : case remainder of
                                    [] -> []
                                    x -> if x == delim
                                         then [] : []
-                                        else split delim 
+                                        else split delim
                                                  (drop (length delim) x)
 
 
@@ -279,13 +283,13 @@ strFromAL inp =
         in unlines . map worker $ inp
 
 {- | The inverse of 'strFromAL', this function reads a string and outputs the
-appropriate association list. 
+appropriate association list.
 
 Like 'strFromAL', this is designed to work with [(String, String)] association
 lists but may also work with other objects with simple representations.
 -}
 strToAL :: (Read a, Read b) => String -> [(a, b)]
-strToAL inp = 
+strToAL inp =
     let worker line =
             case reads line of
                [(key, remainder)] -> case remainder of
@@ -330,7 +334,7 @@ seqList list@(x:xs) = seq (seqList xs) list
 -}
 newtype WholeFunc a b = WholeFunc ([a] -> (WholeFunc a b, [a], [b]))
 
-{- | This is an enhanced version of the concatMap or map functions in 
+{- | This is an enhanced version of the concatMap or map functions in
 Data.List.
 
 Unlike those functions, this one:
@@ -384,7 +388,7 @@ Examples:
 > --> ["Hello",", T","his is"," ","a test."]
 -}
 fixedWidth :: [Int] -> WholeFunc a [a]
-fixedWidth len = 
+fixedWidth len =
     WholeFunc (fixedWidthFunc len)
     where -- Empty input: Empty output, stop
           fixedWidthFunc _ [] = ((fixedWidth []), [], [])

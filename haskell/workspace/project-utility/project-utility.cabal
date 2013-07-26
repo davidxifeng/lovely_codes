@@ -2,8 +2,13 @@ name:           project-utility
 version:        0.1
 cabal-version:  >= 1.2
 build-type:     Simple
-author:         david feng
-description:    这是2012年在天拓深圳的时候写的一个小工具,用来把广告SDK加到其他
+author:         David Feng
+maintainer:     David Feng
+license:        PublicDomain
+category:       utility
+synopsis:       Android Project Helper: a utility to add library to an android
+                project.
+description:    这是2012年在天拓的时候写的一个小工具,用来把广告SDK加到其他
                 Android游戏工程中
 
 executable eclipse

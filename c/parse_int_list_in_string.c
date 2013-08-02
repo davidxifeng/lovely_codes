@@ -3,20 +3,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
-int main(void)
-{
-    const char * testData = "123, 456, 789, 521";
+int main(int argc, char ** argv) {
+    const char * testData = "123, 200, 789, 521";
+    //const char * testData = "123, 20000000000000000000000000000000000000000000456, 789, 521";
     char * endPos;
     long value;
-    do {
+    for(;;) {
         value = strtol(testData, &endPos, 10);
+        if(errno == EINVAL || errno == ERANGE) {
+            printf("error %s\n", strerror(errno));
+            break;
+        }
+        printf("value is %ld\n", value);
         if(*endPos == '\0') {
             break;
         }
         testData = ++endPos;
-        printf("value is %ld\n", value);
-    }while(1);
+    }
     return 0;
 }
 

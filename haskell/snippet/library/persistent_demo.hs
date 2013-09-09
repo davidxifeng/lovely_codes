@@ -33,13 +33,17 @@ x = runSqlPersistMPool $ do
     runMigration migrateAll
 
     --johnId <- insert $ Person "John Doe" $ Just 35
-    r <- selectFirst [PersonAge ==. Just 33] []
+    r <- selectFirst [PersonAge ==. Just 39] []
     liftIO $ print $ fromJust r
     liftIO $ putStrLn "\n"
 
-    let johnId = entityKey $ fromJust r
-    oneJohnPost <- selectList [BlogPostAuthorId ==. johnId] [LimitTo 1]
-    liftIO $ print (oneJohnPost :: [Entity BlogPost])
+    --let johnId = entityKey $ fromJust r
+    let johnId = Key (PersistInt64 8)
+
+    oneJohnPost <- selectList [BlogPostAuthorId ==. johnId] [LimitTo 2]
+    --liftIO $ print (oneJohnPost :: [Entity BlogPost])
+    let t1 = (entityVal $ head (oneJohnPost :: [Entity BlogPost]))
+    liftIO $ print t1
     liftIO $ putStrLn "\n"
     --let johnId = fromJust r
     --janeId <- insert $ Person "Jane Doe" Nothing

@@ -1,4 +1,6 @@
 
+# grep的一个应用
+cat ~/.zshrc | grep "export PATH" >> ~/.zprofile
 
 
 # Thu May 23 21:39:25 CST 2013

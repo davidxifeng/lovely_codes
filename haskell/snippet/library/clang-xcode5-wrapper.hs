@@ -15,16 +15,16 @@ import Data.List (isInfixOf)
 
 clang = "/usr/bin/clang" -- system clang
 
-flags = 
-	[ "-Wno-invalid-pp-token" 
-	, "-Wno-unicode"
-	, "-Wno-trigraphs"
-	]
+flags =
+    [ "-Wno-invalid-pp-token"
+    , "-Wno-unicode"
+    , "-Wno-trigraphs"
+    ]
 
 -- See if we're in preprocessor mode
 check args
-	| and (map (`elem` args) ["-E","-undef","-traditional"]) = replace args
-	| otherwise = args
+    | and (map (`elem` args) ["-E","-undef","-traditional"]) = replace args
+    | otherwise = args
 
 -- make sure we use assembler-with-cpp
 replace ("-x":"c":xs) = "-x":"assembler-with-cpp":replace xs
@@ -32,6 +32,6 @@ replace (x:xs) = x:replace xs
 replace [] = []
 
 main = do
-	args <- getArgs
-	rawSystem clang $ flags ++ (check args)
+    args <- getArgs
+    rawSystem clang $ flags ++ (check args)
 

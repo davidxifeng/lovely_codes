@@ -1,0 +1,27 @@
+
+main <learn_bytecode.lua:0,0> (24 instructions, 96 bytes at 0x7f9f93c04a00)
+0+ params, 3 slots, 0 upvalues, 0 locals, 17 constants, 0 functions
+	1	[2]	NEWTABLE 	0 0 6
+	2	[3]	SETTABLE 	0 -2 -3	; "PosHelmet" 1
+	3	[4]	SETTABLE 	0 -4 -5	; "PosJacket" 2
+	4	[5]	SETTABLE 	0 -6 -7	; "PosJewel" 3
+	5	[6]	SETTABLE 	0 -8 -9	; "PosRing" 4
+	6	[7]	SETTABLE 	0 -10 -11	; "PosWeapon" 5
+	7	[8]	SETTABLE 	0 -12 -13	; "PosBadge" 6
+	8	[9]	SETGLOBAL	0 -1	; EquipPos
+	9	[11]	NEWTABLE 	0 2 0
+	10	[11]	LOADK    	1 -15	; "hi"
+	11	[11]	LOADK    	2 -16	; "you"
+	12	[11]	SETLIST  	0 2 1	; 1
+	13	[11]	SETGLOBAL	0 -14	; td
+	14	[13]	GETGLOBAL	0 -17	; print
+	15	[13]	GETGLOBAL	1 -14	; td
+	16	[13]	GETGLOBAL	2 -1	; EquipPos
+	17	[13]	GETTABLE 	2 2 -2	; "PosHelmet"
+	18	[13]	GETTABLE 	1 1 2
+	19	[13]	CALL     	0 2 1
+	20	[14]	GETGLOBAL	0 -17	; print
+	21	[14]	GETGLOBAL	1 -14	; td
+	22	[14]	GETTABLE 	1 1 -5	; 2
+	23	[14]	CALL     	0 2 1
+	24	[14]	RETURN   	0 1

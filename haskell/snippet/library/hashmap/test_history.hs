@@ -21,9 +21,6 @@ data Person = Person
 instance FromJSON Person
 instance ToJSON Person
 
---instance FromJSON (HashMap String Person)
---instance ToJSON (HashMap String Person)
-
 js = "{ \"name\": \"Joe\", \"age\": 12 }"
 
 s :: Maybe Person
@@ -37,9 +34,10 @@ ps = Person { name = "david"
 
 h :: Map String Person
 h = Map.fromList [("david test", ps)]
-
-t2 = encode ps
-
 t :: ByteString
 t = encode h
 
+h2 :: HashMap String Person
+h2 = HM.fromList [("hash map", ps)]
+t2 :: ByteString
+t2 = encode h2

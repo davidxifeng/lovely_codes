@@ -1,6 +1,5 @@
 
--- | input 2 "abc"
--- return ["a","b","ab","c","ac","bc"]
+-- | subsequences_n 2 "abc" = ["a","b","ab","c","ac","bc"]
 subsequences_n :: Int -> [a] -> [[a]]
 subsequences_n n = go
   where

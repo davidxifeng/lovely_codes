@@ -63,7 +63,8 @@ void test_format_time(void)
     printf("%d",time_b - time_a);
 }
 
-int timer_main(int argc, char **argv)
+//int timer_main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     unsigned int nTimeTestSec = 0;
     unsigned int nTimeTest = 0;

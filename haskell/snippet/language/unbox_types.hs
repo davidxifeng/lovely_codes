@@ -5,8 +5,11 @@ import Data.Int
 
 import GHC.Prim
 import GHC.Types
+import GHC.Int
 
-main = print $ I# (myadd 1# 0#)
+main = do
+    print $ I# (myadd 1# 0#)
+    print $ I64# (myadd 1# 0#)
 
 myadd :: Int# -> Int# -> Int#
 myadd i r =

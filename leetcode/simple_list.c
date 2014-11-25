@@ -66,11 +66,14 @@ struct ListNode *swapPairs(struct ListNode *head) {
     }
 }
 
+struct ListNode * swapPairs_by_ulyx(struct ListNode * head);
+
 void test(int test[], int n) {
     struct ListNode *list;
     create_list(test, n, &list);
     print_list(list);
     list = swapPairs(list);
+    //list = swapPairs_by_ulyx(list);
     print_list(list);
     free_list(&list);
     printf("\n");
@@ -133,4 +136,13 @@ void print_list(struct ListNode * list) {
     printf("\n");
 }
 
-
+struct ListNode * swapPairs_by_ulyx(struct ListNode * head) {
+    if (head && head->next) {
+        struct ListNode * newhd = head->next;
+        head->next = swapPairs(newhd->next);
+        newhd->next = head;
+        return newhd;
+    } else {
+        return head;
+    }
+}

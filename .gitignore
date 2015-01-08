@@ -1,5 +1,7 @@
 tags
 
+*.dylib
+
 .tup
 *.so
 

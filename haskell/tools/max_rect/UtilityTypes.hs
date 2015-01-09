@@ -69,8 +69,7 @@ data RectInfo
 instance Storable RectInfo where
     sizeOf _ = sizeOf (undefined :: CInt) * 6
     alignment _ = 1
-    -- 无需poke
-    --poke p _ = undefined
+    poke p _ = undefined
     peek p = do
         let ptr = castPtr p :: Ptr CInt
             ib 0 = False
@@ -104,7 +103,7 @@ instance Show Bin where
 instance Storable Bin where
     sizeOf _ = 24 -- padding TODO: hsc
     alignment _ = 1
-    --poke p (Bin w h c ps) = undefined
+    poke p (Bin w h ps) = undefined
     peek p = do
         let ptr = castPtr p :: Ptr CInt
         w <- peekElemOff ptr 0

@@ -26,18 +26,14 @@ app sco = mapUrls $
     <|> mountRoot rootApp
 
 rootApp :: Application
-rootApp = staticApp (defaultWebAppSettings ".")
+rootApp = staticApp (defaultWebAppSettings "www")
 
 myScotty :: S.ScottyM ()
 myScotty = do
-
     S.get "/api" $ S.json =<< liftIO api
-
     S.get "/time" $ S.json =<< liftIO getZonedTime
 
 main :: IO ()
 main = do
     putStrLn "http://localhost:8080/"
-    sa <- S.scottyApp myScotty
-    run 8080 (app sa)
-
+    run 8080 . app =<< S.scottyApp myScotty

@@ -1,0 +1,33 @@
+name:                MaxRect
+version:             0.1.0.0
+synopsis:            just for fun
+description:         just for fun
+homepage:            https://github.com/DavidFeng/lovely_codes/tree/master/haskell/tools/max_rect
+license:             PublicDomain
+license-file:        LICENSE
+author:              David Feng
+maintainer:          davidxifeng@gmail.com
+copyright:           2015
+category:            Game
+build-type:          Simple
+extra-source-files:  Readme.md
+cabal-version:       >=1.10
+
+executable MaxRect
+    main-is:            Main.hs
+    other-extensions:   OverloadedStrings, ForeignFunctionInterface
+    build-depends:      base >=4.7 && <4.8
+                        , wai >=3.0 && <3.1
+                        , http-types >=0.8 && <0.9
+                        , warp >=3.0 && <3.1
+                        , wai-app-static >=3.0 && <3.1
+                        , wai-extra >=3.0 && <3.1
+                        , scotty >=0.9 && <0.10
+                        , mtl >=2.1 && <2.2
+                        , time >=1.4 && <1.5
+                        , aeson >=0.6 && <0.7
+    hs-source-dirs:     src
+    C-sources:          cbits/MaxRectsBinPack.cpp
+    Include-dirs:       cbits
+    extra-libraries:    stdc++
+    default-language:   Haskell2010

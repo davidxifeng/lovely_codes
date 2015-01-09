@@ -23,7 +23,15 @@ app :: Application -> Application
 app sco = mapUrls $
     mount "api" genLayout
     <|> mount "x" sco
-    <|> mountRoot rootApp
+    <|> mount "file" rootApp
+    <|> mountRoot index
+
+index :: Application
+index _ r = r $ responseFile
+    status200
+    [("Content-Type", "text/html")]
+    "www/index.html"
+    Nothing
 
 rootApp :: Application
 rootApp = staticApp (defaultWebAppSettings "www")

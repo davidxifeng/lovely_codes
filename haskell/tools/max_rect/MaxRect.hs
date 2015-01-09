@@ -1,23 +1,12 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
-module Main
-    ( main
+module MaxRect
+    ( minimizeBins
+    , maxRect
     ) where
 import Foreign
 import Foreign.C -- get the C types
 
 import UtilityTypes
-
-main :: IO ()
-main = mapM_ print =<< minimizeBins 256 256 l
-  where
-    l =
-        [ Size 32 32
-        , Size 16 32
-        , Size 64 16
-        , Size 64 32
-        , Size 16 16
-        ]
-
 
 -- | 要求所有size必须小于等于最大bin size
 minimizeBins :: Int -> Int -> [Size] -> IO [Bin]

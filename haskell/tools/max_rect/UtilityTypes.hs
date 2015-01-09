@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module UtilityTypes ( -- ** Pos类型
                       Size(..)
                     , Pos(..)
@@ -8,6 +9,8 @@ import Foreign
 import Foreign.C
 
 import Data.List
+
+import Data.Aeson
 
 data Size
     = Size { width  :: {-# UNPACK #-} !Int
@@ -22,6 +25,7 @@ instance Storable Size where
         w <- peekElemOff ptr 0
         h <- peekElemOff ptr 1
         return $ Size (fromIntegral w) (fromIntegral h)
+
     poke p (Size w h) = do
         let ptr = castPtr p :: Ptr CInt
         pokeElemOff ptr 0 (fromIntegral w)
@@ -30,9 +34,9 @@ instance Storable Size where
 -- | pasteImage 的参数
 data Pos
     = Pos { -- | x坐标
-            x         :: {-# UNPACK #-} !Int
+            posX      :: {-# UNPACK #-} !Int
             -- | y坐标
-          , y         :: {-# UNPACK #-} !Int
+          , posY      :: {-# UNPACK #-} !Int
             -- | 是否顺时针90度翻转图片
           , isRotated :: !Bool
           } deriving (Show)
@@ -42,12 +46,10 @@ instance Storable Pos where
     alignment _ = 1
     peek p = do
         let ptr = castPtr p :: Ptr CInt
-            ib 0 = False
-            ib _ = True
         x <- peekElemOff ptr 0
         y <- peekElemOff ptr 1
         r <- peekElemOff ptr 2
-        return $ Pos (fromIntegral x) (fromIntegral y) (ib r)
+        return $ Pos (fromIntegral x) (fromIntegral y) (r /= 0)
 
     poke p (Pos x y r)= do
         let ptr = castPtr p :: Ptr CInt
@@ -69,11 +71,9 @@ data RectInfo
 instance Storable RectInfo where
     sizeOf _ = sizeOf (undefined :: CInt) * 6
     alignment _ = 1
-    poke p _ = undefined
+    poke _ _ = undefined
     peek p = do
         let ptr = castPtr p :: Ptr CInt
-            ib 0 = False
-            ib _ = True
         x <- peekElemOff ptr 0
         y <- peekElemOff ptr 1
         w <- peekElemOff ptr 2
@@ -84,15 +84,32 @@ instance Storable RectInfo where
                         , riY = fromIntegral y
                         , riW = fromIntegral w
                         , riH = fromIntegral h
-                        , riR = ib r
+                        , riR = r /= 0
                         , riI = fromIntegral i
                         }
+
+instance ToJSON RectInfo where
+    toJSON (RectInfo x y w h r i) = object
+        [ "x" .= x
+        , "y" .= y
+        , "w" .= w
+        , "h" .= h
+        , "r" .= r
+        , "i" .= i
+        ]
 
 data Bin
     = Bin { bWidth  :: !Int
           , bHeight :: !Int
           , bPos    :: [RectInfo]
           }
+
+instance ToJSON Bin where
+    toJSON (Bin w h rl) = object
+        [ "width"  .= w
+        , "height" .= h
+        , "rects"  .= rl
+        ]
 
 instance Show Bin where
     show (Bin w h pl) =
@@ -103,7 +120,7 @@ instance Show Bin where
 instance Storable Bin where
     sizeOf _ = 24 -- padding TODO: hsc
     alignment _ = 1
-    poke p (Bin w h ps) = undefined
+    poke _ (Bin _ _ _) = undefined
     peek p = do
         let ptr = castPtr p :: Ptr CInt
         w <- peekElemOff ptr 0

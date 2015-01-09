@@ -11,7 +11,6 @@ function getNextColor() {
     return colors[startIdx++];
 }
 
-
 var MyLayer = cc.Layer.extend({
     ctor : function() {
         this._super();
@@ -49,15 +48,15 @@ var MyLayer = cc.Layer.extend({
             dn.setAnchorPoint(0, 0);
             dn.setPosition(i * 840, 0);
 
-            this.m_sv.addChild(dn);
-            this.m_sv.setInnerContainerSize(cc.size((i + 1) * 840, 670));
-
             for (var j = 0; j < result[i].rects.length; j++) {
                 var rc = result[i].rects[j];
                 var o = { x : rc.x, y : rc.y};
-                var d = { x : rc.w + rc.x, y : rc.h + rc.y};
+                var d = { x : rc.x + rc.w, y : rc.y + rc.h};
                 dn.drawRect(o, d, getNextColor());
             }
+
+            this.m_sv.setInnerContainerSize(cc.size((i + 1) * 840, 670));
+            this.m_sv.addChild(dn);
         }
     },
 });
@@ -78,6 +77,8 @@ window.onload = function() {
                     var cb = function(e, r) {
                         if (!e) {
                             mylayer.showRects(r);
+                        } else {
+                            cc.log('load json error' + e);
                         }
                     };
                     cc.loader.loadJson(url, cb);

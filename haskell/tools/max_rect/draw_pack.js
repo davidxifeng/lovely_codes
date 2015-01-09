@@ -1,10 +1,23 @@
+var startIdx = 0;
+function getNextColor() {
+    var colors = [
+        cc.color(255, 0, 0),
+        cc.color(0, 255, 0),
+        cc.color(0, 0, 255),
+    ];
+    if (startIdx == colors.length) {
+        startIdx = 0;
+    }
+    return colors[startIdx++];
+}
+
 
 var MyLayer = cc.Layer.extend({
     ctor : function() {
         this._super();
     },
 
-    m_dn : null,
+    m_sv : null,
 
     init : function() {
         this._super();
@@ -16,23 +29,34 @@ var MyLayer = cc.Layer.extend({
         label.setAnchorPoint(0, 1);
         this.addChild(label);
 
-        this.m_dn = new cc.DrawNode();
-        this.m_dn.setAnchorPoint(0, 0);
-        this.addChild(this.m_dn);
+        var scrollView = new ccui.ScrollView();
+        scrollView.setDirection(ccui.ScrollView.DIR_HORIZONTAL);
+        scrollView.setTouchEnabled(true);
+        scrollView.setContentSize(cc.size(840, 670));
+        scrollView.setPosition(0, 0);
+        scrollView.setAnchorPoint(0, 0);
+
+        this.addChild(scrollView);
+        this.m_sv = scrollView;
+
+        this.m_sv.setInnerContainerSize(cc.size(1680, 670));
     },
 
     showRects : function(result) {
-        var fillColor = cc.color(255, 255, 255, 255);
-        var lineWidth = 1;
-        var lineColor = cc.color.GREEN;
+        for (var i = 0; i < result.length; i++) {
 
-        for (var rck in result) {
-            var rcs = result[rck].rects;
-            for (var k in rcs) {
-                var rc = rcs[k];
+            var dn = new cc.DrawNode();
+            dn.setAnchorPoint(0, 0);
+            dn.setPosition(i * 840, 0);
+
+            this.m_sv.addChild(dn);
+            this.m_sv.setInnerContainerSize(cc.size((i + 1) * 840, 670));
+
+            for (var j = 0; j < result[i].rects.length; j++) {
+                var rc = result[i].rects[j];
                 var o = { x : rc.x, y : rc.y};
-                var d = { x : rc.w, y : rc.h};
-                this.m_dn.drawRect(o, d, fillColor, lineWidth, lineColor);
+                var d = { x : rc.w + rc.x, y : rc.h + rc.y};
+                dn.drawRect(o, d, getNextColor());
             }
         }
     },

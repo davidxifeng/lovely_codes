@@ -24,7 +24,15 @@ app sco = mapUrls $
     mount "api" genLayout
     <|> mount "x" sco
     <|> mount "file" rootApp
+    <|> mount "project.json" pj
     <|> mountRoot index
+
+pj :: Application
+pj _ r = r $ responseFile
+    status200
+    [("Content-Type", "application/json")]
+    "www/project.json"
+    Nothing
 
 index :: Application
 index _ r = r $ responseFile

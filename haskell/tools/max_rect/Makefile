@@ -1,6 +1,6 @@
 
 buildDemo:
-	@ghc Main.hs cbits/MaxRectsBinPack.cpp -lstdc++
+	@ghc -isrc src/Main.hs -o MaxRect cbits/MaxRectsBinPack.cpp -lstdc++
 
 # usage:
 #ghci MaxRect.hs -L. -lstdc++ MaxRectsBinPack.o

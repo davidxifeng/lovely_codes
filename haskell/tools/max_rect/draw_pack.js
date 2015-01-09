@@ -21,13 +21,19 @@ var MyLayer = cc.Layer.extend({
         this.addChild(this.m_dn);
     },
 
-    showRects : function(rcs) {
+    showRects : function(result) {
         var fillColor = cc.color(255, 255, 255, 255);
-        var lineWidth = 5;
+        var lineWidth = 1;
         var lineColor = cc.color.GREEN;
-        for (var k in rcs) {
-            var rc = rcs[k];
-            this.m_dn.drawRect(rc.o, rc.d, fillColor, lineWidth, lineColor);
+
+        for (var rck in result) {
+            var rcs = result[rck].rects;
+            for (var k in rcs) {
+                var rc = rcs[k];
+                var o = { x : rc.x, y : rc.y};
+                var d = { x : rc.w, y : rc.h};
+                this.m_dn.drawRect(o, d, fillColor, lineWidth, lineColor);
+            }
         }
     },
 });
@@ -44,11 +50,13 @@ window.onload = function() {
                     var mylayer = new MyLayer();
                     mylayer.init();
 
-                    var rs = [
-                        {o : {x : 5, y : 5}, d : {x : 128, y : 64}},
-                        {o : {x : 200, y : 400}, d : {x : 64, y : 128}},
-                    ];
-                    mylayer.showRects(rs);
+                    var url = "x/api";
+                    var cb = function(e, r) {
+                        if (!e) {
+                            mylayer.showRects(r);
+                        }
+                    };
+                    cc.loader.loadJson(url, cb);
 
                     this.addChild(mylayer);
                 }

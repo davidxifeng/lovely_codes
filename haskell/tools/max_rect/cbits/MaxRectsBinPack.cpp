@@ -537,6 +537,7 @@ void MaxRectsBinPack::PruneFreeList()
 using namespace rbp;
 
 typedef vector<rbp::RectSize> RectSizeVector;
+typedef vector<rbp::RectSize>::iterator RectSizeVectorIterator;
 typedef vector<rbp::Rect> RectVector;
 typedef vector<rbp::Rect>::iterator RectVectorIterator;
 
@@ -551,6 +552,8 @@ extern "C" {
 void sortBinResult(struct Bin * bin);
 
 void removePackedItem(int sizeId, RectSizeVector &rsv);
+
+static int PACK_RECT_ONE_BY_ONE = 1;
 
 void c_minimizeBins(struct Size * max_bin_size,
         struct Size * sizes, int len_size,
@@ -581,7 +584,18 @@ void c_minimizeBins(struct Size * max_bin_size,
         heuristic = MaxRectsBinPack::RectBottomLeftRule;
 
         RectVector rv; // 结果
-        bin.Insert(rsv, rv, heuristic);
+        if (PACK_RECT_ONE_BY_ONE) {
+            RectSizeVectorIterator it = rsv.begin();
+            for ( ; it != rsv.end(); ++it) {
+                Rect rc = bin.Insert(it->width, it->height, heuristic);
+                if (rc.height == 0) {
+                    continue;
+                }
+                rv.push_back(rc);
+            }
+        } else {
+            bin.Insert(rsv, rv, heuristic);
+        }
 
         // 更新已pack总数
         packed_rect_count += rv.size();

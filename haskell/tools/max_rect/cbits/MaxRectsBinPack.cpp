@@ -551,6 +551,7 @@ extern "C" {
     #include "MaxRect.h"
     void lychee_maxRect(int *, int *, struct RectInfo *, int);
 }
+void sortBinResult(struct Bin * bin);
 
 void removePackedItem(int sizeId, RectSizeVector &rsv);
 
@@ -607,6 +608,7 @@ void c_minimizeBins(struct Size * max_bin_size,
             ri[i].sizeId    = it->sizeId;
             removePackedItem(it->sizeId, remain_sizes);
         }
+        sortBinResult(&cbin);
     }
 
     int rb_size = vec_bin.size();
@@ -752,6 +754,30 @@ struct Size size_list_2[] = {
     ,   {144, 178}
 };
 
+void showBinResult(struct Bin * bin_result, int bin_size) {
+    printf("bin size is %d\n", bin_size);
+    for (int i = 0; i < bin_size; ++i) {
+        struct Bin * bin = bin_result + i;
+        printf("bin %d, rects: %d\n", i, bin->itemCount);
+        for (int j = 0; j < bin->itemCount; ++j) {
+            struct RectInfo * ri = bin->itemPos + j;
+            printf("    rect info %2d : %4d, %4d, %4d, %4d, rotated: %s\n",
+                    ri->sizeId, ri->x, ri->y, ri->width, ri->height,
+                    ri->isRotated ? "true" : "false");
+        }
+    }
+}
+
+#define Tp (const struct RectInfo *)
+
+static int cmp_func(const void * a, const void * b) {
+    return (Tp a)->sizeId - (Tp b)->sizeId;
+}
+
+void sortBinResult(struct Bin * bin) {
+    qsort(bin->itemPos, bin->itemCount, sizeof(struct RectInfo), cmp_func);
+}
+
 void test_main() {
     struct Size bin_size = {1024, 1024};
     struct Bin *result;
@@ -759,7 +785,8 @@ void test_main() {
     c_minimizeBins(&bin_size,
                    //size_list,
                    size_list_2,
-                   15, &result, &bin_len);
+                   17, &result, &bin_len);
+    showBinResult(result, bin_len);
     c_freeBinResult(result, bin_len);
 }
 

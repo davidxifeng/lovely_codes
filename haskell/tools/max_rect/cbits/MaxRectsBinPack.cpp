@@ -55,7 +55,7 @@ void MaxRectsBinPack::Init(int width, int height)
     freeRectangles.push_back(n);
 }
 
-Rect MaxRectsBinPack::Insert(int width, int height, FreeRectChoiceHeuristic method)
+Rect MaxRectsBinPack::Insert(int width, int height, int size_id, FreeRectChoiceHeuristic method)
 {
     Rect newNode;
     int score1; // Unused in this function. We don't need to know the score after finding the position.
@@ -71,6 +71,9 @@ Rect MaxRectsBinPack::Insert(int width, int height, FreeRectChoiceHeuristic meth
 
     if (newNode.height == 0)
         return newNode;
+
+    newNode.sizeId = size_id;
+    newNode.isR = newNode.width == width ? 0 : 1;
 
     size_t numRectanglesToProcess = freeRectangles.size();
     for(size_t i = 0; i < numRectanglesToProcess; ++i)
@@ -168,12 +171,7 @@ Rect MaxRectsBinPack::ScoreRect(int width, int height, int size_id, FreeRectChoi
 
     // david's patch
     newNode.sizeId = size_id;
-    if (newNode.width == width) {
-        newNode.isR = 0;
-    }
-    else {
-        newNode.isR = 1;
-    }
+    newNode.isR = newNode.width == width ? 0 : 1;
 
     return newNode;
 }
@@ -587,7 +585,7 @@ void c_minimizeBins(struct Size * max_bin_size,
         if (PACK_RECT_ONE_BY_ONE) {
             RectSizeVectorIterator it = rsv.begin();
             for ( ; it != rsv.end(); ++it) {
-                Rect rc = bin.Insert(it->width, it->height, heuristic);
+                Rect rc = bin.Insert(it->width, it->height, it->sizeId, heuristic);
                 if (rc.height == 0) {
                     continue;
                 }

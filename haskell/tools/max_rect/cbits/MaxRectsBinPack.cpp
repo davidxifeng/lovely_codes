@@ -724,3 +724,43 @@ void lychee_maxRect(int * width, int * height, struct RectInfo * ra, int n) {
     }
 }
 
+struct Size size_list[] = {
+    {32, 32},
+    {16, 32},
+    {64, 16},
+    {64, 32},
+    {16, 16}
+};
+
+struct Size size_list_2[] = {
+        {226, 60}
+    ,   {34 ,30}
+    ,   {138 ,38}
+    ,   {114, 202}
+    ,   {40, 170}
+    ,   {126, 50}
+    ,   {262, 52}
+    ,   {116, 138}
+    ,   {114, 162}
+    ,   {158, 108}
+    ,   {144, 118}
+    ,   {144, 100}
+    ,   {126, 74}
+    ,   {176, 86}
+    ,   {66, 114}
+    ,   {186, 132}
+    ,   {144, 178}
+};
+
+void test_main() {
+    struct Size bin_size = {1024, 1024};
+    struct Bin *result;
+    int bin_len;
+    c_minimizeBins(&bin_size,
+                   //size_list,
+                   size_list_2,
+                   15, &result, &bin_len);
+    c_freeBinResult(result, bin_len);
+}
+
+

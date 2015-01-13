@@ -55,8 +55,6 @@ void MaxRectsBinPack::Init(int width, int height)
     freeRectangles.push_back(n);
 }
 
-// 未使用
-#if 0
 Rect MaxRectsBinPack::Insert(int width, int height, FreeRectChoiceHeuristic method)
 {
     Rect newNode;
@@ -90,7 +88,6 @@ Rect MaxRectsBinPack::Insert(int width, int height, FreeRectChoiceHeuristic meth
     usedRectangles.push_back(newNode);
     return newNode;
 }
-#endif
 
 void MaxRectsBinPack::Insert(std::vector<RectSize> &rects, std::vector<Rect> &dst, FreeRectChoiceHeuristic method)
 {
@@ -783,9 +780,9 @@ void test_main() {
     struct Bin *result;
     int bin_len;
     c_minimizeBins(&bin_size,
-                   //size_list,
-                   size_list_2,
-                   17, &result, &bin_len);
+                   size_list, 5,
+                   //size_list_2, 17,
+                   &result, &bin_len);
     showBinResult(result, bin_len);
     c_freeBinResult(result, bin_len);
 }

@@ -106,13 +106,11 @@ public:
     /// @param rects The list of rectangles to insert. This vector will be destroyed in the process.
     /// @param dst [out] This list will contain the packed rectangles. The indices will not correspond to that of rects.
     /// @param method The rectangle placement rule to use when packing.
-    // ... 测了一下发现结果不对,原来居然是这个API其实并没有实现 而且文档上没有说明,看了代码才知道
     void Insert(std::vector<RectSize> &rects, std::vector<Rect> &dst, FreeRectChoiceHeuristic method);
 
-#if 0
     /// Inserts a single rectangle into the bin, possibly rotated.
     Rect Insert(int width, int height, FreeRectChoiceHeuristic method);
-#endif
+
     /// Computes the ratio of used surface area to the total bin area.
     float Occupancy() const;
 

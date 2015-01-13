@@ -41,6 +41,23 @@ var MyLayer = cc.Layer.extend({
         this.m_sv.setInnerContainerSize(cc.size(1680, 670));
     },
 
+    showRects2 : function(result) {
+        var dn = new cc.DrawNode();
+        dn.setAnchorPoint(0, 0);
+        dn.setPosition(0, 0);
+        this.m_sv.setInnerContainerSize(cc.size(6 * 840, 670));
+        this.m_sv.addChild(dn);
+        for (var i = 0; i < result.length; i++) {
+            for (var j = 0; j < result[i].length; j++) {
+                var rc = result[i][j];
+                var o = { x : rc.x, y : rc.y};
+                var d = { x : rc.x + rc.width, y : rc.y + rc.height};
+                console.log(o, d);
+                dn.drawRect(o, d, getNextColor());
+            }
+        }
+    },
+
     showRects : function(result) {
         for (var i = 0; i < result.length; i++) {
 
@@ -73,15 +90,26 @@ window.onload = function() {
                     var mylayer = new MyLayer();
                     mylayer.init();
 
-                    var url = "x/api";
+                    var url = "file/data.json";
                     var cb = function(e, r) {
+                        if (!e) {
+                            mylayer.showRects2(r);
+                        } else {
+                            cc.log('load json data error' + e);
+                        }
+                    };
+
+                    var url2 = "x/api";
+                    var cb2 = function(e, r) {
                         if (!e) {
                             mylayer.showRects(r);
                         } else {
                             cc.log('load json error' + e);
                         }
                     };
+
                     cc.loader.loadJson(url, cb);
+                    //cc.loader.loadJson(url2, cb2);
 
                     this.addChild(mylayer);
                 }

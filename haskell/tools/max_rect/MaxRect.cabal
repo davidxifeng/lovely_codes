@@ -25,7 +25,8 @@ executable MaxRect
                         , scotty >=0.9 && <0.10
                         , mtl >=2.1 && <2.2
                         , time >=1.4 && <1.5
-                        , aeson >=0.6 && <0.7
+                        , aeson
+                        --, aeson >=0.6 && <0.7
     hs-source-dirs:     src
     C-sources:          cbits/MaxRectsBinPack.cpp
     Include-dirs:       cbits

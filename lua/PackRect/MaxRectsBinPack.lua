@@ -1,10 +1,10 @@
 -- MaxRectsBinPack module
 
 local export = {
-    createBin, insert, insertList, minimizeBins, rotate_rect
+    createBin, insert, insertList, minimizeBins, rotate_rect, layoutRect
 }
 
-local createBin, insert, insertList, minimizeBins, rotate_rect
+local createBin, insert, insertList, minimizeBins, rotate_rect, layoutRect
 
 local scoreRect, splitFreeNode, placeRect, pruneFreeList, findPosition
 
@@ -287,11 +287,15 @@ function rotate_rect(width, height, angle)
     return rx * 2, ry * 2
 end
 
+function layoutRect()
+end
+
 
 export.createBin    = createBin
 export.insert       = insert
 export.insertList   = insertList
 export.minimizeBins = minimizeBins
 export.rotate_rect  = rotate_rect
+export.layoutRect   = layoutRect
 
 return export

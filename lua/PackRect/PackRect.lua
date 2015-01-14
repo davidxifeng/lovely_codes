@@ -4,15 +4,13 @@ local function log(...)
 end
 
 local function printJson(obj)
-    local json = require 'json'
-    local r = json.encode(obj)
-    print(r)
+    print(require 'json'.encode(obj))
 end
 
 local function dumpPackResult(dst)
     for k, v in ipairs(dst) do
-        log('%d: x = %d, y = %d, width = %d, height = %d, isRotate = %s'
-            , k, v.x, v.y, v.width, v.height, tostring(v.isRotate))
+        log('%d: x = %d, y = %d, width = %d, height = %d, isRotate = %s',
+            k, v.x, v.y, v.width, v.height, tostring(v.isRotate))
     end
 end
 
@@ -30,5 +28,23 @@ local function testMaxRectBL()
     end
 end
 
-testMaxRectBL()
+local function testInsert()
+    local td1 = require 'data'.d1
+    local bin = createBin(1024, 1024)
+    for k, v in ipairs(td1) do
+        local r = insert(bin, v.width, v.height, k)
+        if not r then
+            log('pack size %d (w: %d, h: %d) failed', k, v.width. v.height)
+        end
+    end
+    for k, v in ipairs(bin.usedRectangles) do
+        log('%d: x: %d, y: %d, w: %d, h: %d', v.id, v.x, v.y, v.width, v.height)
+    end
+end
 
+local function main()
+    testMaxRectBL()
+    testInsert()
+end
+
+main()

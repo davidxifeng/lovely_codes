@@ -1,13 +1,14 @@
 -- MaxRectsBinPack module
 
 local export = {
-    createBin, insert, minimizeBins, rotate_rect
+    createBin, insert, insertList, minimizeBins, rotate_rect
 }
 
-local createBin, insert, minimizeBins, rotate_rect
+local createBin, insert, insertList, minimizeBins, rotate_rect
 
 local scoreRect, splitFreeNode, placeRect, pruneFreeList, findPosition
 
+local copyRect, copyNode
 -- import
 
 local ipairs       = ipairs
@@ -38,11 +39,34 @@ function createBin(w, h)
     }
 end
 
+--- insert a single size to bin
+-- @return result or nil
+function insert(bin, width, height, id)
+    local newNode = findPosition(bin, width, height, score1, score2)
+
+    if newNode.height == 0 then
+        return nil
+    end
+
+    newNode.id = id
+
+    local i = 1
+    while i <= # bin.freeRectangles do
+        if splitFreeNode(bin, bin.freeRectangles[i], newNode) then
+            table_remove(bin.freeRectangles, i)
+            i = i - 1
+        end
+        i = i + 1
+    end
+    pruneFreeList(bin)
+    table_insert(bin.usedRectangles, copyNode(newNode))
+    return newNode
+end
 
 --- insert size list
 -- @param sizeList input size array
 -- @return is pack all and result list
-function insert(bin, sizeList)
+function insertList(bin, sizeList)
     local rectList = {}
 
     while # sizeList > 0 do
@@ -124,8 +148,19 @@ function findPosition(bin, width, height, bestY, bestX)
     return bestNode, bestY, bestX
 end
 
+function copyRect(rect)
+    return { x = rect.x, y = rect.y, width = rect.width, height = rect.height }
+end
+
+function copyNode(node)
+    local newNode    = copyRect(node)
+    newNode.isRotate = node.isRotate
+    newNode.id       = node.id
+    return newNode
+end
+
 function placeRect(bin, rectList, node)
-    local i = 1;
+    local i = 1
     while i <= # bin.freeRectangles do
         if splitFreeNode(bin, bin.freeRectangles[i], node) then
             table_remove(bin.freeRectangles, i)
@@ -135,11 +170,7 @@ function placeRect(bin, rectList, node)
     end
     pruneFreeList(bin)
     table_insert(bin.usedRectangles, node)
-    table_insert(rectList, node)
-end
-
-local function copyRect(rect)
-    return { x = rect.x, y = rect.y, width = rect.width, height = rect.height }
+    table_insert(rectList, copyNode(node))
 end
 
 function splitFreeNode(bin, freeNode, usedNode)
@@ -239,7 +270,7 @@ function minimizeBins(maxBinWidth, maxBinHeight, inputSizeList)
     local binList = {}
     while true do
         local bin = createBin(maxBinWidth, maxBinHeight)
-        local ok, r = insert(bin, sizeList)
+        local ok, r = insertList(bin, sizeList)
         table_insert(binList, r)
         if ok then
             break
@@ -269,6 +300,7 @@ end
 
 export.createBin    = createBin
 export.insert       = insert
+export.insertList   = insertList
 export.minimizeBins = minimizeBins
 export.rotate_rect  = rotate_rect
 

@@ -4,6 +4,7 @@ return {
         { width = 32, height = 32 },
         { width = 64, height = 64 },
         { width = 2 , height = 64 },
+        { width = 16, height = 16 },
     },
     d2 = {
         { width = 128, height = 126 },

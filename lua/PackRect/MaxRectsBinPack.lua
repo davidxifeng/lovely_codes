@@ -9,8 +9,8 @@ local createBin, insert, insertList, minimizeBins, rotate_rect
 local scoreRect, splitFreeNode, placeRect, pruneFreeList, findPosition
 
 local copyRect, copyNode
--- import
 
+-- import
 local ipairs       = ipairs
 local pairs        = pairs
 local table_insert = table.insert
@@ -44,28 +44,16 @@ end
 -- @return result or nil
 function insert(bin, width, height, id)
     local newNode = findPosition(bin, width, height, score1, score2)
-
     if newNode.height == 0 then
         return nil
     end
-
     newNode.id = id
-
-    local i = 1
-    while i <= # bin.freeRectangles do
-        if splitFreeNode(bin, bin.freeRectangles[i], newNode) then
-            table_remove(bin.freeRectangles, i)
-            i = i - 1
-        end
-        i = i + 1
-    end
-    pruneFreeList(bin)
-    table_insert(bin.usedRectangles, copyNode(newNode))
-    return newNode
+    placeRect(bin, newNode)
+    return copyNode(newNode)
 end
 
 --- insert size list
--- @param sizeList input size array
+-- @param sizeList input size array, {id, width, height}
 -- @return is pack all and result list
 function insertList(bin, sizeList)
     local rectList = {}
@@ -90,9 +78,11 @@ function insertList(bin, sizeList)
         if bestRectIndex == -1 then
             return false, rectList
         end
-        bestNode.id = sizeList[bestRectIndex].id
 
-        placeRect(bin, rectList, bestNode)
+        bestNode.id = sizeList[bestRectIndex].id
+        table_insert(rectList, copyNode(bestNode))
+
+        placeRect(bin, bestNode)
         table_remove(sizeList, bestRectIndex)
     end
     return true, rectList
@@ -161,7 +151,7 @@ function copyNode(node)
     return newNode
 end
 
-function placeRect(bin, rectList, node)
+function placeRect(bin, node)
     local i = 1
     while i <= # bin.freeRectangles do
         if splitFreeNode(bin, bin.freeRectangles[i], node) then
@@ -172,7 +162,6 @@ function placeRect(bin, rectList, node)
     end
     pruneFreeList(bin)
     table_insert(bin.usedRectangles, node)
-    table_insert(rectList, copyNode(node))
 end
 
 function splitFreeNode(bin, freeNode, usedNode)

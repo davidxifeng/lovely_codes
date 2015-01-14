@@ -1,12 +1,27 @@
 -- MaxRectsBinPack module
 
 local export = {
-    createBin, insert, minimizeBins
+    createBin, insert, minimizeBins, rotate_rect
 }
 
-local createBin, insert, minimizeBins
+local createBin, insert, minimizeBins, rotate_rect
 
 local scoreRect, splitFreeNode, placeRect, pruneFreeList, findPosition
+
+-- import
+
+local ipairs       = ipairs
+local pairs        = pairs
+local table_insert = table.insert
+local table_remove = table.remove
+local math_huge    = math.huge
+local math_sin     = math.sin
+local math_cos     = math.cos
+local math_asin    = math.asin
+local math_acos    = math.acos
+local math_rad     = math.rad
+local math_abs     = math.abs
+local math_max     = math.max
 
 -- pack 过程中是否旋转rect
 local ROTATE_WHEN_PLACE_RECT = false
@@ -31,8 +46,8 @@ function insert(bin, sizeList)
     local rectList = {}
 
     while # sizeList > 0 do
-        local bestScore1 = math.huge
-        local bestScore2 = math.huge
+        local bestScore1 = math_huge
+        local bestScore2 = math_huge
         local bestRectIndex = -1
         local bestNode
 
@@ -52,7 +67,7 @@ function insert(bin, sizeList)
         end
 
         placeRect(bin, rectList, bestNode)
-        table.remove(sizeList, bestRectIndex)
+        table_remove(sizeList, bestRectIndex)
     end
     return true, rectList
 end
@@ -60,11 +75,11 @@ end
 --- 放置rect,计算评分
 -- @return 新结点 得分x y
 function scoreRect(bin, w, h)
-    local score1, score2 = math.huge, math.huge
+    local score1, score2 = math_huge, math_huge
     local newNode
     newNode, score1, score2 = findPosition(bin, w, h, score1, score2)
     if newNode.height == 0 then
-        score1, score2 = math.huge, math.huge
+        score1, score2 = math_huge, math_huge
     end
     return newNode, score1, score2
 end
@@ -72,7 +87,7 @@ end
 --- 在bottom left开始寻找位置
 function findPosition(bin, width, height, bestY, bestX)
     local bestNode = { x = 0, y = 0, width = 0, height = 0 }
-    bestY = math.huge
+    bestY = math_huge
     for _, v in ipairs(bin.freeRectangles) do
         -- Try to place the rectangle in upright (non-flipped) orientation.
         if v.width >= width and v.height >= height then
@@ -113,14 +128,14 @@ function placeRect(bin, rectList, node)
     local i = 1;
     while i <= # bin.freeRectangles do
         if splitFreeNode(bin, bin.freeRectangles[i], node) then
-            table.remove(bin.freeRectangles, i)
+            table_remove(bin.freeRectangles, i)
             i = i - 1
         end
         i = i + 1
     end
     pruneFreeList(bin)
-    table.insert(bin.usedRectangles, node)
-    table.insert(rectList, node)
+    table_insert(bin.usedRectangles, node)
+    table_insert(rectList, node)
 end
 
 local function copyRect(rect)
@@ -143,7 +158,7 @@ function splitFreeNode(bin, freeNode, usedNode)
             and usedNode.y < freeNode.y + freeNode.height then
             local newNode = copyRect(freeNode)
             newNode.height = usedNode.y - newNode.y
-            table.insert(bin.freeRectangles, newNode)
+            table_insert(bin.freeRectangles, newNode)
         end
 
         -- New node at the bottom side of the used node.
@@ -151,7 +166,7 @@ function splitFreeNode(bin, freeNode, usedNode)
             local newNode = copyRect(freeNode)
             newNode.y = usedNode.y + usedNode.height
             newNode.height = freeNode.y + freeNode.height - (usedNode.y + usedNode.height)
-            table.insert(bin.freeRectangles, newNode)
+            table_insert(bin.freeRectangles, newNode)
         end
     end
 
@@ -162,7 +177,7 @@ function splitFreeNode(bin, freeNode, usedNode)
             and usedNode.x < freeNode.x + freeNode.width then
             local newNode = copyRect(freeNode)
             newNode.width = usedNode.x - newNode.x
-            table.insert(bin.freeRectangles, newNode)
+            table_insert(bin.freeRectangles, newNode)
         end
 
         -- New node at the right side of the used node.
@@ -170,7 +185,7 @@ function splitFreeNode(bin, freeNode, usedNode)
             local newNode = copyRect(freeNode)
             newNode.x = usedNode.x + usedNode.width
             newNode.width = freeNode.x + freeNode.width - (usedNode.x + usedNode.width)
-            table.insert(bin.freeRectangles, newNode)
+            table_insert(bin.freeRectangles, newNode)
         end
     end
     return true
@@ -192,12 +207,12 @@ function pruneFreeList(bin)
         local j = i + 1
         while j <= # freeRectangles do
             if isContainedIn(freeRectangles[i], freeRectangles[j]) then
-                table.remove(freeRectangles, i)
+                table_remove(freeRectangles, i)
                 i = i - 1
                 break
             end
             if isContainedIn(freeRectangles[j], freeRectangles[i]) then
-                table.remove(freeRectangles, j)
+                table_remove(freeRectangles, j)
                 j = j - 1
             end
             j = j + 1
@@ -209,7 +224,7 @@ end
 local function copyList(list)
     local r = {}
     for _, v in ipairs(list) do
-        table.insert(r, v)
+        table_insert(r, v)
     end
     return r
 end
@@ -225,7 +240,7 @@ function minimizeBins(maxBinWidth, maxBinHeight, inputSizeList)
     while true do
         local bin = createBin(maxBinWidth, maxBinHeight)
         local ok, r = insert(bin, sizeList)
-        table.insert(binList, r)
+        table_insert(binList, r)
         if ok then
             break
         end
@@ -233,8 +248,28 @@ function minimizeBins(maxBinWidth, maxBinHeight, inputSizeList)
     return binList
 end
 
+--- 旋转矩形 angle角度(角度) 返回旋转后的矩形的宽高
+function rotate_rect(width, height, angle)
+    local hw, hh = width / 2, height / 2
+    local len_tr = (hw * hw + hh * hh) ^ 0.5
+
+    local na = math_asin(hh / len_tr) + math_rad(angle)
+    local nx = math_cos(na) * len_tr
+    local ny = math_sin(na) * len_tr
+
+    local ma = math_acos(-hw / len_tr) + math_rad(angle)
+    local mx = math_cos(ma) * len_tr
+    local my = math_sin(ma) * len_tr
+
+    local rx = math_max(math_abs(mx), math_abs(nx))
+    local ry = math_max(math_abs(my), math_abs(ny))
+    return rx * 2, ry * 2
+end
+
+
 export.createBin    = createBin
 export.insert       = insert
 export.minimizeBins = minimizeBins
+export.rotate_rect  = rotate_rect
 
 return export

@@ -1,21 +1,3 @@
---- 旋转矩形 angle角度(角度) 返回旋转后的矩形的宽高
-local function rotate_rect(width, height, angle)
-    local hw, hh = width / 2, height / 2
-    local len_tr = (hw * hw + hh * hh) ^ 0.5
-
-    local na = math.asin(hh / len_tr) + math.rad(angle)
-    local nx = math.cos(na) * len_tr
-    local ny = math.sin(na) * len_tr
-
-    local ma = math.acos(-hw / len_tr) + math.rad(angle)
-    local mx = math.cos(ma) * len_tr
-    local my = math.sin(ma) * len_tr
-
-    local rx = math.max(math.abs(mx), math.abs(nx))
-    local ry = math.max(math.abs(my), math.abs(ny))
-    return rx * 2, ry * 2
-end
-
 
 local function log(...)
     print(string.format(...))

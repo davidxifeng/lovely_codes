@@ -15,6 +15,7 @@ local ipairs       = ipairs
 local pairs        = pairs
 local table_insert = table.insert
 local table_remove = table.remove
+local table_sort   = table.sort
 local math_huge    = math.huge
 local math_sin     = math.sin
 local math_cos     = math.cos
@@ -89,6 +90,7 @@ function insertList(bin, sizeList)
         if bestRectIndex == -1 then
             return false, rectList
         end
+        bestNode.id = sizeList[bestRectIndex].id
 
         placeRect(bin, rectList, bestNode)
         table_remove(sizeList, bestRectIndex)
@@ -254,8 +256,9 @@ end
 
 local function copyList(list)
     local r = {}
-    for _, v in ipairs(list) do
-        table_insert(r, v)
+    for i, v in ipairs(list) do
+        local nv = { id = i, width = v.width, height = v.height }
+        table_insert(r, nv)
     end
     return r
 end
@@ -268,14 +271,12 @@ end
 function minimizeBins(maxBinWidth, maxBinHeight, inputSizeList)
     local sizeList = copyList(inputSizeList)
     local binList = {}
-    while true do
+    repeat
         local bin = createBin(maxBinWidth, maxBinHeight)
         local ok, r = insertList(bin, sizeList)
+        table_sort(r, function(a, b) return a.id < b.id end)
         table_insert(binList, r)
-        if ok then
-            break
-        end
-    end
+    until ok
     return binList
 end
 

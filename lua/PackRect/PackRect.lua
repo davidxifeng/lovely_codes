@@ -10,7 +10,7 @@ end
 local function dumpPackResult(dst)
     for k, v in ipairs(dst) do
         log('%d: x = %d, y = %d, width = %d, height = %d, isRotate = %s',
-            k, v.x, v.y, v.width, v.height, tostring(v.isRotate))
+            v.id, v.x, v.y, v.width, v.height, tostring(v.isRotate))
     end
 end
 

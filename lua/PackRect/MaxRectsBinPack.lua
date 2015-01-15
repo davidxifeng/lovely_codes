@@ -302,5 +302,4 @@ return {
     insertList    = insertList,
     insertByOrder = insertByOrder,
     minimizeBins  = minimizeBins,
-    rotateRect    = rotateRect,
 }

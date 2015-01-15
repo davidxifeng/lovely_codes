@@ -10,16 +10,15 @@ end
 local function dumpPackResult(dst)
     for k, v in ipairs(dst) do
         log('%d: x = %d, y = %d, width = %d, height = %d, isRotate = %s',
-            v.id, v.x, v.y, v.width, v.height, tostring(v.isRotate))
+            k, v.x, v.y, v.width, v.height, tostring(v.isRotate))
     end
 end
 
-local bp = require 'MaxRectsBinPack'
-local minimizeBins = bp.minimizeBins
-local createBin = bp.createBin
-local insert = bp.insert
+local bp            = require 'MaxRectsBinPack'
+local minimizeBins  = bp.minimizeBins
+local insertByOrder = bp.insertByOrder
 
-local function testMaxRectBL()
+local function testMinimizeBins()
     local td1 = require 'data'
     local rl = minimizeBins(840 * 4, 670, td1.d1)
     --printJson(rl)
@@ -28,23 +27,23 @@ local function testMaxRectBL()
     end
 end
 
-local function testInsert()
+local function testInsertByOrder()
     local td1 = require 'data'.d1
-    local bin = createBin(1024, 1024)
-    for k, v in ipairs(td1) do
-        local r = insert(bin, v.width, v.height, k)
-        if not r then
-            log('pack size %d (w: %d, h: %d) failed', k, v.width. v.height)
-        end
+    local r, rc, sz = insertByOrder(64, 64, td1)
+    print(r and '全部pack ' or '没有全部pack')
+    print('已pack列表')
+    for k, v in ipairs(rc) do
+        log('%d: x %d, y %d, w %d, h %d', k, v.x, v.y, v.width, v.height)
     end
-    for k, v in ipairs(bin.usedRectangles) do
-        log('%d: x: %d, y: %d, w: %d, h: %d', v.id, v.x, v.y, v.width, v.height)
+    print('未pack列表')
+    for k, v in ipairs(sz) do
+        log('%d: w %d, h %d', k, v.width, v.height)
     end
 end
 
 local function main()
-    testMaxRectBL()
-    testInsert()
+    testMinimizeBins()
+    testInsertByOrder()
 end
 
 main()

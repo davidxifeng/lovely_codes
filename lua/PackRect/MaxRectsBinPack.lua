@@ -1,14 +1,14 @@
 -- MaxRectsBinPack module
 
-local export = {
-    createBin, insert, insertList, minimizeBins, rotate_rect, layoutRect
-}
+-- export
+local createBin, insert, insertList, insertByOrder
+local minimizeBins, rotate_rect, layoutRect
 
-local createBin, insert, insertList, minimizeBins, rotate_rect, layoutRect
-
+-- internal functions
 local scoreRect, splitFreeNode, placeRect, pruneFreeList, findPosition
 
-local copyRect, copyNode
+-- utility functions
+local copyTable, copyRect, copyNode, copyList
 
 -- import
 local ipairs       = ipairs
@@ -42,18 +42,39 @@ end
 
 --- insert a single size to bin
 -- @return result or nil
-function insert(bin, width, height, id)
-    local newNode = findPosition(bin, width, height, score1, score2)
+function insert(bin, v)
+    local newNode = findPosition(bin, v.width, v.height)
     if newNode.height == 0 then
         return nil
     end
-    newNode.id = id
     placeRect(bin, newNode)
-    return copyNode(newNode)
+    v.x        = newNode.x
+    v.y        = newNode.y
+    v.width    = newNode.width
+    v.height   = newNode.height
+    v.isRotate = newNode.isRotate
+    return v
+end
+
+--- 按照顺序布局 size列表
+-- @return 全部size是否已经pack, 已pack的列表, 未pack的列表
+function insertByOrder(width, height, objList)
+    local rcList, unpackList = {}, copyList(objList)
+    local bin = createBin(width, height)
+    local i = # unpackList
+    while i > 0 do
+        local r = insert(bin, unpackList[i])
+        if r then
+            table_remove(unpackList, i)
+            table_insert(rcList, r)
+        end
+        i = i - 1
+    end
+    return # unpackList == 0, rcList, unpackList
 end
 
 --- insert size list
--- @param sizeList input size array, {id, width, height}
+-- @param sizeList input size array, {width, height}
 -- @return is pack all and result list
 function insertList(bin, sizeList)
     local rectList = {}
@@ -79,7 +100,6 @@ function insertList(bin, sizeList)
             return false, rectList
         end
 
-        bestNode.id = sizeList[bestRectIndex].id
         table_insert(rectList, copyNode(bestNode))
 
         placeRect(bin, bestNode)
@@ -147,8 +167,26 @@ end
 function copyNode(node)
     local newNode    = copyRect(node)
     newNode.isRotate = node.isRotate
-    newNode.id       = node.id
     return newNode
+end
+
+--- 简单表复制 不处理元表和表的k,v中有自己的情况
+function copyTable(obj)
+  if type(obj) ~= 'table' then return obj end
+  local res = {}
+  for k, v in pairs(obj) do
+      res[copyTable(k)] = copyTable(v)
+  end
+  return res
+end
+
+--- deep copy list
+function copyList(list)
+    local r = {}
+    for i, v in ipairs(list) do
+        table_insert(r, copyTable(v))
+    end
+    return r
 end
 
 function placeRect(bin, node)
@@ -243,15 +281,6 @@ function pruneFreeList(bin)
     end
 end
 
-local function copyList(list)
-    local r = {}
-    for i, v in ipairs(list) do
-        local nv = { id = i, width = v.width, height = v.height }
-        table_insert(r, nv)
-    end
-    return r
-end
-
 --- minimizeBins
 -- @number maxBinWidth 目标bin宽度
 -- @number maxBinHeight 目标bin高度
@@ -263,7 +292,6 @@ function minimizeBins(maxBinWidth, maxBinHeight, inputSizeList)
     repeat
         local bin = createBin(maxBinWidth, maxBinHeight)
         local ok, r = insertList(bin, sizeList)
-        table_sort(r, function(a, b) return a.id < b.id end)
         table_insert(binList, r)
     until ok
     return binList
@@ -290,12 +318,12 @@ end
 function layoutRect()
 end
 
-
-export.createBin    = createBin
-export.insert       = insert
-export.insertList   = insertList
-export.minimizeBins = minimizeBins
-export.rotate_rect  = rotate_rect
-export.layoutRect   = layoutRect
-
-return export
+return {
+    createBin     = createBin,
+    insert        = insert,
+    insertList    = insertList,
+    insertByOrder = insertByOrder,
+    minimizeBins  = minimizeBins,
+    rotate_rect   = rotate_rect,
+    layoutRect    = layoutRect,
+}

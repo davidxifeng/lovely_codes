@@ -1,8 +1,7 @@
 -- MaxRectsBinPack module
 
 -- export
-local createBin, insert, insertList, insertByOrder
-local minimizeBins, rotate_rect, layoutRect
+local createBin, insert, insertList, insertByOrder, minimizeBins
 
 -- internal functions
 local scoreRect, splitFreeNode, placeRect, pruneFreeList, findPosition
@@ -172,12 +171,12 @@ end
 
 --- 简单表复制 不处理元表和表的k,v中有自己的情况
 function copyTable(obj)
-  if type(obj) ~= 'table' then return obj end
-  local res = {}
-  for k, v in pairs(obj) do
-      res[copyTable(k)] = copyTable(v)
-  end
-  return res
+    if type(obj) ~= 'table' then return obj end
+    local res = {}
+    for k, v in pairs(obj) do
+        res[copyTable(k)] = copyTable(v)
+    end
+    return res
 end
 
 --- deep copy list
@@ -297,33 +296,11 @@ function minimizeBins(maxBinWidth, maxBinHeight, inputSizeList)
     return binList
 end
 
---- 旋转矩形 angle角度(角度) 返回旋转后的矩形的宽高
-function rotate_rect(width, height, angle)
-    local hw, hh = width / 2, height / 2
-    local len_tr = (hw * hw + hh * hh) ^ 0.5
-
-    local na = math_asin(hh / len_tr) + math_rad(angle)
-    local nx = math_cos(na) * len_tr
-    local ny = math_sin(na) * len_tr
-
-    local ma = math_acos(-hw / len_tr) + math_rad(angle)
-    local mx = math_cos(ma) * len_tr
-    local my = math_sin(ma) * len_tr
-
-    local rx = math_max(math_abs(mx), math_abs(nx))
-    local ry = math_max(math_abs(my), math_abs(ny))
-    return rx * 2, ry * 2
-end
-
-function layoutRect()
-end
-
 return {
     createBin     = createBin,
     insert        = insert,
     insertList    = insertList,
     insertByOrder = insertByOrder,
     minimizeBins  = minimizeBins,
-    rotate_rect   = rotate_rect,
-    layoutRect    = layoutRect,
+    rotateRect    = rotateRect,
 }

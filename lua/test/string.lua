@@ -12,3 +12,7 @@ for xy in string.gmatch(s, '{%d+,%d+}') do
     end
 end
 print(string.match(s, '{%d+,%d+}'))
+
+local x, y = s:match('{%d+,%d+}'):match('(%d+),(%d+)')
+print('x, y: ', x, y)
+

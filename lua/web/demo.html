@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="author" content="David Feng" />
+    <meta name="description" content="play Lua in a browser" />
+    <title>Lua for html client scripting</title>
+    <script src="lua.vm.js"></script>
+</head>
+<body>
+    <canvas id='cc' width=480 height=320 style='border: 1px solid;'></canvas>
+
+    <script type="text/lua">
+    js.global:alert('Lua') -- this is Lua!
+    </script>
+
+</body>
+</html>

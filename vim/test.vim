@@ -1,4 +1,4 @@
-function! s:Displayversion()
+function! s:DisplayVersion()
     echo "simple tool v 0.0.1"
     echo "write : 2012-11-20 16:18:47"
 endfunction
@@ -59,7 +59,7 @@ endfunction
 
 
 function! Main()
-    "call s:Displayversion()
+    "call s:DisplayVersion()
     let prj_dir = "/Users/david/projects/cv2"
     "let file_type_list = ["java", "c", "cpp", "mk", "lua", "h", "xml"]
     let file_type_list = ["java.txt", "c.txt", "cpp.txt", "mk.txt", "lua.txt", "h.txt", "xml.txt"]

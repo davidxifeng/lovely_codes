@@ -1,3 +1,9 @@
+
+
+" test:
+" :so %
+" :DavidTest this is a test
+
 com! -nargs=* DavidTest call CmdFunc(<f-args>)
 
 " 变参说明

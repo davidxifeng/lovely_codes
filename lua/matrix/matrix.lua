@@ -27,6 +27,7 @@ function Matrix:translate(tx, ty)
     local ntx = self.tx + self.a * tx + self.c * ty
     local nty = self.ty + self.b * tx + self.d * ty
     self.tx, self.ty = ntx, nty
+    return self
 end
 
 -- 顺时针旋转 为负, 逆时针旋转值为正, 单位角度
@@ -39,6 +40,7 @@ function Matrix:rotate(ang)
     local nc = self.c * cos - self.a * sin
     local nd = self.d * cos - self.b * sin
     self.a, self.b, self.c, self.d = na, nb, nc, nd
+    return self
 end
 
 function Matrix:apply(x, y)
@@ -57,9 +59,8 @@ end
 local function test()
     local m = Matrix.new()
     m:show()
-    m:translate(1, 1) m:show()
-    print(m:apply(1, 1))
-    m:rotate(-45) m:show()
+    m:translate(1, 1):rotate(-45)
+    m:show()
     print(m:apply(1, 1))
 end
 

@@ -64,6 +64,15 @@ local function test()
     print(m:apply(1, 1))
 end
 
-test()
+local function test2()
+    local m1 = Matrix.new():rotate(-55)
+    print(m1:apply(740, 128))
+    local m2 = Matrix.new():rotate(-55):translate(20, 20)
+    print(m2:apply(740, 128))
+    local m3 = Matrix.new():translate(20, 20):rotate(-55)
+    print(m3:apply(740, 128))
+end
+
+test2()
 
 return Matrix

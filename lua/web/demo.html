@@ -8,10 +8,16 @@
     <script src="lua.vm.js"></script>
 </head>
 <body>
-    <canvas id='cc' width=480 height=320 style='border: 1px solid;'></canvas>
+    <canvas id='cc' width=800 height=600 style='border: 1px solid;'></canvas>
 
     <script type="text/lua">
-    js.global:alert('Lua') -- this is Lua!
+
+local document = js.global.document
+local canvas = document:getElementById('cc')
+local context = canvas:getContext('2d')
+context:strokeText("hello html5 canvas from Lua", 100, 100)
+context:strokeText(document.title, 100, 200)
+
     </script>
 
 </body>

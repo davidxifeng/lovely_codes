@@ -34,7 +34,7 @@ end
 
 local context = window.document:getElementById('cc'):getContext('2d')
 
---context:save()
+context:save()
 context:translate(400, 300)
 context:scale(0.45, 0.45)
 context.strokeStyle = 'rgba(255, 32, 128, 128)'
@@ -53,20 +53,22 @@ local function f(t, ag)
     return r
 end
 context.strokeStyle = 'rgba(15, 232, 128, 128)'
-drawRect(context, f(tb, 0))
 drawRect(context, {
     { x = -5, y = 5}, { x = 5, y = 5},
     { x = 5, y = -5}, { x = -5, y = -5},
 })
 
-local r = 0
+local r = -55
+drawRect(context, f(tb, r))
+--[[
 window:setInterval(function(e)
     drawRect(context, f(tb, r))
     r = r - 1 == -360 and 0 or r - 1
-end, 50
+end, 5000
 )
+--]]
 
---context:restore()
+context:restore()
 
     </script>
 </body>

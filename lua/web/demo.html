@@ -26,6 +26,9 @@ local function drawRect(ctx, rcs)
     ctx:lineTo(rcs[3].x, rcs[3].y)
     ctx:lineTo(rcs[4].x, rcs[4].y)
     ctx:lineTo(rcs[1].x, rcs[1].y)
+    ctx:lineTo(rcs[3].x, rcs[3].y)
+    ctx:moveTo(rcs[4].x, rcs[4].y)
+    ctx:lineTo(rcs[2].x, rcs[2].y)
     ctx:stroke()
 end
 
@@ -51,6 +54,10 @@ local function f(t)
 end
 context.strokeStyle = 'rgba(15, 232, 128, 128)'
 drawRect(context, f(tb))
+drawRect(context, {
+    { x = -5, y = 5}, { x = 5, y = 5},
+    { x = 5, y = -5}, { x = -5, y = -5},
+})
 
 context:restore()
 

@@ -64,13 +64,21 @@ local function test()
     print(m:apply(1, 1))
 end
 
+-- 绕原点 逆时针旋转 ang度
+local function rot(x, y, ang)
+    local r = math.rad(ang)
+    local rx = x * math.cos(r) + y * math.sin(r)
+    local ry = y * math.cos(r) - x * math.sin(r)
+    return rx, ry
+end
+
 local function test2()
-    local m1 = Matrix.new():rotate(-55)
+    local m1 = Matrix.new():rotate(55)
     print(m1:apply(740, 128))
-    local m2 = Matrix.new():rotate(-55):translate(20, 20)
-    print(m2:apply(740, 128))
-    local m3 = Matrix.new():translate(20, 20):rotate(-55)
-    print(m3:apply(740, 128))
+    print(rot(370, 560, -55))
+    print(rot(-370, 560, -55))
+    print(rot(-370, -560, -55))
+    print(rot(370, 560, -55))
 end
 
 test2()

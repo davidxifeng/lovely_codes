@@ -7,10 +7,16 @@
     <title>Lua for html client scripting</title>
     <script src="sys/lua.vm.js"></script>
     <script src="sys/lua.js"></script>
+    <script >
+    console.log('head a');
+    </script>
 </head>
-<body>
+<body onload="console.log('body onload')">
     <canvas id='cc' width=800 height=600 style='border: 1px solid;'></canvas>
 
+    <script >
+    console.log('body a');
+    </script>
     <script type="text/lua">
 
 local function rot(x, y, ang)
@@ -74,5 +80,9 @@ context:restore()
 
     </script>
     <script type="text/lua" data-src="clock.lua"></script>
+
+    <script >
+    console.log('body b');
+    </script>
 </body>
 </html>

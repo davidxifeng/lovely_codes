@@ -1,3 +1,3 @@
 
-js.global:alert('hello src Lua')
+js.global.console:log 'lua log'
 

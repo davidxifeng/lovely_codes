@@ -634,10 +634,11 @@ Lua.init = function() {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function () {
         if (this.readyState === 4) {
-            Module['FS_createDataFile'](
-                "/", "js.lua", xmlHttp.responseText, true, true);
+            //Module['FS_createDataFile']("/", "js.lua", xmlHttp.responseText, true, true);
             var L = exports.L = new Lua.State();
-            L.execute("dofile 'js.lua'");
+            L.execute(xmlHttp.responseText);
+            Lua.executeScripts(L);
+
             if (typeof window === 'object') {
                 var onload = window.onload;
                 window.onload = function() {
@@ -647,7 +648,7 @@ Lua.init = function() {
             }
         }
     }
-    xmlHttp.open('GET', 'sys/js.lua', false);
+    xmlHttp.open('GET', 'sys/js.lua', true);
     xmlHttp.send();
 };
 Lua.executeScripts = function(L) {
@@ -660,11 +661,8 @@ Lua.executeScripts = function(L) {
                     L.execute(xmlHttp.responseText);
                 }
             }
-            xmlHttp.open('GET', ls, false);
+            xmlHttp.open('GET', ls, true);
             xmlHttp.send();
-            if (xmlHttp.status != 200) {
-                console.log('load ' + ls + ' failed');
-            }
         } else {
             L.execute(tag.innerHTML);
         }

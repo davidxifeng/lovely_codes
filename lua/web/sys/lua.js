@@ -652,17 +652,18 @@ Lua.init = function() {
 };
 Lua.executeScripts = function(L) {
     Array.prototype.forEach.call(document.querySelectorAll('script[type=\"text\/lua\"]'), function(tag) {
-        if (tag.src) {
+        var ls = tag.dataset.src;
+        if (ls) {
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.onreadystatechange = function () {
                 if (this.readyState === 4) {
                     L.execute(xmlHttp.responseText);
                 }
             }
-            xmlHttp.open('GET', tag.src, false);
+            xmlHttp.open('GET', ls, false);
             xmlHttp.send();
             if (xmlHttp.status != 200) {
-                console.log('load ' + tag.src + ' failed');
+                console.log('load ' + ls + ' failed');
             }
         } else {
             L.execute(tag.innerHTML);

@@ -24,3 +24,7 @@ irssi
 
 sudo ngrep  -l -q -d eth0 "^GET | ^POST " tcp and port 80
 #这个文件用来保存一些好用的工具, 或者一些命令的用法示例,等等
+
+
+# 查找文件并执行in place替换
+find . -name '*.lua' | xargs perl -pi -e 's/abc/def/g'

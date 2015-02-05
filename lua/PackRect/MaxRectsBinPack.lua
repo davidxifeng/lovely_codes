@@ -190,9 +190,11 @@ end
 
 function placeRect(bin, node)
     local i = 1
-    while i <= # bin.freeRectangles do
+    local n = # bin.freeRectangles
+    while i <= n do
         if splitFreeNode(bin, bin.freeRectangles[i], node) then
             table_remove(bin.freeRectangles, i)
+            n = n - 1
             i = i - 1
         end
         i = i + 1

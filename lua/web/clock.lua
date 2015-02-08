@@ -1,10 +1,3 @@
-local function rot(x, y, ang)
-    local r = math.rad(ang and ang or -55)
-    local rx = x * math.cos(r) + y * math.sin(r)
-    local ry = y * math.cos(r) - x * math.sin(r)
-    return rx, ry
-end
-
 local function drawRect(ctx, rcs)
     ctx:beginPath()
     ctx:moveTo(rcs[1].x, rcs[1].y)
@@ -12,45 +5,62 @@ local function drawRect(ctx, rcs)
     ctx:lineTo(rcs[3].x, rcs[3].y)
     ctx:lineTo(rcs[4].x, rcs[4].y)
     ctx:lineTo(rcs[1].x, rcs[1].y)
+    --[[
     ctx:lineTo(rcs[3].x, rcs[3].y)
     ctx:moveTo(rcs[4].x, rcs[4].y)
     ctx:lineTo(rcs[2].x, rcs[2].y)
+    --]]
     ctx:stroke()
 end
 
+
 local context = window.document:getElementById('cc'):getContext('2d')
+
+local function go(t, m)
+    local r = {}
+    for _, v in ipairs(t) do
+        local x, y = m:apply(v.x, v.y)
+        table.insert(r, { x = x, y = y })
+    end
+    return r
+end
 
 local function main()
     context:save()
+
+    -- context init
     context:translate(400, 300)
-    context:scale(0.45, 0.45)
-    context.strokeStyle = 'rgba(255, 32, 128, 128)'
+    context:scale(0.39, -0.39)
 
     local tb = {
-        { x = -370, y = 560}, { x = 370, y = 560},
-        { x = 370, y = -560}, { x = -370, y = -560},
+        { x = 0, y = 0}, { x = 400, y = 0},
+        { x = 400, y = 600}, { x = 0, y = 600},
     }
+    context.strokeStyle = 'rgba(255, 32, 128, 128)'
     drawRect(context, tb)
-    local function f(t, ag)
-        local r = {}
-        for _, v in ipairs(t) do
-            local x, y = rot(v.x, v.y, ag)
-            table.insert(r, { x = x, y = y })
-        end
-        return r
-    end
+
+    local m = Matrix.new()
+    m:translate(100, 120)
     context.strokeStyle = 'rgba(15, 232, 128, 128)'
+    drawRect(context, go(tb, m))
 
-    --[[
-    drawRect(context, {
-        { x = -5, y = 5}, { x = 5, y = 5},
-        { x = 5, y = -5}, { x = -5, y = -5},
-    })
-    --]]
+    m = Matrix.new()
+    m:translate(100, 120):rotate(-55)
+    context.strokeStyle = 'blue'
+    drawRect(context, go(tb, m))
 
-    local r = -55
-    drawRect(context, f(tb, r))
-    drawRect(context, f(tb, -r))
+    m = Matrix.new()
+    m:translate(100, 120):rotate(-55):translate(-100, -120)
+    context.strokeStyle = 'yellow'
+    local ntb = go(tb, m)
+    drawRect(context, ntb)
+
+    m = Matrix.new()
+    m:translate(100, 120):rotate(55):translate(-101, -121)
+    context.strokeStyle = 'black'
+    drawRect(context, go(ntb, m))
+
     context:restore()
 end
+
 main()

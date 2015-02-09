@@ -1,3 +1,5 @@
+# 旋转图片 并设置alpha透明度
+convert gun_003_n.png -alpha set -background none -rotate 54 output.png
 
 # grep的一个应用
 cat ~/.zshrc | grep "export PATH" >> ~/.zprofile

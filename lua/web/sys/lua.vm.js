@@ -44707,16 +44707,4 @@ run();
 
 // {{POST_RUN_ADDITIONS}}
 
-
-
-
-
-
 // {{MODULE_ADDITIONS}}
-
-
-
-
-
-
-//# sourceMappingURL=lua.vm.js.map

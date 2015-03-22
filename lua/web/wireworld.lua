@@ -32,13 +32,15 @@ local function create_world(w, h, cells)
     local offset_x, offset_y = 400 - cw / 2, 300 - ch / 2
 
     return {
-        c_width    = cw,
-        c_height   = ch,
-        offset_x   = offset_x,
-        offset_y   = offset_y,
-        is_a       = true,
-        cells_a    = build_cells(cells),
-        cells_b    = build_cells(cells),
+        width    = w,
+        height   = h,
+        c_width  = cw,
+        c_height = ch,
+        offset_x = offset_x,
+        offset_y = offset_y,
+        is_a     = true,
+        cells_a  = build_cells(cells),
+        cells_b  = build_cells(cells),
     }
 end
 
@@ -75,17 +77,51 @@ local function draw_world(context, world)
 end
 
 local function transition_world(world)
-    local function get_neighbour(cell, world)
+    local function check_neighbour_head(cells, j, k)
+        local j_m_1 = j - 1
+        local min_x = j_m_1 >= 1 and j_m_1 or 1
+        local j_p_1 = j + 1
+        local max_x = j_p_1 <= world.width and j_p_1 or world.width
+        local k_m_1 = k - 1
+        local min_y = k_m_1 >= 1 and k_m_1 or 1
+        local k_p_1 = k + 1
+        local max_y = k_p_1 <= world.height and k_p_1 or world.height
+        local count = 0
+        for x = min_x, max_x do
+            for y = min_y, max_y do
+                local row = cells[x]
+                local cell = row and row[y]
+                if cell and cell == CellType.Head then
+                    count = count + 1
+                end
+            end
+        end
+        return count == 1 or count == 2
     end
 
-    local function update_cells()
+    local function update_cells(next_cells, cells)
+        for j, row in pairs(cells) do
+            for k, cell_type in pairs(row) do
+                if cell_type == CellType.Head then
+                    next_cells[j][k] = CellType.Tail
+                elseif cell_type == CellType.Tail then
+                    next_cells[j][k] = CellType.Conductor
+                elseif cell_type == CellType.Conductor then
+                    if check_neighbour_head(cells, j, k) then
+                        next_cells[j][k] = CellType.Head
+                    else
+                        next_cells[j][k] = CellType.Conductor
+                    end
+                end
+            end
+        end
     end
     if world.is_a then
         world.is_a = false
-        update_cells(world.cells_a, world.cells_b)
+        update_cells(world.cells_b, world.cells_a)
     else
         world.is_a = true
-        update_cells(world.cells_b, world.cells_a)
+        update_cells(world.cells_a, world.cells_b)
     end
 end
 
@@ -116,7 +152,8 @@ do
     end
 
     local debug = true
-    local fps = debug and 1 or 60
+    local fps = debug and 5 or 60
     game_loop()
     window:setInterval(game_loop, 1000 / fps)
+    --window:setTimeout(game_loop, 1000 / fps)
 end

@@ -19,7 +19,6 @@ local function get_cells_from_image(image_url, on_load)
         local context = canvas:getContext('2d')
         context:drawImage(img, 0, 0)
 
-
         local imgData = context:getImageData(0, 0, img.width, img.height)
         local iw, ih = imgData.width, imgData.height
         local data = imgData.data
@@ -133,19 +132,19 @@ local function draw_world(context, world)
 end
 
 local function transition_world(world)
+
     local function check_neighbour_head(cells, j, k)
         local max_y = j < world.height and j + 1 or world.height
         local max_x = k < world.width and k + 1 or world.width
         local count = 0
         for y = j > 1 and j - 1 or 1, max_y do
             for x = k > 1 and k - 1 or 1, max_x do
-                --if y ~= j or x ~= k then
-                    local row = cells[y]
-                    local cell = row and row[x]
-                    if cell and cell == CellType.Head then
-                        count = count + 1
-                    end
-                --end
+                local row = cells[y]
+                local cell = row and row[x]
+                if cell and cell == CellType.Head then
+                    if count == 2 then return false end
+                    count = count + 1
+                end
             end
         end
         return count == 1 or count == 2
@@ -180,7 +179,6 @@ local function transition_world(world)
 end
 
 -- main
-local image_url = 'image/cycle.bmp'
 local image_url = 'image/circuit.bmp'
 create_world(image_url, function (the_world)
     local context = window.document:getElementById('ww'):getContext('2d')

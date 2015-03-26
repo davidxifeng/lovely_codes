@@ -3,7 +3,9 @@ local is_debug = true
 local grid_len = 4
 local gap_len = 2
 
-local CellType = { Head = 1, Tail = 2, Conductor = 3 }
+local CellType_Head = 'blue'
+local CellType_Tail = 'red'
+local CellType_Conductor = 'yellow'
 
 local function get_cells_from_image(image_url, on_load)
     local img = window.document:createElement('img')
@@ -30,11 +32,11 @@ local function get_cells_from_image(image_url, on_load)
 
                 local cell_type
                 if r >= 128 and g >= 128 and b < 128 then
-                    cell_type = CellType.Conductor
+                    cell_type = CellType_Conductor
                 elseif r >= 128 and g < 128 and b < 128 then
-                    cell_type = CellType.Tail
+                    cell_type = CellType_Tail
                 elseif r < 128 and g < 128 and b >= 128 then
-                    cell_type = CellType.Head
+                    cell_type = CellType_Head
                 end
 
                 if cell_type then
@@ -110,14 +112,8 @@ local function draw_world(context, world)
         context.lineJoin = 'round'
         context:strokeRect(x, y, grid_len, grid_len)
 
-        local fs
-        if     cell_type == CellType.Conductor then fs = 'yellow'
-        elseif cell_type == CellType.Head      then fs = 'blue'
-        elseif cell_type == CellType.Tail      then fs = 'red'
-        end
-
         -- draw cell rect
-        context.fillStyle = fs
+        context.fillStyle = cell_type
         context:fillRect(x, y, grid_len, grid_len)
     end
 
@@ -141,7 +137,7 @@ local function transition_world(world)
             for x = k > 1 and k - 1 or 1, max_x do
                 local row = cells[y]
                 local cell = row and row[x]
-                if cell and cell == CellType.Head then
+                if cell and cell == CellType_Head then
                     if count == 2 then return false end
                     count = count + 1
                 end
@@ -153,15 +149,15 @@ local function transition_world(world)
     local function update_cells(next_cells, cells)
         for j, row in pairs(cells) do
             for k, cell_type in pairs(row) do
-                if cell_type == CellType.Head then
-                    next_cells[j][k] = CellType.Tail
-                elseif cell_type == CellType.Tail then
-                    next_cells[j][k] = CellType.Conductor
-                elseif cell_type == CellType.Conductor then
+                if cell_type == CellType_Head then
+                    next_cells[j][k] = CellType_Tail
+                elseif cell_type == CellType_Tail then
+                    next_cells[j][k] = CellType_Conductor
+                elseif cell_type == CellType_Conductor then
                     if check_neighbour_head(cells, j, k) then
-                        next_cells[j][k] = CellType.Head
+                        next_cells[j][k] = CellType_Head
                     else
-                        next_cells[j][k] = CellType.Conductor
+                        next_cells[j][k] = CellType_Conductor
                     end
                 end
             end

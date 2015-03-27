@@ -175,19 +175,26 @@ local function transition_world(world)
 end
 
 -- main
-local image_url = 'image/circuit.bmp'
-create_world(image_url, function (the_world)
-    local context = window.document:getElementById('ww'):getContext('2d')
-    context:translate(the_world.offset_x, the_world.offset_y)
+local function main()
+    local image_url
+    --image_url = 'image/circuit.bmp'
+    image_url = 'image/cycle.bmp'
+    create_world(image_url, function (the_world)
+        local cvs = window.document:getElementById('ww')
+        local context = cvs:getContext('2d')
+        context:translate(the_world.offset_x, the_world.offset_y)
 
-    local function game_loop()
-        draw_world(context, the_world)
-        transition_world(the_world)
-    end
+        local function game_loop()
+            draw_world(context, the_world)
+            transition_world(the_world)
+        end
 
-    --local fps = is_debug and 2 or 60
-    local fps = 60
-    game_loop()
-    window:setInterval(game_loop, 1000 / fps)
-    --window:setTimeout(game_loop, 1000 / fps)
-end)
+        --local fps = is_debug and 2 or 60
+        local fps = 3
+        game_loop()
+        local interval_id = window:setInterval(game_loop, 1000 / fps)
+        --window:clearInterval(interval_id)
+    end)
+end
+
+main()

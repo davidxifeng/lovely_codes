@@ -2,13 +2,13 @@
 
 ## What's being worked on now
 
+* wireworld play/pause
 * wireworld image editor
 * document
 
 ## Roadmap
 
 * wireworld load new
-* wireworld play/pause
 * wrieworld hot update
 * wireworld computer research
 * FFI

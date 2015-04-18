@@ -1,6 +1,7 @@
 tags
 
 *.dylib
+*.dSYM
 
 .tup
 *.so
@@ -16,5 +17,6 @@ dist
 .stylish-haskell.yaml
 *.hi
 *.o
+*.a
 *.out
 *.swp

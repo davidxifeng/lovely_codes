@@ -13,8 +13,11 @@
                         (((uint64_t)(x) >> 40) & 0xff00ULL) | \
                         ((uint64_t)(x)  >> 56))
 
-
-#define OP_COUNT (((uint32_t)-1) / 25)
+#if 1
+#define OP_COUNT 1
+#else
+#define OP_COUNT (((uint32_t)-1) / 2500)
+#endif
 
 // 测试位操作
 void test_bo(uint64_t i) {
@@ -100,9 +103,13 @@ void union_test() {
 
     printf("%llu\n", x.ull);
 
-    x.d = 1.0;
-    printf("%f\n", x.d);
+    x.d = 1.2344999991522893623141499119810760021209716796875;
+    printf("%02X %02X %02X %02X %02X %02X %02X %02X\n",
+            x.c[0], x.c[1], x.c[2], x.c[3],
+            x.c[4], x.c[5], x.c[6], x.c[7]);
+    printf("%e\n", x.d);
 
+    x.ull = 0x3FF3C08312345678;
     printf("%02X %02X %02X %02X %02X %02X %02X %02X\n",
             x.c[0], x.c[1], x.c[2], x.c[3],
             x.c[4], x.c[5], x.c[6], x.c[7]);

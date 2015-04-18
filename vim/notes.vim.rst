@@ -12,4 +12,4 @@ vim知识备忘
 ========
 
 * 缩进程度显示插件与命令 vim-indent-guides IndentGuides Enable/Disable/Toggle
-
+* 智能text objects选择插件 wildfire, 使用enter作为快捷键

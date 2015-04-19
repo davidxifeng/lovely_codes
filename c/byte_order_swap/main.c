@@ -1,7 +1,13 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 #include <sys/time.h>
+
+#define BSWAP_32(x)     (((uint32_t)(x) << 24) | \
+                        (((uint32_t)(x) <<  8)  & 0xff0000) | \
+                        (((uint32_t)(x) >>  8)  & 0xff00) | \
+                        ((uint32_t)(x)  >> 24))
 
 
 #define BSWAP_64(x)     (((uint64_t)(x) << 56) | \
@@ -115,7 +121,49 @@ void union_test() {
             x.c[4], x.c[5], x.c[6], x.c[7]);
 }
 
+static void test_b32() {
+    unsigned char * c;
+    uint32_t x = 0x12345678;
+    c = (unsigned char *)&x;
+    printf("%02X %02X %02X %02X\n", c[0], c[1], c[2], c[3]);
+    uint32_t y = BSWAP_32(x);
+    c = (unsigned char *)&y;
+    printf("%02X %02X %02X %02X\n", c[0], c[1], c[2], c[3]);
+
+}
+
+static void test_swap_double() {
+    union {
+        double d;
+        uint64_t u;
+    } ud = {
+        .u = 0x7856341283C0F33F
+    };
+    double x = 1.2344999991522893623141499119810760021209716796875;
+    ud.u = BSWAP_64(ud.u);
+    double r = ud.d;
+    if (r == x) {
+        printf("%.64f\n", ud.d);
+        printf("swap okay\n");
+    } else {
+        printf("swap failed\n");
+        printf("%.64f\n", ud.d);
+    }
+
+    double td = 1.2344999991522893623141499119810760021209716796875;
+    if (memcmp(&td, "\x78\x56\x34\x12\x83\xC0\xF3\x3F", 8) == 0) {
+        printf("little endian double\n");
+    } else if (memcmp(&td, "\x3F\xF3\xC0\x83\x12\x34\x56\x78", 8) == 0) {
+        printf("big endian double\n");
+    } else {
+        printf("not support number format to dump!");
+    }
+
+}
+
 int main(int argc, char const* argv[]) {
+    test_swap_double();
+    test_b32();
     union_test();
     uint64_t i = 0x123456789abcdeff;
     measure_time(test_mc, i, "memory copy");

@@ -8,35 +8,28 @@ local string_char  = string.char
 local table_insert = table.insert
 
 local function remove_bom(s)
-    local r = {}
-
-    local count = # s
-    local i = 1
-
-    while i <= count do
-
-        local c = string_byte(s, i)
-        if c == 0xEF and string_byte(s, i + 1) == 0xBB and string_byte(s, i + 2) == 0xBF then
-            i = i + 3
-        else
-            i = i + 1
-            table_insert(r, string_char(c))
-        end
-
+    if #s > 3 and s:sub(1, 3) == '\xef\xbb\xbf' then
+        return true, s:sub(4, -1)
+    else
+        return false
     end
-
-    -- fix new line at eof
-    if r[#r] ~= '\n' then
-        table_insert(r, '\n')
-    end
-
-    return table.concat(r)
 end
 
+local function main(file_name)
+    local file = io.open(file_name, 'rb')
+    local fc = file:read('*a')
+    io.close(file)
+    local found_bom, r = remove_bom(fc)
+    if found_bom then
+        local tmpfile = os.tmpname()
+        file = io.open(tmpfile, 'wb')
+        file:write(r)
+        file:close()
+        os.rename(tmpfile, file_name)
+        --os.execute('mv ' .. tmpfile .. ' ' .. file)
+    end
+end
 
-local stdin = io.input()
-local file = stdin:read('*a')
-stdin:close()
-local stdout = io.output()
-stdout:write(remove_bom(file))
-stdout:close()
+if arg and arg[1] then
+    main(arg[1])
+end

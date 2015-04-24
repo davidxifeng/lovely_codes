@@ -5,6 +5,7 @@ local function shuffle_in_place(array)
         local w = math.random(1, len)
         array[w], array[i] = array[i], array[w]
     end
+    return array
 end
 
 function test_shuffle()

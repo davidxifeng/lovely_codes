@@ -59,6 +59,22 @@ local function click_on_board(board, x, y)
     local cells_on_cross = {}
     local cells_found = 0
     local row = board[y]
+
+    local function check_cell(cell, ix, iy)
+        if cell then
+            local t = cells_on_cross[cell]
+            if t then
+                table.insert(t, {ix, iy})
+            else
+                cells_on_cross[cell] = {{ ix, iy}}
+            end
+            cells_found = cells_found + 1
+            return true
+        else
+            return false
+        end
+    end
+
     for ix = x - 1, 1, -1 do
         local c_cell = row[ix]
         if c_cell then
@@ -68,43 +84,13 @@ local function click_on_board(board, x, y)
         end
     end
     for ix = x + 1, width, 1 do
-        local c_cell = row[ix]
-        if c_cell then
-            local t = cells_on_cross[c_cell]
-            if t then
-                table.insert(t, {ix, y})
-            else
-                cells_on_cross[c_cell] = {{ ix, y}}
-            end
-            cells_found = cells_found + 1
-            break
-        end
+        if check_cell(row[ix], ix, y) then break end
     end
     for iy = y - 1, 1, -1 do
-        local c_cell = board[iy][x]
-        if c_cell then
-            local t = cells_on_cross[c_cell]
-            if t then
-                table.insert(t, {x, iy})
-            else
-                cells_on_cross[c_cell] = {{ x, iy}}
-            end
-            cells_found = cells_found + 1
-            break
-        end
+        if check_cell(board[iy][x], x, iy) then break end
     end
-    for iy = y + 1, 1, 1 do
-        local c_cell = board[iy][x]
-        if c_cell then
-            local t = cells_on_cross[c_cell]
-            if t then
-                table.insert(t, {x, iy})
-            else
-                cells_on_cross[c_cell] = {{ x, iy}}
-            end
-            cells_found = cells_found + 1
-            break
-        end
+    for iy = y + 1, height, 1 do
+        if check_cell(board[iy][x], x, iy) then break end
     end
 
 
@@ -156,9 +142,7 @@ local function test()
     local board = fill_board(create_board())
     render_board(board)
     if pos_can_click(board, 3, 3) then
-        local r, l = click_on_board(board, 3, 3)
-        print(r)
-        render_board(board)
+        local r, l
 
         r, l = click_on_board(board, 2, 2)
         print(r)

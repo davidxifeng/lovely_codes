@@ -1,10 +1,9 @@
 
 local ipairs = ipairs
-local math_random = math.random
-
 
 -- 简单的in place打乱算法
 local function shuffle_in_place(array)
+    local math_random = math.random
     local len = # array
     for i, v in ipairs(array) do
         local w = math_random(1, len)

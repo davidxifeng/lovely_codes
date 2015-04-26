@@ -24,7 +24,8 @@ local function table_concat_(array)
 end
 
 local function class()
-    local cls = { ctor = function() end }
+    local cls_mt = { __call = function(cls, ...) return cls.new(...) end }
+    local cls = setmetatable({ ctor = function() end }, cls_mt)
     cls.__index = cls
     function cls.new(...)
         local instance = setmetatable({}, cls)

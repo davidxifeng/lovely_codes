@@ -1,7 +1,4 @@
-local math_random = math.random
 local utils = require 'utils'
-local shuffle = utils.shuffle
-local table_concat_ = utils.table_concat_
 
 local Board = utils.class()
 
@@ -11,10 +8,6 @@ function Board:ctor(cell_type, w, h, p)
     self.width      = w or 5
     self.height     = h or 8
     self.cell_pairs = p or 10
-
-    local data = {}
-    for i = 1, self.height do table.insert(data, {}) end
-    self.data = data
 
     local cell_type_lookup_table = {}
     for _, v in ipairs(cell_type) do
@@ -31,21 +24,28 @@ function Board:is_cell_type(cell)
 end
 
 function Board:update()
+    local math_random = math.random
     local pl = {}
     for i = 1, self.height do
         for j = 1, self.width do
             table.insert(pl, { x = j, y = i })
         end
     end
-    shuffle(pl)
+    utils.shuffle(pl)
     local cell_type = self.cell_type
     local cell_type_count = # cell_type
+
+    local data = {}
+    for i = 1, self.height do
+        table.insert(data, {})
+    end
     for i = 1, self.cell_pairs do
         local cell = cell_type[math_random(1, cell_type_count)]
         local pa, pb = pl[i], pl[self.cell_pairs + i] -- FIX 相邻
-        self.data[pa.y][pa.x] = cell
-        self.data[pb.y][pb.x] = cell
+        data[pa.y][pa.x] = cell
+        data[pb.y][pb.x] = cell
     end
+    self.data = data
     return self
 end
 
@@ -90,7 +90,7 @@ function Board:click_on(x, y)
             if # v >= 2 then table.insert(res, v) end
         end
         if # res >= 1 then
-            res = table_concat_(res)
+            res = utils.table_concat_(res)
             for _, v in ipairs(res) do
                 self.data[v[2]][v[1]] = nil
             end

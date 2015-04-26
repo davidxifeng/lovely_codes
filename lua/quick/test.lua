@@ -16,3 +16,15 @@ if board:can_click(2, 1) then
     local clear, l = board:click_on(2, 1)
     print(board:render())
 end
+
+math.randomseed(1)
+board:update()
+print(board:render())
+if board:can_click(2, 2) then
+    local clear, l = board:click_on(2, 2)
+    print(board:render())
+end
+if board:can_click(2, 1) then
+    local clear, l = board:click_on(2, 1)
+    print(board:render())
+end

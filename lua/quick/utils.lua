@@ -23,8 +23,20 @@ local function table_concat_(array)
     return r
 end
 
+local function class()
+    local cls = { ctor = function() end }
+    cls.__index = cls
+    function cls.new(...)
+        local instance = setmetatable({}, cls)
+        instance:ctor(...)
+        return instance
+    end
+    return cls
+end
+
 return {
     shuffle       = shuffle_in_place,
     table_concat_ = table_concat_,
+    class         = class,
 }
 

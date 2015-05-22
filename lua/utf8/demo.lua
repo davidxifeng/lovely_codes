@@ -23,7 +23,13 @@ function limitNickLength(str, n)
         i = i + chsize(s_b(str, i))
         n = n - 1
     end
-    return string.sub(str, 1, i - 1)
+    --return string.sub(str, 1, i - 1)
+    local i_m_1 = i - 1
+    if i_m_1 < s_len then
+        return string.sub(str, 1, i_m_1) .. '...'
+    else
+        return str
+    end
 end
 
 local function utf8_substr(s, n)

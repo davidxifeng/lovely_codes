@@ -23,10 +23,13 @@ end
 -- -    0 or more, 最短匹配
 -- +    1 or more repetitions of characters in the class, 最长匹配
 
---- split string by newline
-local function string_split(str)
+--- split string
+-- @sep 长度为1的分隔字符
+local function string_split(str, sep)
     local t = {}
-    for line in string.gmatch(str, '([^\n]+)') do
+    sep = sep or '\n'
+    local pattern = string.format('([^%s]+)', sep)
+    for line in string.gmatch(str, pattern) do
         table.insert(t, line)
     end
     return t

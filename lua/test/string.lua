@@ -17,17 +17,16 @@ local function string_pattern_test()
     print('x, y: ', x, y)
 end
 
+-- '([^\n]*)[\n]?'
+-- ?    0 or 1
+-- *    0 or more repetitions of characters 最长匹配
+-- -    0 or more, 最短匹配
+-- +    1 or more repetitions of characters in the class, 最长匹配
+
 --- split string by newline
--- June 18 2015
--- 当前实现还有问题: 最后会多匹配出一个空串
 local function string_split(str)
     local t = {}
-    -- '([^\n]*)[\n]?'
-    -- ?    0 or 1
-    -- *    0 or more repetitions of characters 最长匹配
-    -- -    0 or more, 最短匹配
-    -- +    1 or more repetitions of characters in the class, 最长匹配
-    for line in string.gmatch(str, '([^\n]*)[\n]*') do
+    for line in string.gmatch(str, '([^\n]+)') do
         table.insert(t, line)
     end
     return t
@@ -36,7 +35,7 @@ end
 local function test_split()
     local s = 'hello\nworld\n\ngo'
     local r = string_split(s)
-    print(#r)
+    print('split result count is: ', #r)
     for _, v in ipairs(r) do
         print(v)
     end

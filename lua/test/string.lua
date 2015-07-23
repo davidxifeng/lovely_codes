@@ -44,5 +44,40 @@ local function test_split()
     end
 end
 
---string_pattern_test()
-test_split()
+local function format_number_thousands(num)
+    local formatted, k = ('%.0f'):format(num)
+    while true do
+        formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
+        if k == 0 then break end
+    end
+    return formatted
+end
+
+local function test_format_number()
+    -- note:
+    -- 1234567890123456232342
+    --      tostring()    => 1.2345678901235e+21
+    --      '%.0f':format => 1,234,567,890,123,456,249,856
+    --
+    --  tostring的实现我之前在Lua源码中跟踪过，其细节是在luaconf.h中定义的
+    --  #define LUA_NUMBER_FMT      "%.14g"
+    --
+    local data = {
+        1,
+        123,
+        1234567,
+        1234567890123456,
+        1234567890123456232342,
+    }
+    for _, v in ipairs(data) do
+        print(format_number_thousands(v))
+    end
+end
+
+local function main()
+    --string_pattern_test()
+    --test_split()
+    test_format_number()
+end
+
+main()

@@ -17,6 +17,15 @@ local function string_pattern_test()
     print('x, y: ', x, y)
 end
 
+local function test_gmatch()
+    local t = '1*100+2*100+3*100'
+    local pattern = '(%d+)%*(%d+)'
+    for stuffID, count in string.gmatch(t, pattern) do
+        print(stuffID, count)
+    end
+end
+
+
 -- '([^\n]*)[\n]?'
 -- ?    0 or 1
 -- *    0 or more repetitions of characters 最长匹配
@@ -81,3 +90,4 @@ local function main()
 end
 
 main()
+

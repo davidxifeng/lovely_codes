@@ -1,4 +1,5 @@
 #!/usr/bin/env lua53
+-- Mon 09:19 Mar 21
 
 local function hashsize(table)
     local n = 0
@@ -17,32 +18,27 @@ local function elem(list, e)
     return false
 end
 
-local function gen_snext(t, cmp)
-    local sort_keys = {}
-    for k, _ in pairs(t) do
-        table.insert(sort_keys, k)
-    end
-    table.sort(sort_keys, cmp)
-
-    return function (t, index)
-        if index == nil then
-            local rk = sort_keys[1]
-            return 1, rk, t[rk]
-        else
-            index = index + 1
-            if index > #sort_keys then
-                return nil
-            else
-                local rk = sort_keys[index]
-                return index, rk, t[rk]
-            end
-        end
-    end
-end
-
--- 接受一个排序key的函数
 local function spairs(t, cmp)
-    return gen_snext(t, cmp), t, nil
+    local sort_keys = {}
+    for k, v in pairs(t) do
+        table.insert(sort_keys, {k, v})
+    end
+    local sf
+    if cmp then
+        sf = function (a, b) return cmp(a[1], b[1]) end
+    else
+        sf = function (a, b) return a[1] < b[1] end
+    end
+    table.sort(sort_keys, sf)
+
+    return function (tb, index)
+        local ni, v = next(tb, index)
+        if ni then
+            return ni, v[1], v[2]
+        else
+            return ni
+        end
+    end, sort_keys, nil
 end
 
 local t = {

@@ -1,7 +1,12 @@
+if _VERSION ~= 'Lua 5.3' then
+  return print 'require Lua 5.3'
+end
+
+
 --- 返回utf8字符串的子串
 -- @string str 要处理的utf-8字符串, 本函数不会校验其正确性
 -- @integer n 默认16
-function limitNickLength(str, n)
+local function utf8_sub(str, n)
     n = n or 16
 
     -- 不严格的utf8字符数量判断
@@ -23,39 +28,19 @@ function limitNickLength(str, n)
         i = i + chsize(s_b(str, i))
         n = n - 1
     end
-    --return string.sub(str, 1, i - 1)
-    local i_m_1 = i - 1
-    if i_m_1 < s_len then
-        return string.sub(str, 1, i_m_1) .. '...'
-    else
-        return str
-    end
+    return string.sub(str, 1, i - 1)
 end
 
 local function utf8_substr(s, n)
-    -- gcc -o utf8.so -O -shared -llua lutf8lib.c
-    -- compile utf8 lib from lua-5.3 with lua-5.2
-    local u = require 'utf8'
-    local t = string.sub(s, 1, (u.offset(s, n + 1) or 0) - 1)
-    return t
+    return string.sub(s, 1, (utf8.offset(s, n + 1) or 0) - 1)
 end
 
 local function test_utf8_len()
-    local n
     local s = 'ฝากไว้ ในกายเทอ' -- chars: 15
 
-    n = 14
-    print(limitNickLength(s, n))
-    print(utf8_substr(s, n))
-    n = 15
-    print(limitNickLength(s, n))
-    print(utf8_substr(s, n))
-    n = 16
-    print(limitNickLength(s, n))
-    print(utf8_substr(s, n))
+    for i = 0, 16 do
+      print(utf8_sub(s, i))
+      print(utf8_substr(s, i))
+    end
 end
-
--- e0 b8 9d ฝ
--- e0 b8 b2 า
-
 test_utf8_len()

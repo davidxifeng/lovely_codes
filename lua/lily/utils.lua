@@ -22,17 +22,19 @@ function M.string_bytes(str)
   end
 end
 
-local function export(_ENV)
-  _ENV.table_reverse = M.table_reverse
-  _ENV.string_bytes = M.string_bytes
-end
-
 local function inject_stdlib()
   table.reverse = M.table_reverse
   string.bytes = M.string_bytes
 end
 
-export(_ENV)
+function M.callable_class(name)
+  return setmetatable({ _classname = name or 'class' }, {
+    __call = function (class, ...)
+      return setmetatable({}, class):ctor(...)
+    end
+  })
+end
+
 inject_stdlib()
 
 return M

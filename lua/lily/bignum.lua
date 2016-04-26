@@ -1,6 +1,6 @@
-require 'utils'
+local utils = require 'utils'
 
-local BigNumber = {}
+local BigNumber = utils.callable_class('BigNumber')
 
 local function integer_to_hex(obj)
   local sign = obj.sign == '-' and '-'
@@ -60,13 +60,6 @@ end
 
 function BigNumber:isZero()
   return self.len == 1 and self[1] == 0
-end
-
-function BigNumber:init(n)
-  self.len = 1
-  self.sign = n < 0 and '-' or '+'
-  self[1] = n or 0
-  return self
 end
 
 local function Add(a, b, c)
@@ -167,32 +160,6 @@ local function Mul(a, b, c)
   return c
 end
 
-function BigNumber.__add(a, b)
-  return Add(a, b, BigNumber(0))
-end
-
-function BigNumber.__sub(a, b)
-end
-
-function BigNumber.__mul(a, b)
-  return Mul(a, b, BigNumber(0))
-end
-
-function BigNumber.__div(a, b)
-end
-
-function BigNumber.__idiv(a, b)
-end
-
-function BigNumber.__mod(a, b)
-end
-
-function BigNumber.__pow(a, b)
-end
-
-function BigNumber.__unm(a)
-end
-
 local BYTE_ZERO = ('0'):byte(1)
 local BYTE_A = ('A'):byte(1)
 
@@ -220,14 +187,43 @@ local function big_number(str)
   assert(false, 'TODO')
 end
 
-return setmetatable(BigNumber, {
-  __call = function (class, n)
-    n = n or 0
-    local tp = type(n)
-    if tp == 'number' then
-      return setmetatable({}, class):init(n)
-    elseif tp == 'string' then
-      return big_number(n)
-    end
+function BigNumber:ctor(n)
+  n = n or 0
+  if type(n) == 'number' then
+    self.len = 1
+    self.sign = n < 0 and '-' or '+'
+    self[1] = n or 0
+    return self
+  else
+    return big_number(n)
   end
-})
+end
+
+
+function BigNumber.__add(a, b)
+  return Add(a, b, BigNumber(0))
+end
+
+function BigNumber.__sub(a, b)
+end
+
+function BigNumber.__mul(a, b)
+  return Mul(a, b, BigNumber(0))
+end
+
+function BigNumber.__div(a, b)
+end
+
+function BigNumber.__idiv(a, b)
+end
+
+function BigNumber.__mod(a, b)
+end
+
+function BigNumber.__pow(a, b)
+end
+
+function BigNumber.__unm(a)
+end
+
+return BigNumber

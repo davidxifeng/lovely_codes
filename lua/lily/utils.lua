@@ -27,8 +27,8 @@ local function inject_stdlib()
   string.bytes = M.string_bytes
 end
 
-function M.callable_class(name)
-  return setmetatable({ _classname = name or 'class' }, {
+function M.callable_class()
+  return setmetatable({}, {
     __call = function (class, ...)
       return setmetatable({}, class):ctor(...)
     end

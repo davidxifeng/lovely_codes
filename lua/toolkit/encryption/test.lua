@@ -27,7 +27,9 @@ local function hex_to_str(s)
   end)
 end
 
-local blowfish_key = blowfish.new(hex_to_str('hello blowfish key'))
+local s = hex_to_str('hello blowfish key')
+print(#s, dump_string(s))
+local blowfish_key = blowfish.new(s)
 
 local fc = '123'
 local ec, rl = blowfish_key:encrypt(fc)

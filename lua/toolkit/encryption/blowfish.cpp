@@ -617,7 +617,26 @@ extern "C" {
 #define BF_MT "david:blowfish"
 
 static int lencrypt(lua_State *L) {
-  return 0;
+  CBlowFish *bf = *(CBlowFish **)luaL_checkudata(L, 1, BF_MT);
+  size_t dlen;
+  unsigned char * data = (unsigned char *)luaL_checklstring(L, 2, &dlen);
+  luaL_argcheck(L, dlen > 0, 2, "attempt to encrypt empty string!");
+  int mode = luaL_optinteger(L, 3, 0);
+
+  size_t nlen;
+  if (dlen % 8 != 0) {
+    nlen = (dlen / 8 + 1) * 8;
+    unsigned char * buf = (unsigned char *)lua_newuserdata(L, nlen);
+    memcpy(buf, data, dlen);
+    data = buf; // buf will be gc by Lua
+  } else {
+    nlen = dlen;
+  }
+
+  bf->Encrypt(data, nlen, mode);
+  lua_pushlstring(L, (const char *)data, nlen);
+  lua_pushinteger(L, dlen);
+  return 2;
 }
 
 static int ldecrypt(lua_State *L) {

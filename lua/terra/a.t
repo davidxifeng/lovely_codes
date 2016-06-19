@@ -1,3 +1,5 @@
+#!/usr/bin/env terra
+
 -- Sun 17:41 Jun 19
 
 local terralib = terralib

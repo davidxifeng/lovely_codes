@@ -37,3 +37,6 @@ print('zlib version is:', zlv)
 local target = terralib.newtarget { Triple = "x86_64-apple-macosx10.11.0" }
 terralib.saveobj('test.prog', 'executable', { main = test }, {'-l', 'z'}, target)
 terralib.saveobj('test.o', { test = test }, {}, target)
+
+os.execute('clang -o a.o -c a.c')
+terralib.saveobj('test2.prog', 'executable', { test = test }, {'a.o', '-l', 'z'}, target)

@@ -22,9 +22,10 @@ local function calcDaysBetweenTest()
     local date1 = { year = 2010, month = 12, day = 31, }
     print(calcDaysBetween(date2, date1))
 
-    local date2 = { year = 2012, month = 3, day = 1, }
-    local date1 = { year = 2011, month = 12, day = 31, }
+    date2 = { year = 2012, month = 3, day = 1, }
+    date1 = { year = 2011, month = 12, day = 31, }
     print(calcDaysBetween(date2, date1))
 end
 
+test()
 calcDaysBetweenTest()

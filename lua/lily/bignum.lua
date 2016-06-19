@@ -126,7 +126,6 @@ local function Sub(a, b, c)
         break
       else
         c[i] = 0xFFFFFFFF
-        borrow = 1
       end
     end
   end
@@ -389,6 +388,12 @@ function BigNumber.__pow(a, b)
 end
 
 function BigNumber.__unm(a)
+  if a.sign == '-' then
+    a.sign = '+'
+  else
+    a.sign = '-'
+  end
+  return a
 end
 
 return BigNumber

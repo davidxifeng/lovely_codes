@@ -25,7 +25,7 @@ local function test_sub()
   print(BigNumber '0x1122' - BigNumber '-0x1121')
   print(BigNumber '0x1122' - BigNumber '-0x1122')
 
-  local b1 = BigNumber '-0x100000000000000000000000000000000'
+  b1 = BigNumber '-0x100000000000000000000000000000000'
   print(b1, b1 - BigNumber '0x1ffffffff')
 
   print(BigNumber '-0x1122' - BigNumber '-0x1121', -0x1122 - -0x1121)
@@ -78,8 +78,7 @@ local function test_le()
   assert(BigNumber '0x100000000000000000000000000000001' <= BigNumber '0x100000000000000000000020000000001' == true)
 end
 
---test_mul()
+test_mul()
 test_sub()
 test_lt()
 test_le()
-

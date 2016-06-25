@@ -223,7 +223,7 @@ string translate_expression(const string & exp)
                         break;
                     }
                     opstk.get_top(stktop);
-                    if(stktop == "(" || 
+                    if(stktop == "(" ||
                         get_priority( cur ) > get_priority(stktop))
                     {
                         opstk.push( cur );
@@ -247,7 +247,7 @@ string translate_expression(const string & exp)
             ++i;
         }
     }
-    Forend:
+Forend:
     while(!opstk.is_empty())
     {
         opstk.pop(stktop);
@@ -345,7 +345,8 @@ int main(void)
 {
     cout<<"david feng's C practice field"<<endl;
     string expr = "108 - 3^2+ 3*(26-22) + 2  * (10 - 5)";
-    string npr_expr;
+    string npr_expr = translate_expression(expr);
+    cout << expr << " = " << calc_npr(npr_expr) << endl;
     while(true)
     {
         cout<<"input an expression to calc\nPress Q to Quit"<<endl;
@@ -359,20 +360,3 @@ int main(void)
     }
     return 0;
 }
-struct TNode
-{
-    string data;
-    TNode * lchild;
-    TNode * rchild;
-};
-
-class BTree
-{
-public:
-    TNode * pRoot;
-    bool pre_order_traverse();
-    bool in_order_traverse();
-    bool post_order_traverse(); 
-    void create_btree();
-};
-

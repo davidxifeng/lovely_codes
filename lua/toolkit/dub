@@ -1,0 +1,22 @@
+#!/usr/bin/env lua53
+
+local io = io
+
+local function file_size(filename)
+  local f = io.open(filename, 'rb')
+  if f then
+    local sz = f:seek('end')
+    f:close()
+    return true, sz
+  end
+end
+
+local print = print
+for i, v in ipairs(arg) do
+  local valid, info = file_size(v)
+  if valid then
+    print(v, info)
+  end
+end
+
+-- vim: ft=lua

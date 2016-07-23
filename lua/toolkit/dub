@@ -1,5 +1,7 @@
 #!/usr/bin/env lua53
 
+-- du -b for Mac OS X
+
 local io = io
 
 local function file_size(filename)
@@ -15,7 +17,7 @@ local print = print
 for i, v in ipairs(arg) do
   local valid, info = file_size(v)
   if valid then
-    print(v, info)
+    print(info, v)
   end
 end
 

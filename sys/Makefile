@@ -7,7 +7,7 @@ all: run
 .PHONY: run
 
 run: boot.bin
-	bochs -q -f bochsrc
+	bochs -q -f bochsrc -rc dbg_cmd
 
 boot.bin: boot.asm
 	nasm -o $@ $^

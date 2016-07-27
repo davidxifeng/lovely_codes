@@ -1,0 +1,15 @@
+# mem 32MB
+megs: 32
+
+#romimage: file=/usr/local/share/bochs/BIOS-bochs-latest
+#vgaromimage: file=/usr/local/share/bochs/VGABIOS-lgpl-latest
+#keyboard: keymap=/usr/local/share/bochs/keymaps/x11-pc-us.map
+
+keyboard: type=mf
+mouse: enabled=0
+
+floppya: 1_44=fd.img, status=inserted
+
+boot: floppy
+
+log: bochs.log

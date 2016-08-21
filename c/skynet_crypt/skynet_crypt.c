@@ -579,8 +579,18 @@ uint64_t dh_exchange(uint64_t x64) {
   return powmodp(G, x64);
 }
 
+
+uint64_t random_ulong(void) {
+  // 以标准C库中的当前时间秒数为随机数种子，其实应该不怎么随机的...
+  int pa = rand_r((unsigned int *)time(NULL));
+  int pb = rand();
+  return pa | (uint64_t)pb << 32;
+}
+
+#if 0
 int main(int argc, char const* argv[])
 {
   printf("skynet crypt\n");
   return 0;
 }
+#endif

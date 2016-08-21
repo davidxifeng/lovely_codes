@@ -1,5 +1,7 @@
 #include <stdint.h>
 
+uint64_t random_ulong(void);
+
 // 要求uint64_t 是 小端字节序存储的
 // 目标平台 arm x86 x86-64
 // 符合此要求，所以不做字节序检查和转换的处理

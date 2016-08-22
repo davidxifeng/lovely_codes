@@ -587,10 +587,11 @@ uint64_t random_ulong(void) {
   return pa | (uint64_t)pb << 32;
 }
 
-#if 0
+#if 1
 int main(int argc, char const* argv[])
 {
   printf("skynet crypt\n");
+  printf("is %llu \n", dh_secret(0x55685456322, 0x2741457643585));
   return 0;
 }
 #endif

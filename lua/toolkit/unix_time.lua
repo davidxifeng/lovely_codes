@@ -1,23 +1,23 @@
 #!/usr/bin/env lua
+-- install: ln -s this_file ~/bin/unixtime
 
 -- Wed 12:17 Sep 07
 -- 专门用来解决显示unix时间戳这个痛点的
 
 local print = print
+local tonumber = tonumber
 local os_date = os.date
 
-local opt = arg[1]
-
+local arg = arg
 
 local s, fmt
 
 local s
+local opt = arg[1]
 if opt == '-u' or opt == '--utc' then
-  s = 2
-  fmt = '!%c'
+  s, fmt = 2, '!%c'
 else
-  s = 1
-  fmt = '%c'
+  s, fmt = 1, '%c'
 end
 
 for i = s, # arg do

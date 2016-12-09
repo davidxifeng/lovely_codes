@@ -20,3 +20,4 @@ dist
 *.a
 *.out
 *.swp
+*.exe

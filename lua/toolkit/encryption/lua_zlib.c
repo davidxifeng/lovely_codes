@@ -370,12 +370,25 @@ static int lz_crc32(lua_State *L) {
     return lz_checksum_new(L, crc32, crc32_combine);
 }
 
+static int lz_uncompress(lua_State *L) {
+  size_t buf_size;
+  const char * s = luaL_checklstring(L, 1, &buf_size);
+  char * d = malloc(buf_size * 128);
+  size_t dest_size;
+  int j = uncompress(d, &dest_size, s, buf_size);
+  if (j) return 0;
+
+  lua_pushlstring(L, d, dest_size);
+  return 1;
+}
+
 static const luaL_Reg zlib_functions[] = {
     { "deflate", lz_deflate_new },
     { "inflate", lz_inflate_new },
     { "adler32", lz_adler32     },
     { "crc32",   lz_crc32       },
     { "version", lz_version     },
+    { "uncompress",lz_uncompress},
     { NULL,      NULL           }
 };
 

@@ -15,18 +15,19 @@ local table_insert = table.insert
 local utf_8_bom = '\xef\xbb\xbf'
 
 local function main(file_name)
-    local file = io.open(file_name, 'rb')
-    local bom = file:read(3)
-    if bom == utf_8_bom then
-      local tmpfile = os.tmpname()
-      local tmp_file = io.open(tmpfile, 'wb')
-      tmp_file:write(file:read '*a') -- be compatible
-      file:close()
-      tmp_file:close()
-      os.rename(tmpfile, file_name)
-    else
+  local file = io.open(file_name, 'rb')
+  local bom = file:read(3)
+  if bom == utf_8_bom then
+    local fc = file:read '*a' -- be compatible
+    file:close()
+    file = io.open(file_name, 'wb')
+    if file then
+      file:write(fc)
       file:close()
     end
+  else
+    file:close()
+  end
 end
 
 if arg then

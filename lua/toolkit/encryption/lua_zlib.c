@@ -373,12 +373,12 @@ static int lz_crc32(lua_State *L) {
 static int lz_uncompress(lua_State *L) {
   size_t buf_size;
   const char * s = luaL_checklstring(L, 1, &buf_size);
-  char * d = malloc(buf_size * 128);
+  unsigned char * d = malloc(buf_size * 128);
   size_t dest_size;
-  int j = uncompress(d, &dest_size, s, buf_size);
+  int j = uncompress(d, &dest_size, (const unsigned char *)s, buf_size);
   if (j) return 0;
 
-  lua_pushlstring(L, d, dest_size);
+  lua_pushlstring(L, (char *)d, dest_size);
   return 1;
 }
 

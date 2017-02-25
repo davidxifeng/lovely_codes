@@ -24,9 +24,13 @@
 
 (define (make-machine register-names ops controller-text)
   (let ((machine (make-new-machine)))
+
     (for-each (lambda (register-name)
                 ((machine 'allocate-register) register-name))
               register-names)
+
+    ; 'symbol 和 eq? 配合，作为 ‘枚举’ 来使用
+
     ((machine 'install-operations) ops)
     ((machine 'install-instruction-sequence)
      (assemble controller-text machine))
@@ -163,6 +167,7 @@
       dispatch)))
 
 
+; 接口函数
 (define (start machine)
   (machine 'start))
 

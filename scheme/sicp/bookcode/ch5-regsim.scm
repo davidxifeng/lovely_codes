@@ -1,3 +1,12 @@
+#lang sicp
+
+; 2017-02-26 Sun 02:40
+; usage:
+; racket: (enter! "ch5-regsim.scm")
+
+
+(#%require (only racket/base error))
+
 ;;;;REGISTER-MACHINE SIMULATOR FROM SECTION 5.2 OF
 ;;;; STRUCTURE AND INTERPRETATION OF COMPUTER PROGRAMS
 
@@ -18,7 +27,7 @@
     (for-each (lambda (register-name)
                 ((machine 'allocate-register) register-name))
               register-names)
-    ((machine 'install-operations) ops)    
+    ((machine 'install-operations) ops)
     ((machine 'install-instruction-sequence)
      (assemble controller-text machine))
     machine))
@@ -40,26 +49,26 @@
   ((register 'set) value))
 
 ;;**original (unmonitored) version from section 5.2.1
-(define (make-stack)
-  (let ((s '()))
-    (define (push x)
-      (set! s (cons x s)))
-    (define (pop)
-      (if (null? s)
-          (error "Empty stack -- POP")
-          (let ((top (car s)))
-            (set! s (cdr s))
-            top)))
-    (define (initialize)
-      (set! s '())
-      'done)
-    (define (dispatch message)
-      (cond ((eq? message 'push) push)
-            ((eq? message 'pop) (pop))
-            ((eq? message 'initialize) (initialize))
-            (else (error "Unknown request -- STACK"
-                         message))))
-    dispatch))
+;(define (make-stack)
+;  (let ((s '()))
+;    (define (push x)
+;      (set! s (cons x s)))
+;    (define (pop)
+;      (if (null? s)
+;          (error "Empty stack -- POP")
+;          (let ((top (car s)))
+;            (set! s (cdr s))
+;            top)))
+;    (define (initialize)
+;      (set! s '())
+;      'done)
+;    (define (dispatch message)
+;      (cond ((eq? message 'push) push)
+;            ((eq? message 'pop) (pop))
+;            ((eq? message 'initialize) (initialize))
+;            (else (error "Unknown request -- STACK"
+;                         message))))
+;    dispatch))
 
 (define (pop stack)
   (stack 'pop))
@@ -84,7 +93,7 @@
           (let ((top (car s)))
             (set! s (cdr s))
             (set! current-depth (- current-depth 1))
-            top)))    
+            top)))
     (define (initialize)
       (set! s '())
       (set! number-pushes 0)
@@ -195,7 +204,7 @@
         (ops (machine 'operations)))
     (for-each
      (lambda (inst)
-       (set-instruction-execution-proc! 
+       (set-instruction-execution-proc!
         inst
         (make-execution-procedure
          (instruction-text inst) labels machine
@@ -327,7 +336,7 @@
   (let ((reg (get-register machine
                            (stack-inst-reg-name inst))))
     (lambda ()
-      (set-contents! reg (pop stack))    
+      (set-contents! reg (pop stack))
       (advance-pc pc))))
 
 (define (stack-inst-reg-name stack-instruction)
@@ -397,11 +406,32 @@
     (if val
         (cadr val)
         (error "Unknown operation -- ASSEMBLE" symbol))))
-
+
 ;; from 4.1
 (define (tagged-list? exp tag)
   (if (pair? exp)
       (eq? (car exp) tag)
       false))
 
-'(REGISTER SIMULATOR LOADED)
+; '(REGISTER SIMULATOR LOADED)
+
+(define gcd-machine
+  (make-machine
+   '(a b t)
+   (list (list 'rem remainder) (list '= =))
+   '(test-b
+       (test (op =) (reg b) (const 0))
+       (branch (label gcd-done))
+       (assign t (op rem) (reg a) (reg b))
+       (assign a (reg b))
+       (assign b (reg t))
+       (goto (label test-b))
+     gcd-done)))
+
+(define (test-gcd-machine a b)
+  (set-register-contents! gcd-machine 'a a)
+  (set-register-contents! gcd-machine 'b b)
+  (start gcd-machine)
+  (get-register-contents gcd-machine 'a))
+
+(define test (test-gcd-machine 15 20))

@@ -1,0 +1,40 @@
+digraph "fsm" {
+  "crow" [color="green"; shape=triangle];
+  "dot" [color="green"; shape=parallelogram	];
+  "inv" [color="green"; shape=rect];
+  "normal" [color="green"; shape=star];
+  "tee" [color="green"; shape=invtriangle];
+  "vee" [color="green"; shape=rectangle];
+
+  "准备" [color="green"; shape=box];
+  "摸牌检查";
+  "摸牌后菜单" [color="green"; shape=diamond];
+  "流局状态";
+  "出牌后菜单" [color="green"; shape=diamond];
+  "拿牌后菜单" [color="green"; shape=diamond];
+  "补杠后菜单" [color="green"; shape=diamond];
+  "抢杠胡";
+  "自摸胡";
+  "点炮胡";
+  "单局结束"[color="red"; shape=box];
+  "准备" -> "摸牌检查" [ color="green" ; label=" 洗牌 " ];
+  "摸牌检查" -> "摸牌后菜单" [ label=" 摸牌 " ];
+  "摸牌检查" -> "流局状态" [ label=" 流局 " ];
+  "摸牌后菜单" -> "出牌后菜单" [ label=" 出牌 " ];
+  "拿牌后菜单" -> "出牌后菜单" [ label=" 出牌 " ];
+  "摸牌后菜单" -> "摸牌检查" [ label=" 暗杠 " ];
+  "拿牌后菜单" -> "摸牌检查" [ label=" 暗杠 " ];
+  "摸牌后菜单" -> "补杠后菜单" [ label=" 补杠 " ];
+  "拿牌后菜单" -> "补杠后菜单" [ label=" 补杠 " ];
+  "补杠后菜单" -> "摸牌检查" [ label=" 正常补杠 " ];
+  "补杠后菜单" -> "抢杠胡" [ label=" 被抢杠 " ];
+  "摸牌后菜单" -> "自摸胡" [ label=" 自摸 " ];
+  "出牌后菜单" -> "摸牌检查" [ label=" 继续摸牌 " ];
+  "出牌后菜单" -> "拿牌后菜单" [ label=" 碰 " ];
+  "出牌后菜单" -> "摸牌检查" [ label=" 杠 " ];
+  "出牌后菜单" -> "点炮胡" [ label=" 点炮 " ];
+  "点炮胡" -> "单局结束" [ label=" 结算 " ];
+  "自摸胡" -> "单局结束" [ label=" 结算 " ];
+  "抢杠胡" -> "单局结束" [ label=" 结算 " ];
+  "流局状态" -> "单局结束" [ label=" 结算 " ];
+}

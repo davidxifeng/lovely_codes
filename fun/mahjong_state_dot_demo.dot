@@ -1,23 +1,18 @@
 digraph "fsm" {
-  "crow" [color="green"; shape=triangle];
-  "dot" [color="green"; shape=parallelogram	];
-  "inv" [color="green"; shape=rect];
-  "normal" [color="green"; shape=star];
-  "tee" [color="green"; shape=invtriangle];
-  "vee" [color="green"; shape=rectangle];
-
-  "准备" [color="green"; shape=box];
-  "摸牌检查";
+  "准备" [color="green"; shape=star;];
+  //"摸牌检查" [shape=invtriangle];
+  "摸牌检查" [shape=triangle];
   "摸牌后菜单" [color="green"; shape=diamond];
-  "流局状态";
+  "流局状态" [shape=triangle];
   "出牌后菜单" [color="green"; shape=diamond];
   "拿牌后菜单" [color="green"; shape=diamond];
   "补杠后菜单" [color="green"; shape=diamond];
-  "抢杠胡";
-  "自摸胡";
-  "点炮胡";
-  "单局结束"[color="red"; shape=box];
-  "准备" -> "摸牌检查" [ color="green" ; label=" 洗牌 " ];
+  "抢杠胡" [shape=parallelogram];
+  "自摸胡" [shape=parallelogram];
+  "点炮胡" [shape=parallelogram];
+  "单局结束"[color="red"; shape=rect];
+
+  "准备" -> "摸牌检查" [ color="green" ; label=" 洗牌 "; headport=n; tailport=s];
   "摸牌检查" -> "摸牌后菜单" [ label=" 摸牌 " ];
   "摸牌检查" -> "流局状态" [ label=" 流局 " ];
   "摸牌后菜单" -> "出牌后菜单" [ label=" 出牌 " ];

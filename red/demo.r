@@ -1,5 +1,6 @@
-;Rebol [Title: "upvalue with context and bind"]
-Red [Title: "upvalue with context and bind"]
+Rebol [Title: "upvalue with context and bind"]
+Red: 1
+Red []
 
 comment {
 local function demo(n)

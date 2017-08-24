@@ -36,15 +36,8 @@ make-demo: func [value] [
   make-c [n: value] ["inc"] [n: n + 1] ["dec"] [n: n - 1]
 ]
 
-fs: make-demo 1
-inc: first fs
-dec: second fs
-
+set [inc dec] make-demo 1
 print [inc dec inc dec] ; 2 1 2 1
-
-fs2: make-demo 5
-inc2: first fs2
-dec2: second fs2
-
+set [inc2 dec2] make-demo 5
 print [inc2 dec2 inc2 dec2] ; 6 5 6 5
 print [inc dec2 inc dec2] ; 2 4 3 3

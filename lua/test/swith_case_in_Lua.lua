@@ -26,4 +26,4 @@ switch( action,
   default( function() print("default") end)
 )
 
--- just for fun, this will create too mach tables, do not use in real life code
+-- just for fun, this will create too much tables, do not use in real life code

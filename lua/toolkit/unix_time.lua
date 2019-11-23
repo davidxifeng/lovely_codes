@@ -11,16 +11,14 @@ local os_date = os.date
 local arg = arg
 
 local s, fmt
-
-local s
 local opt = arg[1]
 if opt == '-u' or opt == '--utc' then
   s, fmt = 2, '!%c'
-elseif opt == nil or opt == '-h' then
+elseif opt == nil or opt == '-h' or opt == '--help' then
   print [[
 usage:
-  unixtime [-u|--utc] unix_time_stamp
-  unixtime -h: show this help info
+  unixtime [-u | --utc] unix_time_stamp
+  unixtime [-h | --help]: show help info
 ]]
   return 0
 else

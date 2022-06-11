@@ -15,6 +15,8 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    println!("Hello, {}", args.name);
-    println!("2022-2-11 wsl lunar neovim");
+    println!("Hello, {}, {}", args.name, args.count);
+
+    let x: u32 = "52".parse().expect("not a number");
+    println!("2022-2-11 wsl lunar neovim {}", x);
 }

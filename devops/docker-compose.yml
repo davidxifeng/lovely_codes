@@ -3,6 +3,8 @@ volumes:
     external: true
   redis-data:
     external: true
+  pgadmin4-data:
+    external: true
 
 services:
   postgres:
@@ -18,6 +20,8 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
       - PGADMIN_DEFAULT_PASSWORD=admin
+    volumes:
+      - pgadmin4-data:/var/lib/pgadmin
     ports:
       - 5050:80
   redis:

@@ -1,6 +1,7 @@
-package main
+package cmd
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"image/gif"
@@ -11,20 +12,40 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/spf13/cobra"
 )
 
-func main() {
-	rand.Seed(time.Now().UTC().UnixNano())
-	if len(os.Args) > 1 && os.Args[1] == "web" {
-		handler := func(w http.ResponseWriter, r *http.Request) {
-			lissajous(w)
-		}
-		http.HandleFunc("/", handler)
-		log.Fatal(http.ListenAndServe("localhost:8000", nil))
-	} else {
-		lissajous(os.Stdout)
-	}
+var serveHttp = true
+
+func init() {
+	rootCmd.AddCommand(helloCmd)
+	helloCmd.Flags().BoolVarP(&serveHttp, "serve", "s", true, "")
 }
+
+var helloCmd = &cobra.Command{
+	Use:   "hello",
+	Short: "run hello world",
+	Run: func(cmd *cobra.Command, args []string) {
+		rand.Seed(time.Now().UTC().UnixNano())
+
+		fmt.Println("flag is : ", serveHttp)
+
+		if serveHttp {
+			handler := func(w http.ResponseWriter, r *http.Request) {
+				lissajous(w)
+			}
+			http.HandleFunc("/", handler)
+			log.Fatal(http.ListenAndServe("localhost:8000", nil))
+		} else {
+
+			lissajous(os.Stdout)
+		}
+
+	},
+}
+
+var palette = []color.Color{color.Black, color.White, color.RGBA{G: 255, A: 255}}
 
 func lissajous(out io.Writer) {
 	const (
@@ -52,5 +73,3 @@ func lissajous(out io.Writer) {
 	}
 	gif.EncodeAll(out, &anim)
 }
-
-var palette = []color.Color{color.Black, color.White, color.RGBA{G: 255, A: 255}}

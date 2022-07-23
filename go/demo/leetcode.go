@@ -157,34 +157,41 @@ func NumToList(n int) *ListNode {
 	return head
 }
 
+func Max(a, b int) int {
+	if a > b {
+		return a
+	} else {
+		return b
+	}
+}
+func Min(a, b int) int {
+	if a > b {
+		return b
+	} else {
+		return a
+	}
+}
+
 func LengthOfLongestSubstring(s string) int {
 	sl := utf8.RuneCountInString(s)
-
 	vs := []rune(s)
-
-	dict := make(map[rune]int)
+	dict := make(map[rune]int, sl)
 	count := 0
 	max := 0
 
-	for i := 0; i < sl; {
-		v := vs[i]
-
-		if b, has := dict[v]; has {
-			count = 0
-			dict = make(map[rune]int)
-			i = b + 1
-			if max > sl-i {
-				break
-			}
+	left := 0
+	for right := 0; right < sl; right++ {
+		v := vs[right]
+		if last, has := dict[v]; has {
+			count = right - last
+			left = Max(left, last+1)
+			dict[v] = right
 		} else {
-			dict[v] = i
+			dict[v] = right
 			count += 1
-			i += 1
 		}
 
-		if count > max {
-			max = count
-		}
+		max = Max(max, right-left+1)
 	}
 	return max
 }

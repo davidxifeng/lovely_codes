@@ -40,5 +40,8 @@ func demoMain() {
 	// fn("bbb", 1)
 	// fn("abcad", 3)
 	// fn("pwwkew", 3)
-	fn("dvdf", 3)
+	// fn("dvdf", 3)
+	fn("abb", 2)
+	fn("abba", 2)
+	// fn("ddvdf", 3)
 }

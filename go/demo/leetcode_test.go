@@ -70,7 +70,7 @@ You may assume the two numbers do not contain any leading zero, except the numbe
 */
 func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 	carry := 0
-	head := &ListNode{}
+	var head *ListNode = nil
 	prev := head
 	for l1 != nil && l2 != nil {
 		n := l1.Val + l2.Val + carry
@@ -80,9 +80,17 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 		} else {
 			carry = 0
 		}
-		prev.Val = n
-		prev.Next = &ListNode{}
-		prev = prev.Next
+		curr := &ListNode{
+			Val:  n,
+			Next: nil,
+		}
+		if head == nil {
+			head = curr
+			prev = curr
+		} else {
+			prev.Next = curr
+			prev = curr
+		}
 
 		l1 = l1.Next
 		l2 = l2.Next
@@ -104,12 +112,20 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 		} else {
 			carry = 0
 		}
-		prev.Val = n
-		prev.Next = &ListNode{}
+		curr := &ListNode{
+			Val:  n,
+			Next: nil,
+		}
+		prev.Next = curr
+		prev = curr
 	}
 	if carry != 0 {
-		prev.Val = 1
-		prev.Next = nil
+		curr := &ListNode{
+			Val:  1,
+			Next: nil,
+		}
+		prev.Next = curr
+		prev = curr
 	}
 
 	return head

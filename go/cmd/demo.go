@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-
 	"play/demo"
+	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 )
@@ -21,7 +21,24 @@ var demoCmd = &cobra.Command{
 }
 
 func demoMain() {
-	fmt.Println("abs ", demo.AbsIf(-2), demo.AbsBitwise(-2))
-	fmt.Println("abs ", demo.AbsIf(-9223372036854775808), demo.AbsBitwise(-9223372036854775808))
-	fmt.Println("abs ", demo.AbsIf(-9223372036854775807), demo.AbsBitwise(9223372036854775807))
+	s := "中文🏄💾"
+	for i, v := range s {
+		fmt.Printf("%d %c %v 0x%05X\n", i, v, v, v)
+	}
+	fmt.Println("len s : ", len(s), utf8.RuneCountInString(s))
+
+	vs := []rune(s)
+	fmt.Println(vs)
+
+	fn := func(s string, n int) {
+		if m := demo.LengthOfLongestSubstring(s); m != n {
+			fmt.Printf("error %s: should be %d, got %d\n", s, n, m)
+		} else {
+			fmt.Println("ok", s, n, m)
+		}
+	}
+	// fn("bbb", 1)
+	// fn("abcad", 3)
+	// fn("pwwkew", 3)
+	fn("dvdf", 3)
 }

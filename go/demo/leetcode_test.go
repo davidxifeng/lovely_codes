@@ -58,3 +58,15 @@ func TestAddTwoNumbers(t *testing.T) {
 	testFn(10, 235)
 	testFn(9999, 2)
 }
+
+func TestLengthOfLongestSubstring(t *testing.T) {
+	fn := func(s string, n int) {
+		if LengthOfLongestSubstring(s) != n {
+			t.Fail()
+		}
+	}
+	fn("bbb", 1)
+	fn("abcabcbb", 3)
+	fn("pwwkew", 3)
+	fn("dvdf", 3)
+}

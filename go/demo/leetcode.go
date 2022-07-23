@@ -1,6 +1,9 @@
 package demo
 
-import "math/bits"
+import (
+	"math/bits"
+	"unicode/utf8"
+)
 
 func TwoSum(nums []int, target int) []int {
 	dict := make(map[int]int, len(nums))
@@ -152,4 +155,36 @@ func NumToList(n int) *ListNode {
 	}
 
 	return head
+}
+
+func LengthOfLongestSubstring(s string) int {
+	sl := utf8.RuneCountInString(s)
+
+	vs := []rune(s)
+
+	dict := make(map[rune]int)
+	count := 0
+	max := 0
+
+	for i := 0; i < sl; {
+		v := vs[i]
+
+		if b, has := dict[v]; has {
+			count = 0
+			dict = make(map[rune]int)
+			i = b + 1
+			if max > sl-i {
+				break
+			}
+		} else {
+			dict[v] = i
+			count += 1
+			i += 1
+		}
+
+		if count > max {
+			max = count
+		}
+	}
+	return max
 }

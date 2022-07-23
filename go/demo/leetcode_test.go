@@ -5,6 +5,19 @@ import (
 )
 
 func twoSum(nums []int, target int) []int {
+	dict := make(map[int]int, len(nums))
+
+	for i, v := range nums {
+		idx, has := dict[target-v]
+		if has {
+			return []int{idx, i}
+		}
+		dict[v] = i
+	}
+	return nil
+}
+
+func twoSumSimple(nums []int, target int) []int {
 	startWith := 0
 	n := len(nums)
 
@@ -28,15 +41,17 @@ func TestTwoSum(t *testing.T) {
 
 	fn := func(nums []int, target int) {
 		index := twoSum(nums, target)
-		if len(index) != 2 {
+		index2 := twoSumSimple(nums, target)
+		if len(index) != 2 || len(index2) != 2 {
 			t.Fail()
 		}
 		a, b := nums[index[0]], nums[index[1]]
-		if a+b != target {
+		if a == b || a+b != target {
 			t.Fail()
 		}
 	}
 
 	fn([]int{2, 7, 11, 15}, 9)
 	fn([]int{3, 2, 4}, 6)
+	fn([]int{6, 5, 4}, 10)
 }

@@ -176,22 +176,24 @@ func LengthOfLongestSubstring(s string) int {
 	sl := utf8.RuneCountInString(s)
 	vs := []rune(s)
 	dict := make(map[rune]int, sl)
-	count := 0
 	max := 0
 
 	left := 0
 	for right := 0; right < sl; right++ {
 		v := vs[right]
+
 		if last, has := dict[v]; has {
-			count = right - last
 			left = Max(left, last+1)
 			dict[v] = right
 		} else {
 			dict[v] = right
-			count += 1
 		}
 
 		max = Max(max, right-left+1)
+		if max > sl-left+1 {
+			break
+		}
 	}
 	return max
+
 }

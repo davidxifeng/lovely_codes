@@ -69,7 +69,50 @@ Add the two numbers and return the sum as a linked list.
 You may assume the two numbers do not contain any leading zero, except the number 0 itself.
 */
 func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
-	return mkLinkList([]int{7, 0, 8})
+	carry := 0
+	head := &ListNode{}
+	prev := head
+	for l1 != nil && l2 != nil {
+		n := l1.Val + l2.Val + carry
+		if n > 9 {
+			n = n - 10
+			carry = 1
+		} else {
+			carry = 0
+		}
+		prev.Val = n
+		prev.Next = &ListNode{}
+		prev = prev.Next
+
+		l1 = l1.Next
+		l2 = l2.Next
+	}
+	var left *ListNode
+	if l1 != nil {
+		left = l1
+	} else if l2 != nil {
+		left = l2
+	} else {
+		left = nil
+	}
+
+	for ; left != nil; left = left.Next {
+		n := carry + left.Val
+		if n > 9 {
+			n = n - 10
+			carry = 1
+		} else {
+			carry = 0
+		}
+		prev.Val = n
+		prev.Next = &ListNode{}
+	}
+	if carry != 0 {
+		prev.Val = 1
+		prev.Next = nil
+	}
+
+	return head
 }
 
 func mkLinkList(vals []int) *ListNode {
@@ -77,8 +120,8 @@ func mkLinkList(vals []int) *ListNode {
 		Val:  vals[0],
 		Next: nil,
 	}
-	prev := head
-	for i := 1; i < len(vals); i++ {
+
+	for i, prev := 1, head; i < len(vals); i++ {
 		curr := &ListNode{
 			Val:  vals[i],
 			Next: nil,

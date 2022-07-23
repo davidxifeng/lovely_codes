@@ -1,6 +1,7 @@
 package demo
 
 import (
+	"math/bits"
 	"testing"
 )
 
@@ -72,6 +73,25 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 	carry := 0
 	var head *ListNode = nil
 	prev := head
+	if l1 == nil || l2 == nil {
+		return nil
+	}
+
+	{
+		n := l1.Val + l2.Val + carry
+		if n > 9 {
+			n = n - 10
+			carry = 1
+		} else {
+			carry = 0
+		}
+		head = &ListNode{
+			Val:  n,
+			Next: nil,
+		}
+		l1, l2, prev = l1.Next, l2.Next, head
+	}
+
 	for l1 != nil && l2 != nil {
 		n := l1.Val + l2.Val + carry
 		if n > 9 {
@@ -80,71 +100,44 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 		} else {
 			carry = 0
 		}
-		curr := &ListNode{
+		prev.Next = &ListNode{
 			Val:  n,
 			Next: nil,
 		}
-		if head == nil {
-			head = curr
-			prev = curr
-		} else {
-			prev.Next = curr
-			prev = curr
-		}
-
-		l1 = l1.Next
-		l2 = l2.Next
+		prev = prev.Next
+		l1, l2 = l1.Next, l2.Next
 	}
-	var left *ListNode
+
+	var remain *ListNode
 	if l1 != nil {
-		left = l1
+		remain = l1
 	} else if l2 != nil {
-		left = l2
+		remain = l2
 	} else {
-		left = nil
+		remain = nil
 	}
 
-	for ; left != nil; left = left.Next {
-		n := carry + left.Val
+	for ; remain != nil; remain = remain.Next {
+		n := carry + remain.Val
 		if n > 9 {
 			n = n - 10
 			carry = 1
 		} else {
 			carry = 0
 		}
-		curr := &ListNode{
+		prev.Next = &ListNode{
 			Val:  n,
 			Next: nil,
 		}
-		prev.Next = curr
-		prev = curr
+		prev = prev.Next
 	}
 	if carry != 0 {
-		curr := &ListNode{
+		prev.Next = &ListNode{
 			Val:  1,
 			Next: nil,
 		}
-		prev.Next = curr
-		prev = curr
 	}
 
-	return head
-}
-
-func mkLinkList(vals []int) *ListNode {
-	head := &ListNode{
-		Val:  vals[0],
-		Next: nil,
-	}
-
-	for i, prev := 1, head; i < len(vals); i++ {
-		curr := &ListNode{
-			Val:  vals[i],
-			Next: nil,
-		}
-		prev.Next = curr
-		prev = curr
-	}
 	return head
 }
 
@@ -156,12 +149,55 @@ func listToNum(l *ListNode) (r int) {
 	return r
 }
 
-func TestAddTwoNumbers(t *testing.T) {
-	l1 := mkLinkList([]int{2, 4, 3})
-	l2 := mkLinkList([]int{5, 6, 4})
-	r := addTwoNumbers(l1, l2)
-	n := listToNum(r)
-	if n != 807 {
-		t.Fail()
+func abs(n int) int {
+	x := n >> (bits.UintSize - 1)
+	return (n ^ x) - x
+}
+
+func numToList(n int) *ListNode {
+	n = abs(n)
+	head := &ListNode{}
+	prev := head
+
+	for n > 0 {
+		prev.Val = n % 10
+		n = n / 10
+		prev.Next = &ListNode{}
+		prev = prev.Next
 	}
+
+	return head
+}
+
+func TestAddTwoNumbers(t *testing.T) {
+	testAbs := func(n, v int) {
+		if abs(n) != v {
+			t.Fail()
+		}
+	}
+	testAbs(25, 25)
+	testAbs(0, 0)
+	testAbs(-52, 52)
+
+	testList := func(n int) {
+		if listToNum(numToList(n)) != n {
+			t.Fail()
+		}
+	}
+	testList(123)
+	testList(1)
+	testList(0)
+	testList(123456789)
+	testList(123450006789)
+	testList(1234500067890)
+
+	testFn := func(a, b int) {
+		c := listToNum(addTwoNumbers(numToList(a), numToList(b)))
+		if c != a+b {
+			t.Fail()
+		}
+	}
+	testFn(1, 23)
+	testFn(10, 235)
+	testFn(9999, 2)
 }

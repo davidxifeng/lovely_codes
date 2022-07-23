@@ -201,6 +201,9 @@ func FindMedianSortedArrays(nums1 []int, nums2 []int) float64 {
 	l1, l2 := len(nums1), len(nums2)
 	l := l1 + l2
 	c := make([]int, l)
+	// TODO 最容易想到的算法, 时间 空间都可以改进
+	// 不需要合并两个slice,只要记录下指针即可
+	// 数组是有序的,可以二分查找中位数,或者用更好的算法
 	for i, j, k := 0, 0, 0; k < l; k++ {
 		if i < l1 && j < l2 {
 			if nums1[i] < nums2[j] {

@@ -26,22 +26,6 @@ func demoMain() {
 		fmt.Printf("%d %c %v 0x%05X\n", i, v, v, v)
 	}
 	fmt.Println("len s : ", len(s), utf8.RuneCountInString(s))
-
-	vs := []rune(s)
-	fmt.Println(vs)
-
-	fn := func(s string, n int) {
-		if m := demo.LengthOfLongestSubstring(s); m != n {
-			fmt.Printf("error %s: should be %d, got %d\n", s, n, m)
-		} else {
-			fmt.Println("ok", s, n, m)
-		}
-	}
-	// fn("bbb", 1)
-	// fn("abcad", 3)
-	// fn("pwwkew", 3)
-	// fn("dvdf", 3)
-	fn("abb", 2)
-	fn("abba", 2)
-	// fn("ddvdf", 3)
+	c := demo.FindMedianSortedArrays([]int{1, 3}, []int{2, 4})
+	fmt.Println(c)
 }

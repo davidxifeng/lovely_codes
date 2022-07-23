@@ -195,5 +195,33 @@ func LengthOfLongestSubstring(s string) int {
 		}
 	}
 	return max
+}
+
+func FindMedianSortedArrays(nums1 []int, nums2 []int) float64 {
+	l1, l2 := len(nums1), len(nums2)
+	l := l1 + l2
+	c := make([]int, l)
+	for i, j, k := 0, 0, 0; k < l; k++ {
+		if i < l1 && j < l2 {
+			if nums1[i] < nums2[j] {
+				c[k] = nums1[i]
+				i++
+			} else {
+				c[k] = nums2[j]
+				j++
+			}
+		} else if i == l1 {
+			c[k] = nums2[j]
+			j++
+		} else if j == l2 {
+			c[k] = nums1[i]
+			i++
+		}
+	}
+	if l%2 == 0 {
+		return float64((c[l/2-1] + c[l/2])) / 2
+	} else {
+		return float64(c[l/2])
+	}
 
 }

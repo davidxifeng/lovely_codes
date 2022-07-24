@@ -26,6 +26,6 @@ func demoMain() {
 		fmt.Printf("%d %c %v 0x%05X\n", i, v, v, v)
 	}
 	fmt.Println("len s : ", len(s), utf8.RuneCountInString(s))
-	c := demo.FindMedianSortedArrays([]int{1, 3}, []int{2, 4})
-	fmt.Println(c)
+
+	fmt.Println(demo.LongestPalindrome("abcba"))
 }

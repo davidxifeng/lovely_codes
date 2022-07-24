@@ -71,3 +71,16 @@ func TestLengthOfLongestSubstring(t *testing.T) {
 	fn("dvdf", 3)
 	fn("abba", 2)
 }
+
+func TestIsPalindrome(t *testing.T) {
+	fn := func(s string, expected bool) {
+		if IsPalindrome(s) != expected {
+			t.Fail()
+		}
+	}
+	fn("abc", false)
+	fn("aba", true)
+	fn("abba", true)
+	fn("abcba", true)
+	fn("abcdcba", true)
+}

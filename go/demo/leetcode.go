@@ -231,3 +231,34 @@ func FindMedianSortedArrays(nums1 []int, nums2 []int) float64 {
 	}
 
 }
+
+func IsPalindrome(s string) bool {
+	// 输入只包括 字母和数字,所以直接使用byte
+	l := len(s)
+	m := l / 2
+	for i := 0; i <= m; i++ {
+		if s[i] != s[l-i-1] {
+			return false
+		}
+	}
+	return true
+}
+
+func LongestPalindrome(s string) string {
+	l := len(s)
+	if l < 1 {
+		return ""
+	}
+
+	for i := l; i > 1; i-- {
+		cc := 0
+		for a, b := 0, 0+i; b <= l; a, b = a+1, b+1 {
+			cc++
+			// fmt.Printf("substr is %s\n", s[a:b])
+			if IsPalindrome(s[a:b]) {
+				return s[a:b]
+			}
+		}
+	}
+	return s[0:1]
+}

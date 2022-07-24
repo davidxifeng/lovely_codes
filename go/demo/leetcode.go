@@ -3,6 +3,8 @@ package demo
 import (
 	"math/bits"
 	"unicode/utf8"
+
+	"golang.org/x/exp/constraints"
 )
 
 func TwoSum(nums []int, target int) []int {
@@ -157,19 +159,17 @@ func NumToList(n int) *ListNode {
 	return head
 }
 
-func Max(a, b int) int {
-	if a > b {
-		return a
-	} else {
+func Max[T constraints.Ordered](a, b T) T {
+	if a < b {
 		return b
 	}
+	return a
 }
-func Min(a, b int) int {
+func Min[T constraints.Ordered](a, b T) T {
 	if a > b {
 		return b
-	} else {
-		return a
 	}
+	return a
 }
 
 func LengthOfLongestSubstring(s string) int {
@@ -254,7 +254,6 @@ func LongestPalindrome(s string) string {
 
 	for i := l; i > 1; i-- {
 		for a, b := 0, 0+i; b <= l; a, b = a+1, b+1 {
-			// fmt.Printf("substr is %s\n", s[a:b])
 			if IsPalindrome(s[a:b]) {
 				return s[a:b]
 			}

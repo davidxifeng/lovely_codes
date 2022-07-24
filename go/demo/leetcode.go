@@ -1,7 +1,6 @@
 package demo
 
 import (
-	"fmt"
 	"math/bits"
 	"unicode/utf8"
 
@@ -269,52 +268,41 @@ func Convert(s string, numRows int) string {
 	t := make([]rune, l)
 
 	start := numRows + numRows - 2
-	offset := make([]int, start)
-
-	for i, c := 0, 0; i < start; i++ {
-		if c == 0 {
-			c = start
-		}
-		offset[i] = c
-		c -= 2
-	}
-	fmt.Println(offset)
 
 	ti := 0
 	for row := 0; row < numRows; row++ {
 		o1, o2 := start-(row*2), row*2
 
-		fmt.Println("row ", row, o1, o2)
 		if row == 0 || row == numRows-1 {
 			o := Max(o1, o2)
 			si := row
 			for i := 0; ; i++ {
-				si += i * o
 				if si >= l {
 					break
 				}
 				t[ti] = r[si]
 				ti++
+
+				si += o
 			}
 		} else {
 			si := row
 			for i := 0; ; i += 1 {
+				if si >= l {
+					break
+				}
+				t[ti] = r[si]
+				ti++
 				si += o1
+
 				if si >= l {
 					break
 				}
 				t[ti] = r[si]
 				ti++
 				si += o2
-				if si >= l {
-					break
-				}
-				t[ti] = r[si]
-				ti++
 			}
 		}
 	}
-	fmt.Println(ti, ti == l, string(t))
-
 	return string(t)
 }

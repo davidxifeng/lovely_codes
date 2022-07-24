@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"play/demo"
-	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 )
@@ -14,18 +13,16 @@ func init() {
 
 var demoCmd = &cobra.Command{
 	Use:   "demo",
-	Short: "run demo",
+	Short: "🏄💾run demo",
+	Long:  "测试LeetCode等代码",
 	Run: func(cmd *cobra.Command, args []string) {
 		demoMain()
 	},
 }
 
-func demoMain() {
-	s := "中文🏄💾"
-	for i, v := range s {
-		fmt.Printf("%d %c %v 0x%05X\n", i, v, v, v)
-	}
-	fmt.Println("len s : ", len(s), utf8.RuneCountInString(s))
+// utf8.RuneCountInString("Hi")
 
-	fmt.Println(demo.LongestPalindrome("abcba"))
+func demoMain() {
+	r := demo.Convert("PAYPALISHIRING", 3)
+	fmt.Println(r == "PAHNAPLSIIGYIR", r)
 }

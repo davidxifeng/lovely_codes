@@ -261,3 +261,12 @@ func LongestPalindrome(s string) string {
 	}
 	return s[0:1]
 }
+
+func Convert(s string, numRows int) string {
+	r := []rune(s)
+	l := len(r)
+	for i := 0; i < l; i++ {
+
+	}
+	return string(r)
+}

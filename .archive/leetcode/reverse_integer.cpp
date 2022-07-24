@@ -1,4 +1,5 @@
 // 11/23/2014 15:55
+// 11/23/2014 16:27
 
 class Solution {
 public:
@@ -6,7 +7,19 @@ int atoi(char *p) {
     char c;
     int r = 0;
     while ((c = *p++)) {
-        r = r * 10 + c - '0';
+        int t;
+        t = r * 10;
+        if ( t < r || t % 10 != 0) {
+            r = 0;
+            break;
+        }
+        int s;
+        s = t + c - '0';
+        if ( s < t) {
+            r = 0;
+            break;
+        }
+        r = s;
     }
     return r;
 }
@@ -32,6 +45,8 @@ int reverse(int x) {
     if ( x < 0) {
         is_ne = 1;
         x = -x;
+    } else if (x < 10) {
+        return x;
     }
 
     for(int i = 0; i < 16; ++i) {
@@ -44,4 +59,3 @@ int reverse(int x) {
 }
 
 };
-

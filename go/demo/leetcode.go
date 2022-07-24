@@ -1,6 +1,7 @@
 package demo
 
 import (
+	"math"
 	"math/bits"
 	"unicode/utf8"
 
@@ -321,4 +322,24 @@ func Convert(s string, numRows int) string {
 		}
 	}
 	return string(t)
+}
+
+// Given a signed 32-bit integer x, return x with its digits reversed.
+// If reversing x causes the value to go outside the signed 32-bit integer
+//range [-231, 231 - 1], then return 0.
+func Reverse(x int) int {
+	r := 0
+	for x != 0 {
+		pop := x % 10
+		x /= 10
+
+		if r > math.MaxInt32/10 || (r == math.MaxInt32/10 && pop > 7) {
+			return 0
+		}
+		if r < math.MinInt32/10 || (r == math.MinInt32/10 && pop < -8) {
+			return 0
+		}
+		r = r*10 + pop
+	}
+	return r
 }

@@ -95,3 +95,14 @@ func TestConvert(t *testing.T) {
 	fn("PAYPALISHIRING", 3, "PAHNAPLSIIGYIR")
 	fn("AB", 1, "AB")
 }
+
+func TestReverse(t *testing.T) {
+	fn := func(x, y int) {
+		if Reverse(x) != y {
+			t.Fail()
+		}
+	}
+	fn(123, 321)
+	fn(-123, -321)
+	fn(120, 21)
+}

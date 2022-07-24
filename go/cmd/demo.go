@@ -23,6 +23,10 @@ var demoCmd = &cobra.Command{
 // utf8.RuneCountInString("Hi")
 
 func demoMain() {
+	// demo.Convert("A", 1)
+	demo.Convert("ABC", 2)
 	r := demo.Convert("PAYPALISHIRING", 3)
 	fmt.Println(r == "PAHNAPLSIIGYIR", r)
+	fmt.Println(r)
+	fmt.Println("PAHNAPLSIIGYIR")
 }

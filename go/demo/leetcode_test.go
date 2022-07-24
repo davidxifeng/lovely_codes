@@ -84,3 +84,14 @@ func TestIsPalindrome(t *testing.T) {
 	fn("abcba", true)
 	fn("abcdcba", true)
 }
+
+func TestConvert(t *testing.T) {
+	fn := func(s string, nr int, r string) {
+		if Convert(s, nr) != r {
+			t.Fail()
+		}
+	}
+	fn("A", 1, "A")
+	fn("PAYPALISHIRING", 3, "PAHNAPLSIIGYIR")
+	fn("AB", 1, "AB")
+}

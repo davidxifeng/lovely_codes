@@ -272,8 +272,24 @@ func Convert(s string, numRows int) string {
 	ti := 0
 	for row := 0; row < numRows; row++ {
 		o1, o2 := start-(row*2), row*2
+		// fmt.Printf("o1 %d, o2: %d of row %d\n", o1, o2, row)
 
-		if row == 0 || row == numRows-1 {
+		if row == 0 {
+			o := Max(o1, o2)
+			if o == 0 {
+				o = 1
+			}
+			si := row
+			for i := 0; ; i++ {
+				if si >= l {
+					break
+				}
+				t[ti] = r[si]
+				ti++
+
+				si += o
+			}
+		} else if row == numRows-1 {
 			o := Max(o1, o2)
 			si := row
 			for i := 0; ; i++ {

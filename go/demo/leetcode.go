@@ -245,15 +245,15 @@ func IsPalindrome(s string) bool {
 }
 
 func LongestPalindrome(s string) string {
+	// 暴力搜索, 时间复杂度 O(n ^ 3), 空间复杂度O(1)
+	// 官方给出了另外4种更高效的算法
 	l := len(s)
 	if l < 1 {
 		return ""
 	}
 
 	for i := l; i > 1; i-- {
-		cc := 0
 		for a, b := 0, 0+i; b <= l; a, b = a+1, b+1 {
-			cc++
 			// fmt.Printf("substr is %s\n", s[a:b])
 			if IsPalindrome(s[a:b]) {
 				return s[a:b]

@@ -16,6 +16,36 @@ fn add_one(i: i32) -> i32 {
     return i + 1;
 }
 
+fn test_for_loop() {
+    for i in 1 ..=5 {
+        println!("i is {}", i);
+    }
+
+    let mut list = [1,2,3];
+
+    // 可变借用
+    for li in &mut list {
+        println!("list item is {}", li);
+        *li = *li + 1;
+    }
+
+    // array pretty print
+    println!("array is {:?}", list);
+
+    // 循环N次, c style
+    for _ in 0..3 {
+        println!("hi!");
+    }
+}
+
+fn test_basic() {
+    let v = Some(3u8);
+    if let Some(_) = v {
+        println!("not nothing");
+    }
+
+}
+
 fn main() {
     let args = Args::parse();
 
@@ -24,4 +54,7 @@ fn main() {
     let x: i32 = "52".parse().expect("not a number");
     println!("2022-2-11 wsl lunar neovim {}", add_one(x));
     println!("how error handling is in rust?");
+
+    test_for_loop();
+    test_basic();
 }

@@ -23,21 +23,42 @@ pub struct NotDivisibleError {
 // Calculate `a` divided by `b` if `a` is evenly divisible by `b`.
 // Otherwise, return a suitable error.
 pub fn divide(a: i32, b: i32) -> Result<i32, DivisionError> {
-    todo!();
+    match b {
+        0 => Err(DivisionError::DivideByZero),
+        _ => {
+            if a % b == 0 {
+                Ok(a / b)
+            } else {
+                Err(DivisionError::NotDivisible(NotDivisibleError {
+                    dividend: a,
+                    divisor: b,
+                }))
+            }
+        }
+    }
 }
 
 // Complete the function and return a value of the correct type so the test passes.
 // Desired output: Ok([1, 11, 1426, 3])
-fn result_with_list() -> () {
-    let numbers = vec![27, 297, 38502, 81];
-    let division_results = numbers.into_iter().map(|n| divide(n, 27));
+fn result_with_list() -> Result<Vec<i32>, DivisionError> {
+    vec![27, 297, 38502, 81]
+        .into_iter()
+        .map(|n| divide(n, 27))
+        .collect()
 }
 
 // Complete the function and return a value of the correct type so the test passes.
 // Desired output: [Ok(1), Ok(11), Ok(1426), Ok(3)]
-fn list_of_results() -> () {
-    let numbers = vec![27, 297, 38502, 81];
-    let division_results = numbers.into_iter().map(|n| divide(n, 27));
+fn list_of_results() -> Vec<Result<i32, DivisionError>> {
+    // 删掉一些变量后改成了一个表达式
+    // rust迭代器确实强悍,完全一样的代码,就因为返回类型不同,所以
+    // 迭代方式也不同,对错误的处理也就不同,执行过程也不一样了
+    // 这个版本,遇到错误后还会执行下一个,直到整个vec迭代完成
+    // 上个版本,遇到错误后就停止迭代了,成功才会迭代完整个vec
+    vec![27, 297, 38502, 81]
+        .into_iter()
+        .map(|n| divide(n, 27))
+        .collect()
 }
 
 #[cfg(test)]

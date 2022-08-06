@@ -1,8 +1,6 @@
 // threads3.rs
 // Execute `rustlings hint threads3` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
-
 use std::sync::mpsc;
 use std::sync::Arc;
 use std::thread;
@@ -29,10 +27,11 @@ fn send_tx(q: Queue, tx: mpsc::Sender<u32>) -> () {
     let qc1 = qc.clone();
     let qc2 = qc.clone();
 
+    let t1 = tx.clone();
     thread::spawn(move || {
         for val in &qc1.first_half {
             println!("sending {:?}", val);
-            tx.send(*val).unwrap();
+            t1.send(*val).unwrap();
             thread::sleep(Duration::from_secs(1));
         }
     });

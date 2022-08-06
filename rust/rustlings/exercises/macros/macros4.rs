@@ -1,12 +1,11 @@
 // macros4.rs
 // Execute `rustlings hint macros4` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
-
 macro_rules! my_macro {
     () => {
         println!("Check out my macro!");
-    }
+    };
+
     ($val:expr) => {
         println!("Look at this other macro: {}", $val);
     }
@@ -15,4 +14,5 @@ macro_rules! my_macro {
 fn main() {
     my_macro!();
     my_macro!(7777);
+    my_macro!("hi");
 }

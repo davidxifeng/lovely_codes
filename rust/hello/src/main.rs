@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use clap::Parser;
 
 #[derive(Parser, Debug)]
@@ -43,6 +45,12 @@ fn test_basic() {
     if let Some(_) = v {
         println!("not nothing");
     }
+
+    let mut dict = HashMap::new();
+    dict.insert("k", "v");
+    let e = dict.entry("k2").or_insert("love");
+    *e = "go";
+    println!("dict {:?}", &dict)
 
 }
 

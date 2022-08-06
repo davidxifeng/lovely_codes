@@ -3,13 +3,13 @@
 // 'use' and 'as' keywords. Fix these 'use' statements to make the code compile.
 // Execute `rustlings hint modules2` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
-
 mod delicious_snacks {
     // TODO: Fix these use statements
-    use self::fruits::PEAR as ???
-    use self::veggies::CUCUMBER as ???
+    // pub use对外导出
+    pub use self::fruits::PEAR as fruit;
+    pub use self::veggies::CUCUMBER as veggie;
 
+    // 模块还可以嵌套!
     mod fruits {
         pub const PEAR: &'static str = "Pear";
         pub const APPLE: &'static str = "Apple";

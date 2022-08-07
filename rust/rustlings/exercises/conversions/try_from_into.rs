@@ -58,16 +58,17 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
-        let [r, g, b] = arr;
-        if is_color_error(r) || is_color_error(g) || is_color_error(b) {
-            Err(IntoColorError::IntConversion)
-        } else {
-            Ok(Color {
-                red: r as u8,
-                green: g as u8,
-                blue: b as u8,
-            })
-        }
+        arr[..].try_into()
+        // let [r, g, b] = arr;
+        // if is_color_error(r) || is_color_error(g) || is_color_error(b) {
+        //     Err(IntoColorError::IntConversion)
+        // } else {
+        //     Ok(Color {
+        //         red: r as u8,
+        //         green: g as u8,
+        //         blue: b as u8,
+        //     })
+        // }
     }
 }
 
@@ -78,20 +79,23 @@ impl TryFrom<&[i16]> for Color {
         if slice.len() != 3 {
             Err(IntoColorError::BadLen)
         } else {
+            (slice[0], slice[1], slice[2]).try_into()
+
+
             // TODO 不知道这里如何处理更好, 试了一下try fold但没有搞定
-            if let [r, g, b] = slice[0..3] {
-                if is_color_error(r) || is_color_error(g) || is_color_error(b) {
-                    Err(IntoColorError::IntConversion)
-                } else {
-                    Ok(Color {
-                        red: r as u8,
-                        green: g as u8,
-                        blue: b as u8,
-                    })
-                }
-            } else {
-                Err(IntoColorError::BadLen)
-            }
+            // if let [r, g, b] = slice[0..3] {
+            //     if is_color_error(r) || is_color_error(g) || is_color_error(b) {
+            //         Err(IntoColorError::IntConversion)
+            //     } else {
+            //         Ok(Color {
+            //             red: r as u8,
+            //             green: g as u8,
+            //             blue: b as u8,
+            //         })
+            //     }
+            // } else {
+            //     Err(IntoColorError::BadLen)
+            // }
         }
     }
 }

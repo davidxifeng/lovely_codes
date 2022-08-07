@@ -23,8 +23,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
 // You need to create an implementation for a tuple of three integers,
@@ -34,10 +32,25 @@ enum IntoColorError {
 // but the slice implementation needs to check the slice length!
 // Also note that correct RGB color values must be integers in the 0..=255 range.
 
+// 泛型参数不能直接和字面量, 可以作为参数传递,不过这里只有i16
+fn is_color_error(v: i16) -> bool {
+    v < 0 || v > 255
+}
+
 // Tuple implementation
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let (r, g, b) = tuple;
+        if is_color_error(r) || is_color_error(g) || is_color_error(b) {
+            Err(IntoColorError::IntConversion)
+        } else {
+            Ok(Color {
+                red: r as u8,
+                green: g as u8,
+                blue: b as u8,
+            })
+        }
     }
 }
 
@@ -45,6 +58,16 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        let [r, g, b] = arr;
+        if is_color_error(r) || is_color_error(g) || is_color_error(b) {
+            Err(IntoColorError::IntConversion)
+        } else {
+            Ok(Color {
+                red: r as u8,
+                green: g as u8,
+                blue: b as u8,
+            })
+        }
     }
 }
 
@@ -52,6 +75,24 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            Err(IntoColorError::BadLen)
+        } else {
+            // TODO 不知道这里如何处理更好, 试了一下try fold但没有搞定
+            if let [r, g, b] = slice[0..3] {
+                if is_color_error(r) || is_color_error(g) || is_color_error(b) {
+                    Err(IntoColorError::IntConversion)
+                } else {
+                    Ok(Color {
+                        red: r as u8,
+                        green: g as u8,
+                        blue: b as u8,
+                    })
+                }
+            } else {
+                Err(IntoColorError::BadLen)
+            }
+        }
     }
 }
 
